@@ -27,7 +27,7 @@ public partial class FeatureFlagWebService
     public FeatureFlagWebService(NavigationManager navigationManager, IHttpClientFactory factory, ILogger<FeatureFlagWebService> logger)
     {
         _navigationManager = navigationManager;
-        _httpClient = factory.CreateClient("MyVideoResume.Server");
+        _httpClient = factory.CreateClient(Constants.HttpClientFactory);
         _logger = logger;
     }
 

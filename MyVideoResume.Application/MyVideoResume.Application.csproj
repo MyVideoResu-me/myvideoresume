@@ -9,6 +9,9 @@
 
 	<ItemGroup>
 		<PackageReference Include="Docnet.Core" Version="2.6.0" />
+		<PackageReference Include="Microsoft.AspNetCore.HeaderPropagation" Version="9.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Http" Version="9.0.0" />
+		<PackageReference Include="Radzen.Blazor" Version="5.7.2" />
 		<PackageReference Include="Splitio" Version="7.10.0" />
 		<PackageReference Include="System.Security.Cryptography.Pkcs" Version="9.0.0" />
 		<PackageReference Include="System.Security.Cryptography.Xml" Version="9.0.0" />

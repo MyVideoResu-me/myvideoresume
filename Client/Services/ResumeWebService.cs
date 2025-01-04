@@ -36,7 +36,7 @@ public partial class ResumeWebService
 
     public ResumeWebService(NavigationManager navigationManager, IHttpClientFactory factory, ILogger<DashboardWebService> logger, SecurityWebService securityService)
     {
-        this._httpClient = factory.CreateClient("MyVideoResume.Server");
+        this._httpClient = factory.CreateClient(Constants.HttpClientFactory);
         this._navigationManager = navigationManager;
         this._logger = logger;
         this._securityService = securityService;

@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Components.Authorization;
 using Radzen;
 using MyVideoResume.Data.Models;
 using MyVideoResume.Client.Shared.Security.Recaptcha;
+using MyVideoResume.Web.Common;
 
 namespace MyVideoResume.Client.Services;
 
@@ -34,7 +35,7 @@ public partial class SecurityWebService
 
     public SecurityWebService(NavigationManager navigationManager, IHttpClientFactory factory, ILogger<SecurityWebService> logger, RecaptchaService recaptchaService)
     {
-        this.httpClient = factory.CreateClient("MyVideoResume.Server");
+        this.httpClient = factory.CreateClient(Constants.HttpClientFactory);
         this.navigationManager = navigationManager;
         this._logger = logger;
         this.recaptchaService = recaptchaService;

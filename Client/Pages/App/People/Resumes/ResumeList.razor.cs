@@ -74,4 +74,11 @@ public partial class ResumeList
         if (result.HasValue())
             ResumeItems = await Service.GetResumeSummaryItems();
     }
+    void OnClick(RadzenSplitButtonItem args, ResumeSummaryItem item)
+    {
+        if (args.Value.HasValue())
+            ShowSuccessNotification("Test", "Test");
+
+    }
+
 }

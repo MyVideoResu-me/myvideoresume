@@ -15,4 +15,7 @@
 		<PackageReference Include="Microsoft.Data.SqlClient" Version="*" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />	
 	</ItemGroup>
+	<ItemGroup>
+	  <ProjectReference Include="..\MyVideoResume.Application\MyVideoResume.Application.csproj" />
+	</ItemGroup>
 </Project>

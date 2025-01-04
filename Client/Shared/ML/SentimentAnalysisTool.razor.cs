@@ -10,6 +10,7 @@ using Radzen;
 using Radzen.Blazor;
 using System.Net.Http.Json;
 using Blazored.LocalStorage;
+using MyVideoResume.Web.Common;
 
 namespace MyVideoResume.Client.Shared.ML;
 
@@ -49,7 +50,7 @@ public partial class SentimentAnalysisTool
         float percentage = 0;
         try
         {
-            var uri = new Uri($"{NavigationManager.BaseUri}sentiment/sentimentprediction");
+            var uri = new Uri($"{NavigationManager.BaseUri}{Paths.AI_API_Sentiment}");
             var response = await Http.PostAsJsonAsync<string>(uri, resume);
             percentage = await response.ReadAsync<float>();
             await localStorage.SetItemAsync("textresume", resume);

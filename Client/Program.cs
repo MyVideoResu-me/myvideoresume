@@ -38,7 +38,7 @@ builder.Services.AddHttpClient("MyVideoResume.Server", client => client.BaseAddr
 //                    client.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress);
 //                })
 //                .AddHeaderPropagation();
-builder.Services.AddTransient(sp => sp.GetRequiredService<IHttpClientFactory>().CreateClient("MyVideoResume.Server"));
+builder.Services.AddTransient(sp => sp.GetRequiredService<IHttpClientFactory>().CreateClient(Constants.HttpClientFactory));
 builder.Services.AddScoped<FeatureFlagWebService>();
 builder.Services.AddScoped<SecurityWebService>();
 builder.Services.AddScoped<DashboardWebService>();

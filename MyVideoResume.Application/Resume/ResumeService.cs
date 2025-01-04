@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Components;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using MyVideoResume.Abstractions.Core;
@@ -6,6 +7,7 @@ using MyVideoResume.Abstractions.Resume;
 using MyVideoResume.Data;
 using MyVideoResume.Data.Models.Resume;
 using MyVideoResume.Web.Common;
+using Radzen;
 using System.Text.Json;
 
 namespace MyVideoResume.Application.Resume;
@@ -16,14 +18,20 @@ public class ResumeService
     private readonly DataContext _dataContext;
     private readonly IConfiguration _configuration;
     private readonly AccountService _accountService;
+    private readonly NavigationManager _navigationManager;
+    private readonly HttpClient _httpClient;
 
-    public ResumeService(ILogger<ResumeService> logger, IConfiguration configuration, DataContext context, AccountService accountService)
+    public ResumeService(ILogger<ResumeService> logger, IConfiguration configuration, DataContext context, AccountService accountService, NavigationManager navigationManager, IHttpClientFactory httpClientFactory)
     {
         _dataContext = context;
         _logger = logger;
         _configuration = configuration;
         _accountService = accountService;
+        _navigationManager = navigationManager;
+        _httpClient = httpClientFactory.CreateClient(Constants.HttpClientFactory);
     }
+
+
 
     //Get All Public Resume Summaries
     public async Task<List<ResumeSummaryItem>> GetResumeSummaryItems(string? userId = null, bool? onlyPublic = null)
@@ -49,7 +57,7 @@ public class ResumeService
                 query = query.Where(x => x.UserId == userId);
             }
 
-            result = query.Select(x => new ResumeSummaryItem() { UserId = x.UserId, CreationDateTimeFormatted = x.CreationDateTime.Value.ToString("yyyy-MM-dd"), IsPublic = true, Id = x.Id.ToString(), ResumeTemplateName = x.ResumeTemplate.Name, ResumeSummary = x.MetaResume.Basics.Summary, ResumeSlug = x.Slug, ResumeName = x.MetaResume.Basics.Name }).ToList();
+            result = query.Select(x => new ResumeSummaryItem() { SentimentScore = x.SentimentScore, UserId = x.UserId, CreationDateTimeFormatted = x.CreationDateTime.Value.ToString("yyyy-MM-dd"), IsPublic = true, Id = x.Id.ToString(), ResumeTemplateName = x.ResumeTemplate.Name, ResumeSummary = x.MetaResume.Basics.Summary, ResumeSlug = x.Slug, ResumeName = x.MetaResume.Basics.Name }).ToList();
         }
         catch (Exception ex)
         {

@@ -36,7 +36,7 @@ public partial class JobWebService
 
     public JobWebService(NavigationManager navigationManager, IHttpClientFactory factory, ILogger<DashboardWebService> logger)
     {
-        this._httpClient = factory.CreateClient("MyVideoResume.Server");
+        this._httpClient = factory.CreateClient(Constants.HttpClientFactory);
         this._navigationManager = navigationManager;
         this._logger = logger;
     }

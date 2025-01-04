@@ -14,10 +14,10 @@ public class ResumeSummaryItem
     public string ResumeName { get; set; }
     public string ResumeSlug { get; set; }
     public string ResumeTemplateName { get; set; }
+    public string ResumeSummary { get; set; }
 
+    public float? SentimentScore { get; set; }
     public bool IsPublic { get; set; }
 
-    public string ResumeSummary { get; set; }
     public string CreationDateTimeFormatted { get; set; }
-
 }

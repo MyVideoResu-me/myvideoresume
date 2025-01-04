@@ -21,7 +21,16 @@ public static class Paths
     public const string Jobs_API_ViewById = "api/job/{id}";
     public const string Jobs_API_Save = "api/job/save";
     public const string Jobs_API_Extract = "api/job/extract";
+    public const string AI_API_Sentiment = "sentiment/sentimentprediction";
 }
+
+public static class Constants
+{
+
+    public const string HttpClientFactory = "MyVideoResume.Server";
+    public const string BaseUriConfigurationProperty = "BaseUri";
+}
+
 
 public static class Extensions
 {
