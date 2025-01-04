@@ -94,7 +94,7 @@ public partial class BuilderPage
 
     protected async Task Save()
     {
-        var result = await Service.Save(Resume);
+        var result = await ResumeWebService.Save(Resume);
         if (result.ErrorMessage.HasValue())
             ShowSuccessNotification("Resume Saved", string.Empty);
         else
@@ -163,7 +163,7 @@ public partial class BuilderPage
         {
             if (ResumeId.ToLower() != "new")
             {
-                var temp = await Service.GetResume(ResumeId);
+                var temp = await ResumeWebService.GetResume(ResumeId);
                 if (temp != null && Security.User.Id == temp.UserId)
                 {
                     Resume = temp;

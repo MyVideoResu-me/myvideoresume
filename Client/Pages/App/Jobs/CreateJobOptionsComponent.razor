@@ -5,9 +5,9 @@
     <RadzenSplitButton Icon="add_circle" Click=@(args => OnClick(args)) Text="Create Job" ButtonStyle="ButtonStyle.Danger">
         <ChildContent>
             <RadzenSplitButtonItem Icon="backup" Text="From Website" Value="url" />
-            <RadzenSplitButtonItem Icon="upload_file" Text="Upload PDF" Value="pdf" />
-            <RadzenSplitButtonItem Icon="upload" Text="Upload JSON" Value="json" />
-            <RadzenSplitButtonItem Icon="construction" Text="Resume Builder" Value="builder" Visible=@Service.IsResumeBuilderEnabled />
+            <RadzenSplitButtonItem Icon="picture_as_pdf" Text="Upload PDF" Value="pdf" />
+            <RadzenSplitButtonItem Icon="note_add" Text="Upload MS Word" Value="word" />
+            <RadzenSplitButtonItem Icon="construction" Text="Job Builder" Value="builder" Visible=@Service.IsResumeBuilderEnabled />
         </ChildContent>
     </RadzenSplitButton>
 </div>

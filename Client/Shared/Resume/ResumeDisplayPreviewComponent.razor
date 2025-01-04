@@ -8,12 +8,19 @@
 
 @if (Visible)
 {
-    <!-- For Each REsume Loop through and display -->
-    @foreach (var resume in ResumeItems)
+    if (ResumeItems != null && ResumeItems.Count > 0)
     {
-        <RadzenColumn Size="12" SizeXS="12" SizeSM="12" SizeMD="4" SizeLG="3" SizeXL="3" SizeXX="2">
-            <ResumePreviewComponent ResumeItem=@resume DeleteCompleted=@DeleteCompletedHandler Mode="ResumePreviewMode.Edit"></ResumePreviewComponent>
-        </RadzenColumn>
+        @foreach (var resume in ResumeItems)
+        {
+            <RadzenColumn Size="12" SizeXS="12" SizeSM="12" SizeMD="4" SizeLG="3" SizeXL="3" SizeXX="2">
+                <ResumePreviewComponent ResumeItem=@resume DeleteCompleted=@DeleteCompletedHandler Mode="ResumePreviewMode.Edit"></ResumePreviewComponent>
+            </RadzenColumn>
+        }
+
+    }
+    else
+    {
+        <div>No records to display.</div>
     }
 }
 

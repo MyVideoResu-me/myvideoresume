@@ -135,6 +135,23 @@ public partial class ResumeController : ControllerBase
         return result;
     }
 
+    [HttpPost("SentimentPrediction")]
+    public async Task<ActionResult<ResponseResult<float>>> SentimentPrediction([FromBody] string id)
+    {
+        var result = new ResponseResult<float>();
+        try
+        {
+            result = await _resumeService.GetSentimentPrediction(id);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.Message, ex);
+            result.ErrorMessage = ex.Message;
+        }
+        return result;
+    }
+
+
     [HttpPost("Summarize")]
     public async Task<ActionResult<ResponseResult>> Summarize([FromBody] string resumeText)
     {

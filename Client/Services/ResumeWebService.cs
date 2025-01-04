@@ -42,6 +42,23 @@ public partial class ResumeWebService
         this._securityService = securityService;
     }
 
+    public async Task<ResponseResult<float>> GetSentimentAnalysisById(string id)
+    {
+        var result = new ResponseResult<float>();
+        var uri = new Uri($"{_navigationManager.BaseUri}{Paths.Resume_API_Sentiment}");
+        var response = await _httpClient.PostAsJsonAsync<string>(uri, id);
+        result = await response.ReadAsync<ResponseResult<float>>();
+
+        return result;
+    }
+
+    public async Task<float> GetSentimentAnalysisByText(string resumeAsText)
+    {
+        var uri = new Uri($"{_navigationManager.BaseUri}{Paths.AI_API_Sentiment}");
+        var response = await _httpClient.PostAsJsonAsync<string>(uri, resumeAsText);
+        return await response.ReadAsync<float>();
+    }
+
     public async Task<List<ResumeSummaryItem>> GetPublicResumes() //Eventually Pass in a Search Object
     {
         var result = new List<ResumeSummaryItem> { };

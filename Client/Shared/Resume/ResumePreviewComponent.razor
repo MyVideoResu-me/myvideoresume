@@ -90,7 +90,7 @@
     protected async Task Delete()
     {
         var result = new ResponseResult();
-        result = await Service.Delete(ResumeItem.Id);
+        result = await ResumeWebService.Delete(ResumeItem.Id);
         await DeleteCompleted.InvokeAsync(result);
     }
 }

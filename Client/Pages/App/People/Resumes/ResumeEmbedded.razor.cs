@@ -36,7 +36,7 @@ public partial class ResumeEmbedded
 
         try
         {
-            Resume = await Service.GetResume(Slug);
+            Resume = await ResumeWebService.GetResume(Slug);
             IsResumeDeleted = Resume.DeletedDateTime.HasValue;
             if (IsResumeDeleted)
             {

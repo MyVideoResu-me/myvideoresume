@@ -50,9 +50,7 @@ public partial class SentimentAnalysisTool
         float percentage = 0;
         try
         {
-            var uri = new Uri($"{NavigationManager.BaseUri}{Paths.AI_API_Sentiment}");
-            var response = await Http.PostAsJsonAsync<string>(uri, resume);
-            percentage = await response.ReadAsync<float>();
+            percentage = await ResumeWebService.GetSentimentAnalysisByText(resume);
             await localStorage.SetItemAsync("textresume", resume);
         }
         catch (Exception ex)

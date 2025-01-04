@@ -1,13 +1,17 @@
 ﻿using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.HeaderPropagation;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Primitives;
 using MyVideoResume.Abstractions.Core;
 using MyVideoResume.Abstractions.Resume;
 using MyVideoResume.Data;
 using MyVideoResume.Data.Models.Resume;
 using MyVideoResume.Web.Common;
 using Radzen;
+using System.Net.Http.Json;
 using System.Text.Json;
 
 namespace MyVideoResume.Application.Resume;
@@ -20,18 +24,50 @@ public class ResumeService
     private readonly AccountService _accountService;
     private readonly NavigationManager _navigationManager;
     private readonly HttpClient _httpClient;
+    private readonly string _baseUri;
+    private readonly IServiceScopeFactory _serviceScopeFactory;
 
-    public ResumeService(ILogger<ResumeService> logger, IConfiguration configuration, DataContext context, AccountService accountService, NavigationManager navigationManager, IHttpClientFactory httpClientFactory)
+    public ResumeService(ILogger<ResumeService> logger, IConfiguration configuration, DataContext context, AccountService accountService, NavigationManager navigationManager, IHttpClientFactory httpClientFactory, IServiceScopeFactory serviceScopeFactory)
     {
+        _baseUri = configuration.GetValue<string>(Constants.BaseUriConfigurationProperty);
         _dataContext = context;
         _logger = logger;
         _configuration = configuration;
         _accountService = accountService;
         _navigationManager = navigationManager;
         _httpClient = httpClientFactory.CreateClient(Constants.HttpClientFactory);
+        _serviceScopeFactory = serviceScopeFactory;
     }
 
+    public async Task<ResponseResult<float>> GetSentimentPrediction(string id)
+    {
+        var result = new ResponseResult<float>();
+        try
+        {
+            var item = _dataContext.ResumeInformation.FirstOrDefault(x => x.Id == Guid.Parse(id));
+            if (item != null)
+            {
+                var uri = new Uri($"{_baseUri}{Paths.AI_API_Sentiment}");
+                using IServiceScope scope = _serviceScopeFactory.CreateScope();
+                var headerPropagationValues = scope.ServiceProvider.GetRequiredService<HeaderPropagationValues>();
+                headerPropagationValues.Headers = new Dictionary<string, StringValues>(StringComparer.OrdinalIgnoreCase);
+                //eventually set headers coming from other sources (e.g. consuming a queue) 
+                headerPropagationValues.Headers.Add("User-Agent", "background-service");
+                var response = await _httpClient.PostAsJsonAsync<string>(uri, item.ResumeSerialized);
+                var valueReturned = await response.ReadAsync<float>();
+                item.SentimentScore = valueReturned;
+                await _dataContext.SaveChangesAsync();
+                result.Result = valueReturned;
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.Message, ex);
+            result.ErrorMessage = ex.Message;
+        }
 
+        return result;
+    }
 
     //Get All Public Resume Summaries
     public async Task<List<ResumeSummaryItem>> GetResumeSummaryItems(string? userId = null, bool? onlyPublic = null)

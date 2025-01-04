@@ -42,7 +42,7 @@ public static class EnumExtensions
 
 public class ResumeComponent : BasicTemplate
 {
-    [Inject] protected ResumeWebService Service { get; set; }
+    [Inject] protected ResumeWebService ResumeWebService { get; set; }
     [Inject] protected FeatureFlagClientService FeatureFlagService { get; set; }
 
     protected async Task DownloadJsonFile(ResumeInformationEntity resume) 

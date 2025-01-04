@@ -1,4 +1,5 @@
 using System.Net.Http;
+using System.Security.Policy;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -10,6 +11,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.JSInterop;
 using MyVideoResume.Abstractions.Core;
 using MyVideoResume.Abstractions.Resume;
+using MyVideoResume.Client.Shared.Resume;
 using MyVideoResume.Data.Models.Resume;
 using MyVideoResume.Web.Common;
 using Radzen;
@@ -32,10 +34,29 @@ public partial class ResumeList
         return result;
     }
 
+    protected async Task ProcessSentimentAnalysis(ResumeSummaryItem item)
+    {
+        var result = new ResponseResult<float>();
+        result = await ResumeWebService.GetSentimentAnalysisById(item.Id);
+        if (result.ErrorMessage.HasValue())
+        {
+            ShowErrorNotification("Failed to Process Sentiment", string.Empty);
+        }
+        else
+        {
+            ShowSuccessNotification("Sentiment Updated", string.Empty);
+            item.SentimentScore = result.Result;
+
+            DialogService.Close();
+            await OpenSentimentAnalysis(item);
+        }
+    }
+
+
     protected async Task Delete(ResumeSummaryItem item)
     {
         var result = new ResponseResult();
-        result = await Service.Delete(item.Id);
+        result = await ResumeWebService.Delete(item.Id);
         if (result.ErrorMessage.HasValue())
         {
             ShowErrorNotification("Failed to Delete", string.Empty);
@@ -43,7 +64,7 @@ public partial class ResumeList
         else
         {
             ShowSuccessNotification("Resume Deleted", string.Empty);
-            ResumeItems = await Service.GetResumeSummaryItems();
+            ResumeItems = await ResumeWebService.GetResumeSummaryItems();
         }
     }
 
@@ -56,7 +77,7 @@ public partial class ResumeList
         else
         {
             ShowSuccessNotification("Resume Deleted", string.Empty);
-            ResumeItems = await Service.GetResumeSummaryItems();
+            ResumeItems = await ResumeWebService.GetResumeSummaryItems();
         }
     }
 
@@ -66,19 +87,28 @@ public partial class ResumeList
         await base.OnInitializedAsync();
 
         if (Security.IsAuthenticated())
-            ResumeItems = await Service.GetResumeSummaryItems();
+            ResumeItems = await ResumeWebService.GetResumeSummaryItems();
     }
 
     protected async Task ResumeCreated(string result)
     {
         if (result.HasValue())
-            ResumeItems = await Service.GetResumeSummaryItems();
+            ResumeItems = await ResumeWebService.GetResumeSummaryItems();
     }
-    void OnClick(RadzenSplitButtonItem args, ResumeSummaryItem item)
-    {
-        if (args.Value.HasValue())
-            ShowSuccessNotification("Test", "Test");
 
+    async Task OpenAITools(RadzenSplitButtonItem args, ResumeSummaryItem item)
+    {
+        if (args != null)
+            switch (args.Value)
+            {
+                case "sentiment":
+                    await OpenSentimentAnalysis(item);
+                    break;
+                default:
+                    break;
+            }
+        else
+            await OpenSentimentAnalysis(item);
     }
 
 }
