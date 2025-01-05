@@ -201,6 +201,7 @@ public class ResumeService
                         resume.Privacy_ShowResume = DisplayPrivacy.ToSelf;
                         resume.UserId = string.Empty;
                         resume.DeletedDateTime = DateTime.UtcNow;
+                        resume.Slug = string.Empty;
                         if (resume.MetaResume != null)
                         {
                             resume.MetaResume.UserId = string.Empty;
