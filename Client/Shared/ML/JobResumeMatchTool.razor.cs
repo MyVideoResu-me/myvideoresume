@@ -21,24 +21,24 @@ public partial class JobResumeMatchTool
     protected ILocalStorageService localStorage { get; set; }
 
     public string Result { get; set; } = "";
-    public bool Busy { get; set; }
+    public bool Busy { get; set; } = false;
     public string Resume { get; set; }
     public string JobDescription { get; set; }
 
     private async Task JobResumeMatchAsync()
     {
+        Busy = true;
         try
         {
-            Busy = true;
             var r = await Service.Match(JobDescription, Resume);
             Result = r.Result;
-            Busy = false;
         }
         catch (Exception ex)
         {
             Logger.LogError(ex.Message, ex);
             Result = "Coming Soon";
         }
+        Busy = false;
     }
 
     protected override async Task OnInitializedAsync()

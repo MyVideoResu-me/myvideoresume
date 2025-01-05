@@ -30,7 +30,8 @@ public class JobBase : CommonBase
     public string UserId { get; set; }
     public string Title { get; set; }
     public string Description { get; set; }
-    public string Slug { get; set; }
+    public string JobSerialized { get; set; }
+    public string? Slug { get; set; }
     public List<string>? Responsibilities { get; set; }
     [JsonIgnore, NotMapped]
     public string ResponsibilitiesFlattened

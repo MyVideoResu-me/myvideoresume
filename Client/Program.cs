@@ -13,7 +13,6 @@ using System;
 using MyVideoResume.Client.Services.FeatureFlag;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
-
 builder.Services.AddBlazorBootstrap();
 builder.Services.AddRadzenComponents();
 builder.Services.AddRadzenCookieThemeService(options =>

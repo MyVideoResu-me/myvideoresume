@@ -132,11 +132,11 @@ public partial class JobWebService
         return r;
     }
 
-    public async Task<ResponseResult> Extract(string url)
+    public async Task<ResponseResult<JobSummaryItem>> Extract(string url)
     {
         var uri = new Uri($"{_navigationManager.BaseUri}{Paths.Jobs_API_Extract}");
         var response = await _httpClient.PostAsJsonAsync<string>(uri, url);
-        var r = await response.ReadAsync<ResponseResult>();
+        var r = await response.ReadAsync<ResponseResult<JobSummaryItem>>();
         return r;
     }
 }

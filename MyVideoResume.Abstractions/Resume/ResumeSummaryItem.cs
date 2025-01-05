@@ -16,6 +16,8 @@ public class ResumeSummaryItem
     public string ResumeTemplateName { get; set; }
     public string ResumeSummary { get; set; }
 
+    public string ResumeSerialized { get; set; }
+
     public float? SentimentScore { get; set; }
     public bool IsPublic { get; set; }
 

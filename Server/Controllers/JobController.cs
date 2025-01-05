@@ -141,12 +141,12 @@ public partial class JobController : ControllerBase
     //}
 
     [HttpPost("Extract")]
-    public async Task<ActionResult<ResponseResult<JobSummaryItem>>> Summarize([FromBody] string url)
+    public async Task<ActionResult<ResponseResult<JobSummaryItem>>> Extract([FromBody] string url)
     {
         var result = new ResponseResult<JobSummaryItem>();
         try
         {
-            result = await _engine.ExtractJobDescription(url);
+            result = await _service.SaveJobByUrl(url);
         }
         catch (Exception ex)
         {

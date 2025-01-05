@@ -13,11 +13,11 @@ public class CompanyProfile : CommonBase
 
     public string? Description { get; set; }
 
-    public string Website { get; set; }
+    public string? Website { get; set; }
 
-    public string Phone { get; set; }
+    public string? Phone { get; set; }
 
-    public DateTime TermsOfUseAgreementAcceptedDateTime { get; set; }
+    public DateTime? TermsOfUseAgreementAcceptedDateTime { get; set; }
     public string? TermsOfUserAgreementVersion { get; set; }
 
     public DateTime? ApprovedDateTime { get; set; }

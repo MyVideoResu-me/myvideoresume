@@ -34,23 +34,6 @@ public partial class ResumeList
         return result;
     }
 
-    protected async Task ProcessSentimentAnalysis(ResumeSummaryItem item)
-    {
-        var result = new ResponseResult<float>();
-        result = await ResumeWebService.GetSentimentAnalysisById(item.Id);
-        if (result.ErrorMessage.HasValue())
-        {
-            ShowErrorNotification("Failed to Process Sentiment", string.Empty);
-        }
-        else
-        {
-            ShowSuccessNotification("Sentiment Updated", string.Empty);
-            item.SentimentScore = result.Result;
-
-            DialogService.Close();
-            await OpenSentimentAnalysis(item);
-        }
-    }
 
 
     protected async Task Delete(ResumeSummaryItem item)
@@ -103,6 +86,9 @@ public partial class ResumeList
             {
                 case "sentiment":
                     await OpenSentimentAnalysis(item);
+                    break;
+                case "jobmatch":
+                    await OpenJobMatchAnalysis(item);
                     break;
                 default:
                     break;

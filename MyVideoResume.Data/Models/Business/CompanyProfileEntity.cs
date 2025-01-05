@@ -17,7 +17,7 @@ public class CompanyProfileEntity : CompanyProfile
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public Guid Id { get; set; }
 
-    public AddressEntity MailingAddress { get; set; }
+    public AddressEntity? MailingAddress { get; set; }
 
     public AddressEntity? BillingAddress { get; set; }
 

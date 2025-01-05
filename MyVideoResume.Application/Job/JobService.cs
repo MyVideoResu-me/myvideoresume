@@ -1,11 +1,16 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.HeaderPropagation;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Primitives;
+using MyVideoResume.Abstractions.Core;
 using MyVideoResume.Abstractions.Job;
 using MyVideoResume.Abstractions.Resume;
 using MyVideoResume.Application.Resume;
 using MyVideoResume.Data;
 using MyVideoResume.Data.Models;
+using MyVideoResume.Web.Common;
 
 namespace MyVideoResume.Application.Job;
 
@@ -15,18 +20,42 @@ public partial class JobService
     private readonly DataContext _dataContext;
     private readonly IConfiguration _configuration;
     private readonly AccountService _accountService;
+    private readonly IJobPromptEngine _engine;
+    private readonly HttpClient _httpClient;
+    private readonly IServiceScopeFactory _serviceScopeFactory;
 
-    public JobService(ILogger<JobService> logger, IConfiguration configuration, DataContext context, AccountService accountService)
+    public JobService(ILogger<JobService> logger, IJobPromptEngine engine, IConfiguration configuration, DataContext context, AccountService accountService, IHttpClientFactory httpClientFactory, IServiceScopeFactory serviceScopeFactory)
     {
         _dataContext = context;
         _logger = logger;
         _configuration = configuration;
         _accountService = accountService;
+        _engine = engine;
+        _httpClient = httpClientFactory.CreateClient(Constants.HttpClientFactory);
+        _serviceScopeFactory = serviceScopeFactory;
     }
 
     public async Task<JobPreferencesEntity> GetJobPreferences(string userId)
     {
         throw new NotImplementedException();
+    }
+
+    public async Task<ResponseResult<JobSummaryItem>> SaveJobByUrl(string url)
+    {
+        var result = new ResponseResult<JobSummaryItem>();
+
+        //call the URL
+        using IServiceScope scope = _serviceScopeFactory.CreateScope();
+        var headerPropagationValues = scope.ServiceProvider.GetRequiredService<HeaderPropagationValues>();
+        headerPropagationValues.Headers = new Dictionary<string, StringValues>(StringComparer.OrdinalIgnoreCase);
+        //eventually set headers coming from other sources (e.g. consuming a queue) 
+        headerPropagationValues.Headers.Add("User-Agent", "background-service");
+
+        var response = await _httpClient.GetStringAsync(url);
+        //call the AI
+        result = await _engine.ExtractJob(response);
+
+        return result;
     }
 
     //Get All Public Resume Summaries
