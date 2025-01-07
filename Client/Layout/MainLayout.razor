@@ -52,15 +52,18 @@
             <RadzenPanelMenuItem Text="Companies" Path="companies" Icon="store" title="Companies" />
             <RadzenPanelMenuItem Text="People" Path="people" Icon="contacts" title="People" />
             <RadzenPanelMenuItem Text="Tools" Icon="handyman" title="Tools">
-                <RadzenPanelMenuItem Text="Sentiment Analysis" Path="Tools/SentimentAnalysis" Icon="mood" title="Sentiment Analysis" />
-                <RadzenPanelMenuItem Text="Summarize Resume" Path="Tools/SummarizeResume" Icon="query_stats" title="Summarize Resume" />
-                <RadzenPanelMenuItem Text="Job Resume Match" Path="Tools/JobResumeMatch" Icon="join_inner" title="Job Resume Match" />
-                <RadzenPanelMenuItem Text="PDF to JSON" Path="Tools/pdftojson" Icon="convert_to_text" title="PDF to JSON" />
+                <RadzenPanelMenuItem Text="Sentiment Analysis" Path=@Paths.Tools_Sentiment Icon="mood" title="Sentiment Analysis" />
+                <RadzenPanelMenuItem Text="Summarize Resume" Path=@Paths.Tools_SummarizeResume Icon="query_stats" title="Summarize Resume" />
+                <RadzenPanelMenuItem Text="Job Resume Match" Path=@Paths.Tools_JobMatch Icon="join_inner" title="Job Resume Match" />
+                <RadzenPanelMenuItem Text="PDF to JSON" Path=@Paths.Tools_PdfToJson Icon="convert_to_text" title="PDF to JSON" />
 
             </RadzenPanelMenuItem>
             <RadzenPanelMenuItem Text="Tasks" Path="tasks" Icon="task_alt" title="Tasks" />
             <RadzenPanelMenuItem Text="Outreach" Path="feed" Icon="campaign" title="Outreach" />
-            <RadzenPanelMenuItem Text="About" Path="about" Icon="info" title="About" />
+            <RadzenPanelMenuItem Text="Help / About" Icon="info" title="Help / About">
+                <RadzenPanelMenuItem Text="How To Articles" Path="Articles/HowTo" Icon="question_mark" title="How To Articles" />
+                <RadzenPanelMenuItem Text="About" Path="about" Icon="store" title="About" />
+            </RadzenPanelMenuItem>
         </RadzenPanelMenu>
     </RadzenSidebar>
     <RadzenBody>

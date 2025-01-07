@@ -6,6 +6,7 @@ using Blazored.LocalStorage;
 using MyVideoResume.Abstractions.Job;
 using MyVideoResume.Abstractions.Core;
 using MyVideoResume.Client.Services;
+using Markdig;
 
 namespace MyVideoResume.Client.Shared.ML;
 
@@ -20,10 +21,10 @@ public partial class JobResumeMatchTool
     [Inject]
     protected ILocalStorageService localStorage { get; set; }
 
-    public string Result { get; set; } = "";
+    public string Result { get; set; } = "Results";
     public bool Busy { get; set; } = false;
-    public string Resume { get; set; }
-    public string JobDescription { get; set; }
+    public string Resume { get; set; } = "Copy & Paste Resume";
+    public string JobDescription { get; set; } = "Copy & Paste Job Description";
 
     private async Task JobResumeMatchAsync()
     {
@@ -31,7 +32,7 @@ public partial class JobResumeMatchTool
         try
         {
             var r = await Service.Match(JobDescription, Resume);
-            Result = r.Result;
+            Result = Markdown.ToHtml(r.Result);
         }
         catch (Exception ex)
         {

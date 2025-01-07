@@ -23,6 +23,10 @@ public static class Paths
     public const string Jobs_API_Save = "api/job/save";
     public const string Jobs_API_Extract = "api/job/extract";
     public const string AI_API_Sentiment = "sentiment/sentimentprediction";
+    public const string Tools_Sentiment = "Tools/SentimentAnalysis";
+    public const string Tools_SummarizeResume = "Tools/SummarizeResume";
+    public const string Tools_JobMatch = "Tools/JobResumeMatch";
+    public const string Tools_PdfToJson = "Tools/pdftojson";
 }
 
 public static class Constants
