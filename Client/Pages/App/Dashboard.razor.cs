@@ -30,18 +30,18 @@ public partial class Dashboard
     protected ILogger<Dashboard> Console { get; set; }
 
     List<ResumeSummaryItem> ResumeList { get; set; } = new List<ResumeSummaryItem>();
-    ResumeUploadToJsonComponent ResumeUploadToJsonComponent { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
+
         if (Security.IsAuthenticated())
             ResumeList = await Service.GetResumeSummaries();
     }
 
     async Task DeleteCompletedHandler(ResponseResult result)
     {
-        if (!result.ErrorMessage.HasValue())
+        if (result.ErrorMessage.HasValue())
         {
             ShowErrorNotification("Error Deleting Resume", string.Empty);
         }

@@ -46,11 +46,13 @@ public static class DbContextExtensions
         if (existingEntity == null)
         {
             context.Add(newEntity);
+            context.SaveChanges();
             return newEntity;
         }
         else if (newEntity == null)
         {
             context.Remove(existingEntity);
+            context.SaveChanges();
             return null;
         }
         else
@@ -89,6 +91,8 @@ public static class DbContextExtensions
                                     throw new NullReferenceException($"The collection type in the Navigation property '{navigationEntry.Metadata.Name}' doesn't have an 'Add' method.");
 
                                 addMethod.Invoke(existingNavigationObject, new[] { newValue });
+                                context.SaveChanges();
+
                             }
 
                             //Update sub navigation
@@ -108,6 +112,8 @@ public static class DbContextExtensions
                                 throw new NullReferenceException($"The collection type in the Navigation property '{navigationEntry.Metadata.Name}' doesn't have a 'Remove' method.");
 
                             removeMethod.Invoke(existingNavigationObject, new[] { existingValue });
+                            context.SaveChanges();
+
                         }
                     }
                 }
@@ -117,6 +123,7 @@ public static class DbContextExtensions
                     insertUpdateOrDeleteGraph(context, passedNavigationObject, navigationEntry.CurrentValue, existingEntry.Metadata.ClrType.FullName);
                 }
             }
+            context.SaveChanges();
 
             return existingEntity;
         }

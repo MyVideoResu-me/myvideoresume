@@ -2,22 +2,48 @@
 <RadzenRow Gap="5" RowGap="5" style="margin-bottom:25px">
     <RadzenColumn>
         <RadzenCard>
-            <RadzenRow>
-                <h3>How Good of a Match is my Resume</h3>
-            </RadzenRow>
             <RadzenRow JustifyContent="JustifyContent.Start" AlignItems="AlignItems.Center" Gap="0">
                 <RadzenColumn Size="6">
-                    <InputTextArea cols="25" class="sentiment" rows="10" placeholder="Copy & Paste Resume" @bind-Value="Resume" />
+                    Resume:
+                    <RadzenHtmlEditor @bind-Value=@Resume style="height: 275px; width:100%;" class="sentiment">
+                        <RadzenHtmlEditorUndo />
+                        <RadzenHtmlEditorRedo />
+                        <RadzenHtmlEditorSeparator />
+                        <RadzenHtmlEditorBold />
+                        <RadzenHtmlEditorItalic />
+                        <RadzenHtmlEditorUnderline />
+                        <RadzenHtmlEditorStrikeThrough />
+                        <RadzenHtmlEditorSeparator />
+                    </RadzenHtmlEditor>
                 </RadzenColumn>
                 <RadzenColumn Size="6">
-                    <InputTextArea cols="25" class="sentiment" rows="10" placeholder="Copy & Paste Job Description" @bind-Value="JobDescription" />
+                    Job Description:
+                    <RadzenHtmlEditor @bind-Value=@JobDescription style="height: 275px; width:100%;" class="sentiment">
+                        <RadzenHtmlEditorUndo />
+                        <RadzenHtmlEditorRedo />
+                        <RadzenHtmlEditorSeparator />
+                        <RadzenHtmlEditorBold />
+                        <RadzenHtmlEditorItalic />
+                        <RadzenHtmlEditorUnderline />
+                        <RadzenHtmlEditorStrikeThrough />
+                        <RadzenHtmlEditorSeparator />
+                    </RadzenHtmlEditor>
                 </RadzenColumn>
             </RadzenRow>
             <RadzenRow style="padding: 5px">
                 <RadzenButton Click=JobResumeMatchAsync IsBusy=@Busy>Match</RadzenButton>
             </RadzenRow>
             <RadzenRow>
-                <InputTextArea cols="25" class="sentiment" rows="10" @bind-Value="Result" placeholder="Results" />
+                <RadzenHtmlEditor @bind-Value=@Result style="height: 275px; width:100%;" Placeholder="Results">
+                    <RadzenHtmlEditorUndo />
+                    <RadzenHtmlEditorRedo />
+                    <RadzenHtmlEditorSeparator />
+                    <RadzenHtmlEditorBold />
+                    <RadzenHtmlEditorItalic />
+                    <RadzenHtmlEditorUnderline />
+                    <RadzenHtmlEditorStrikeThrough />
+                    <RadzenHtmlEditorSeparator />
+                </RadzenHtmlEditor>
             </RadzenRow>
         </RadzenCard>
     </RadzenColumn>

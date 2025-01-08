@@ -30,15 +30,13 @@ public partial class ResumeEmbedded
     public Type ComponentType { get; set; }
     public Dictionary<string, object> ComponentParameters { get; set; }
 
-    [Inject] protected ResumeWebService Service { get; set; }
-
-
-
     protected override async Task OnInitializedAsync()
     {
+        await base.OnInitializedAsync();
+
         try
         {
-            Resume = await Service.GetResume(Slug);
+            Resume = await ResumeWebService.GetResume(Slug);
             IsResumeDeleted = Resume.DeletedDateTime.HasValue;
             if (IsResumeDeleted)
             {
@@ -59,7 +57,5 @@ public partial class ResumeEmbedded
         {
             Logger.LogError(ex.Message, ex);
         }
-
-        await base.OnInitializedAsync();
     }
 }

@@ -6,6 +6,7 @@
 
     protected override async Task OnInitializedAsync()
     {
+        await base.OnInitializedAsync();
         if (!IsAuthenticated)
         {
             var redirectUrl = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);

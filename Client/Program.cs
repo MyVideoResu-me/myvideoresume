@@ -10,9 +10,9 @@ using MyVideoResume.Web.Common;
 //using Refit;
 using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
 using System;
+using MyVideoResume.Client.Services.FeatureFlag;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
-
 builder.Services.AddBlazorBootstrap();
 builder.Services.AddRadzenComponents();
 builder.Services.AddRadzenCookieThemeService(options =>
@@ -21,6 +21,7 @@ builder.Services.AddRadzenCookieThemeService(options =>
     options.Duration = TimeSpan.FromDays(365);
 });
 builder.Services.AddBlazoredLocalStorage();
+builder.Services.AddSingleton<FeatureFlagClientService>();
 builder.Services.AddSingleton<RecaptchaService>();
 //builder.Services.AddTransient(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 builder.Services.AddScoped<DataContextService>();
@@ -36,7 +37,8 @@ builder.Services.AddHttpClient("MyVideoResume.Server", client => client.BaseAddr
 //                    client.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress);
 //                })
 //                .AddHeaderPropagation();
-builder.Services.AddTransient(sp => sp.GetRequiredService<IHttpClientFactory>().CreateClient("MyVideoResume.Server"));
+builder.Services.AddTransient(sp => sp.GetRequiredService<IHttpClientFactory>().CreateClient(Constants.HttpClientFactory));
+builder.Services.AddScoped<FeatureFlagWebService>();
 builder.Services.AddScoped<SecurityWebService>();
 builder.Services.AddScoped<DashboardWebService>();
 builder.Services.AddScoped<ResumeWebService>();

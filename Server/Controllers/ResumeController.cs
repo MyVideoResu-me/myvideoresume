@@ -135,6 +135,23 @@ public partial class ResumeController : ControllerBase
         return result;
     }
 
+    [HttpPost("SentimentPrediction")]
+    public async Task<ActionResult<ResponseResult<float>>> SentimentPrediction([FromBody] string id)
+    {
+        var result = new ResponseResult<float>();
+        try
+        {
+            result = await _resumeService.GetSentimentPrediction(id);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.Message, ex);
+            result.ErrorMessage = ex.Message;
+        }
+        return result;
+    }
+
+
     [HttpPost("Summarize")]
     public async Task<ActionResult<ResponseResult>> Summarize([FromBody] string resumeText)
     {
@@ -175,7 +192,7 @@ public partial class ResumeController : ControllerBase
         {
             if (file != null)
             {
-                result = await _engine.ResumeParseJSON(file);
+                result = await _engine.ResumeParseJSON(_documentProcessor.ConvertToString(file));
             }
         }
         catch (Exception ex)
@@ -198,35 +215,24 @@ public partial class ResumeController : ControllerBase
                 //Lets Verify if the user is logged in.. If so, we'll create a resume.
                 var id = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-                switch (file.ContentType)
+                var resumeJson = _documentProcessor.ConvertToString(file);
+                if (file.ContentType == "application/json")
                 {
-                    case "application/json":
-                        {
-                            var resumeJson = _documentProcessor.JSONToString(file.OpenReadStream());
-                            result = await _resumeService.CreateResume(id, resumeJson);
-                            break;
-                        }
-                    case "application/pdf":
-                        {
-                            var tempresult = await _engine.ResumeParseJSON(file);
-                            if (!tempresult.ErrorMessage.HasValue())
-                            {
-                                //Remove the Markdown from the Response
-                                var resume = tempresult.Result;
-                                result = await _resumeService.CreateResume(id, resume);
-                            }
-                            else
-                            {
-                                result.ErrorMessage = tempresult.ErrorMessage;
-                            }
-                            break;
-                        }
-                    case "application/msword":
-                        break;
-                    default:
-                        {
-                            break;
-                        }
+                    result = await _resumeService.CreateResume(id, resumeJson);
+                }
+                else 
+                {
+                    var temppdfresult = await _engine.ResumeParseJSON(resumeJson);
+                    if (!temppdfresult.ErrorMessage.HasValue())
+                    {
+                        //Remove the Markdown from the Response
+                        var resume = temppdfresult.Result;
+                        result = await _resumeService.CreateResume(id, resume);
+                    }
+                    else
+                    {
+                        result.ErrorMessage = temppdfresult.ErrorMessage;
+                    }
                 }
             }
         }

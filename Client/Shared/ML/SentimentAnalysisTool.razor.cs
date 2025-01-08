@@ -10,6 +10,7 @@ using Radzen;
 using Radzen.Blazor;
 using System.Net.Http.Json;
 using Blazored.LocalStorage;
+using MyVideoResume.Web.Common;
 
 namespace MyVideoResume.Client.Shared.ML;
 
@@ -49,9 +50,7 @@ public partial class SentimentAnalysisTool
         float percentage = 0;
         try
         {
-            var uri = new Uri($"{NavigationManager.BaseUri}sentiment/sentimentprediction");
-            var response = await Http.PostAsJsonAsync<string>(uri, resume);
-            percentage = await response.ReadAsync<float>();
+            percentage = await ResumeWebService.GetSentimentAnalysisByText(resume);
             await localStorage.SetItemAsync("textresume", resume);
         }
         catch (Exception ex)
@@ -63,6 +62,7 @@ public partial class SentimentAnalysisTool
 
     protected override async Task OnInitializedAsync()
     {
+        await base.OnInitializedAsync();
         try
         {
             resume = await localStorage.GetItemAsync<string>("textresume");
@@ -75,6 +75,5 @@ public partial class SentimentAnalysisTool
         {
             Logger.LogError(ex.Message, ex);
         }
-        await base.OnInitializedAsync();
     }
 }

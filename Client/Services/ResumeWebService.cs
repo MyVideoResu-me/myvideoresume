@@ -29,19 +29,34 @@ namespace MyVideoResume.Client.Services;
 
 public partial class ResumeWebService
 {
-    private readonly DataContext _dataContext;
     private readonly HttpClient _httpClient;
     private readonly NavigationManager _navigationManager;
     private readonly SecurityWebService _securityService;
     private readonly ILogger<DashboardWebService> _logger;
 
-    public ResumeWebService(NavigationManager navigationManager, IHttpClientFactory factory, ILogger<DashboardWebService> logger, DataContext dataContext, SecurityWebService securityService)
+    public ResumeWebService(NavigationManager navigationManager, IHttpClientFactory factory, ILogger<DashboardWebService> logger, SecurityWebService securityService)
     {
-        this._httpClient = factory.CreateClient("MyVideoResume.Server");
+        this._httpClient = factory.CreateClient(Constants.HttpClientFactory);
         this._navigationManager = navigationManager;
         this._logger = logger;
-        this._dataContext = dataContext;
         this._securityService = securityService;
+    }
+
+    public async Task<ResponseResult<float>> GetSentimentAnalysisById(string id)
+    {
+        var result = new ResponseResult<float>();
+        var uri = new Uri($"{_navigationManager.BaseUri}{Paths.Resume_API_Sentiment}");
+        var response = await _httpClient.PostAsJsonAsync<string>(uri, id);
+        result = await response.ReadAsync<ResponseResult<float>>();
+
+        return result;
+    }
+
+    public async Task<float> GetSentimentAnalysisByText(string resumeAsText)
+    {
+        var uri = new Uri($"{_navigationManager.BaseUri}{Paths.AI_API_Sentiment}");
+        var response = await _httpClient.PostAsJsonAsync<string>(uri, resumeAsText);
+        return await response.ReadAsync<float>();
     }
 
     public async Task<List<ResumeSummaryItem>> GetPublicResumes() //Eventually Pass in a Search Object
@@ -69,6 +84,7 @@ public partial class ResumeWebService
             var uri = new Uri($"{_navigationManager.BaseUri}api/resume/GetSummaryItems");
             var response = await _httpClient.GetAsync(uri);
             result = await response.ReadAsync<List<ResumeSummaryItem>>();
+            result = result.OrderByDescending(x => x.CreationDateTimeFormatted).ToList();
         }
         catch (Exception ex)
         {
@@ -120,7 +136,6 @@ public partial class ResumeWebService
         {
             var uri = new Uri($"{_navigationManager.BaseUri}api/resume/{resumeId}");
             var content = new FormUrlEncodedContent(new Dictionary<string, string> { { "resumeId", resumeId } });
-
             var response = await _httpClient.PostAsync(uri, content);
             result = await response.ReadAsync<ResponseResult>();
         }

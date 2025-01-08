@@ -40,6 +40,7 @@ public partial class DataContext : DbContext
         configurationBuilder.Conventions.Add(_ => new BlankTriggerAddingConvention());
     }
     public DbSet<UserProfileEntity> UserProfiles { get; set; } = default!;
+    public DbSet<JobItemEntity> Jobs { get; set; } = default!;
     public DbSet<JobPreferencesEntity> JobPreferences { get; set; } = default!;
     public DbSet<MetaResumeEntity> Resumes { get; set; } = default!;
     public DbSet<ResumeInformationEntity> ResumeInformation { get; set; } = default!;

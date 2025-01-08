@@ -24,7 +24,6 @@ public partial class MainLayout
         }
     }
 
-
     public bool ShowLogin
     {
         get
@@ -32,8 +31,4 @@ public partial class MainLayout
             return !Security.IsAuthenticated();
         }
     }
-
-
-
-
 }

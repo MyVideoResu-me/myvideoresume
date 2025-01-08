@@ -19,6 +19,7 @@ public partial class ApplicationUsers
 
     protected override async Task OnInitializedAsync()
     {
+        await base.OnInitializedAsync();
         users = await Security.GetUsers();
     }
 
@@ -31,7 +32,7 @@ public partial class ApplicationUsers
 
     protected async Task RowSelect(MyVideoResume.Data.Models.ApplicationUser user)
     {
-        await DialogService.OpenAsync<EditApplicationUser>("Edit Application User", new Dictionary<string, object>{ {"Id", user.Id} });
+        await DialogService.OpenAsync<EditApplicationUser>("Edit Application User", new Dictionary<string, object> { { "Id", user.Id } });
 
         users = await Security.GetUsers();
     }

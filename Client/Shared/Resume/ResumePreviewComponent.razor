@@ -2,43 +2,39 @@
 @using MyVideoResume.Abstractions.Resume
 @using MyVideoResume.Abstractions.Resume.Formats.JSONResumeFormat
 @using MyVideoResume.Data.Models.Resume
-@inherits BaseComponent
-@inject ResumeWebService Service
+@inherits ResumeComponent
 
-<RadzenCard style="background-color:white; width: 350px">
+<RadzenCard style="background-color:white;">
     <RadzenCard class="rz-shadow-0 rz-border-radius-0" style="margin: 5px calc(-1 * var(--rz-card-padding));background-color:white; cursor: pointer" @onclick=@(()=> NavigateTo("resumes", ResumeItem.Id.ToString()))>
-        <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Start">
-            @*             <RadzenImage Path="@ResumeEntity?.UserId" Style="width: 100px; height: 100px; border-radius: 50%;" />
- *@            <RadzenStack Gap="0">
-                <RadzenText style="color: #262526" TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-4 rz-mb-0">Name</RadzenText>
-                <RadzenText style="color: #262526" TextStyle="TextStyle.H3"><b>@(ResumeItem.ResumeName)</b></RadzenText>
-                <RadzenText Visible=@DisplayItem style ="color: #262526" TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-2 rz-my-0">ID</RadzenText>
-                <RadzenText Visible=@DisplayItem style="color: #262526" TextStyle="TextStyle.Body1"><b>@(ResumeItem.Id)</b></RadzenText>
-                <RadzenText style="color: #262526" TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-2 rz-my-0">Creation</RadzenText>
-                <RadzenText style="color: #262526" TextStyle="TextStyle.Body1"><b>@(ResumeItem.CreationDateTimeFormatted)</b></RadzenText>
-            </RadzenStack>
+        <RadzenStack Orientation="Orientation.Vertical" JustifyContent="JustifyContent.Start" Gap="0">
+            <RadzenText style="color: #262526" TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-4 rz-mb-0">Name</RadzenText>
+            <div style=" max-width: 250px; "><RadzenText style="color: #262526; text-overflow:ellipsis; white-space: nowrap; overflow: hidden;" TextStyle="TextStyle.H3" title="@(ResumeItem.ResumeName)">@(ResumeItem.ResumeName)</RadzenText></div>
+            <RadzenText Visible=@DisplayItem() style="color: #262526" TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-2 rz-my-0">ID</RadzenText>
+            <RadzenText Visible=@DisplayItem() style="color: #262526" TextStyle="TextStyle.Body1">@(ResumeItem.Id)</RadzenText>
+            <RadzenText style="color: #262526" TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-2 rz-my-0">Creation</RadzenText>
+            <RadzenText style="color: #262526" TextStyle="TextStyle.Body1"><b>@(ResumeItem.CreationDateTimeFormatted)</b></RadzenText>
         </RadzenStack>
     </RadzenCard>
     <RadzenCard class="rz-shadow-0 rz-border-radius-0" style="margin: 5px calc(-1 * var(--rz-card-padding)); background-color: #0e44cc; cursor: pointer" @onclick=@(()=> NavigateTo("resumes", ResumeItem.Id.ToString()))>
         <RadzenText TextStyle="TextStyle.H6" style="color:white; "><strong>Details</strong></RadzenText>
         <RadzenRow RowGap="0">
-            <RadzenColumn SizeSM="12" Visible=@DisplayItem>
+            <RadzenColumn Visible=@DisplayItem()>
                 <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-4 rz-mb-0" style="color:white; ">Template</RadzenText>
                 <RadzenText TextStyle="TextStyle.Body1" style="color:white; "><b> @(ResumeItem.ResumeTemplateName)</b></RadzenText>
                 <RadzenText TextStyle="TextStyle.Overline" class=" rz-display-flex rz-mt-4 rz-mb-0" style="color:white; ">Public</RadzenText>
                 <RadzenText TextStyle="TextStyle.Body1" style="color:white; "><b>@(ResumeItem.IsPublic)</b></RadzenText>
             </RadzenColumn>
-            <RadzenColumn SizeSM="12">
+            <RadzenColumn>
                 <RadzenText TextStyle="TextStyle.Overline" style="color:white; " class="rz-display-flex rz-mt-4 rz-mb-0">Summary</RadzenText>
-                <RadzenText style="color:white; " TextStyle="TextStyle.Body1"><b>@(ResumeItem.ResumeSummary)</b></RadzenText>
+                <RadzenText style="color:white; text-overflow:ellipsis; white-space:normal; overflow: hidden; height:240px" TextStyle="TextStyle.Body1" title="@(ResumeItem.ResumeSummary)">@(ResumeItem.ResumeSummary)</RadzenText>
                 @*                 <RadzenText style="color:white; " TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-4 rz-mb-0">Freight</RadzenText>
                 <RadzenText style="color:white; " TextStyle="TextStyle.Body1"><b>@(ResumeEntity?.Basics?.Summary)</b></RadzenText>
  *@            </RadzenColumn>
         </RadzenRow>
     </RadzenCard>
     <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Center" Gap="0">
-        <RadzenButton ButtonStyle="ButtonStyle.Danger" Variant="Variant.Text" Icon="delete" Text="Delete" Click=Delete Visible=@DisplayItem />
-        <RadzenButton ButtonStyle="ButtonStyle.Dark" Variant="Variant.Text" Icon="edit" Text="Edit" Visible=@DisplayItem Click=@(()=> NavigateTo("resumes/builder", ResumeItem.Id)) />
+        <RadzenButton ButtonStyle="ButtonStyle.Danger" Variant="Variant.Text" Icon="delete" Text="Delete" Click=Delete Visible=@DisplayItem() />
+        <RadzenButton ButtonStyle="ButtonStyle.Dark" Variant="Variant.Text" Icon="edit" Text="Edit" Visible=@FeatureFlagService.IsResumeBuilderEnabled Click=@(()=> NavigateTo("resumes/builder", ResumeItem.Id)) />
         <RadzenButton ButtonStyle="ButtonStyle.Dark" Variant="Variant.Text" Icon="preview" Text="View" Click=@(()=> NavigateTo("resumes", ResumeItem.Id)) />
     </RadzenStack>
 </RadzenCard>
@@ -58,7 +54,22 @@
     [Parameter]
     public ResumePreviewMode Mode { get; set; } = ResumePreviewMode.View;
 
-    public bool DisplayItem { get; set; } = false;
+    public bool DisplayItem()
+    {
+        var result = false;
+        switch (Mode)
+        {
+            case ResumePreviewMode.View:
+                result = false;
+                break;
+            case ResumePreviewMode.Edit:
+                result = ResumeItem.UserId == Security.User.Id;
+                break;
+            default:
+                break;
+        }
+        return result;
+    }
 
     public string ResumeCreationDate { get; set; }
 
@@ -74,23 +85,12 @@
                     CreationDateTimeFormatted = DateTime.UtcNow.ToString("yyyy-MM-dd")
                 };
 
-        switch (Mode)
-        {
-            case ResumePreviewMode.View:
-                DisplayItem = false;
-                break;
-            case ResumePreviewMode.Edit:
-                DisplayItem = ResumeItem.UserId == Security.User.Id;
-                break;
-            default:
-                break;
-        }
     }
 
     protected async Task Delete()
     {
         var result = new ResponseResult();
-        result = await Service.Delete(ResumeItem.Id);
+        result = await ResumeWebService.Delete(ResumeItem.Id);
         await DeleteCompleted.InvokeAsync(result);
     }
 }

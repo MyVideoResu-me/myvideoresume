@@ -8,7 +8,10 @@ using System.Linq;
 namespace MyVideoResume.Abstractions.Resume;
 public enum ResumeType
 {
-    JSONResumeFormat = 1
+    ResumeBuilder = 0,
+    JSONResumeFormat = 1,
+    WordDoc = 2,
+    Pdf = 3,
 }
 
 public enum DisplayPrivacy
@@ -42,5 +45,6 @@ public class ResumeInformation : CommonBase
     public PaySchedule PaySchedule { get; set; } = PaySchedule.Yearly;
     public float MinimumSalary { get; set; }
     public ResumeType ResumeType { get; set; }
+    public float? SentimentScore { get; set; }
     public string ResumeSerialized { get; set; }
 }

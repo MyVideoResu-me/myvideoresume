@@ -19,6 +19,7 @@ public partial class AddApplicationRole
 
     protected override async Task OnInitializedAsync()
     {
+        await base.OnInitializedAsync();
         role = new MyVideoResume.Data.Models.ApplicationRole();
     }
 

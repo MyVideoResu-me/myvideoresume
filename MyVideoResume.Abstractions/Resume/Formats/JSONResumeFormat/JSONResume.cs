@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace MyVideoResume.Abstractions.Resume.Formats.JSONResumeFormat;
 
@@ -39,7 +41,7 @@ public class Basics
     public string Image { get; set; } = string.Empty;
     public string Email { get; set; } = string.Empty;
     public string Phone { get; set; } = string.Empty;
-    public string Url { get; set; } = string.Empty;
+    public string? Url { get; set; } = string.Empty;
     public string Summary { get; set; } = string.Empty;
     public Location? Location { get; set; }
 }
@@ -59,125 +61,129 @@ public class Work
 {
     [JsonIgnore]
     public string? Id { get; set; } = Guid.NewGuid().ToString();
-    public int Order { get; set; }
-    public string Name { get; set; }
-    public string Position { get; set; }
-    public string Summary { get; set; }
-    public string StartDate { get; set; }
-    public string EndDate { get; set; }
-    public List<string> Highlights { get; set; }
-    public string Url { get; set; }
+    public string Name { get; set; } = string.Empty;
+    public string Position { get; set; } = string.Empty;
+    public string Summary { get; set; } = string.Empty;
+    public string StartDate { get; set; } = string.Empty;
+    public string EndDate { get; set; } = string.Empty;
+    public List<string>? Highlights { get; set; }
+    [JsonIgnore, NotMapped]
+    public string HighlightsFlattened
+    {
+        get => String.Join(Environment.NewLine, Highlights);
+        set
+        {
+            Highlights.Clear();
+            string[] val;
+            if (value.Contains("\n"))
+                val = value.Split("\n");
+            else
+                val = value.Split(Environment.NewLine);
+            Highlights.AddRange(val);
+        }
+    }
+    public string? Url { get; set; } = string.Empty;
 }
 
 public class Volunteer
 {
     [JsonIgnore]
     public string? Id { get; set; } = Guid.NewGuid().ToString();
-    public int Order { get; set; }
-    public string Organization { get; set; }
-    public string Position { get; set; }
-    public string Summary { get; set; }
-    public string StartDate { get; set; }
-    public string EndDate { get; set; }
-    public List<string> Highlights { get; set; }
-    public string Url { get; set; }
+    public string Organization { get; set; } = string.Empty;
+    public string Position { get; set; } = string.Empty;
+    public string Summary { get; set; } = string.Empty;
+    public string StartDate { get; set; } = string.Empty;
+    public string EndDate { get; set; } = string.Empty;
+    public List<string>? Highlights { get; set; }
+    public string? Url { get; set; } = string.Empty;
 }
 
 public class Education
 {
     [JsonIgnore]
     public string? Id { get; set; } = Guid.NewGuid().ToString();
-    public int Order { get; set; }
-    public string Institution { get; set; }
-    public string Area { get; set; }
-    public string StudyType { get; set; }
-    public string StartDate { get; set; }
-    public string EndDate { get; set; }
-    public string Score { get; set; }
-    public List<string> Courses { get; set; }
-    public string Url { get; set; }
+    public string Institution { get; set; } = string.Empty;
+    public string? Area { get; set; } = string.Empty;
+    public string? StudyType { get; set; } = string.Empty;
+    public string StartDate { get; set; } = string.Empty;
+    public string EndDate { get; set; } = string.Empty;
+    public string? Score { get; set; } = string.Empty;
+    public List<string>? Courses { get; set; } 
+    public string? Url { get; set; } = string.Empty;
 }
 
 public class Award
 {
     [JsonIgnore]
     public string? Id { get; set; } = Guid.NewGuid().ToString();
-    public int Order { get; set; }
-    public string Title { get; set; }
-    public string Date { get; set; }
-    public string Awarder { get; set; }
-    public string Summary { get; set; }
+    public string Title { get; set; } = string.Empty;
+    public string Date { get; set; } = string.Empty;
+    public string Awarder { get; set; } = string.Empty;
+    public string Summary { get; set; } = string.Empty;
 }
 
 public class Certificate
 {
     [JsonIgnore]
     public string? Id { get; set; } = Guid.NewGuid().ToString();
-    public int Order { get; set; }
-    public string Name { get; set; }
-    public string Date { get; set; }
-    public string Issuer { get; set; }
-    public string Url { get; set; }
+    public string Name { get; set; } = string.Empty;
+    public string Date { get; set; } = string.Empty;
+    public string Issuer { get; set; } = string.Empty;
+    public string? Url { get; set; } = string.Empty;
 }
 
 public class Publication
 {
     [JsonIgnore]
     public string? Id { get; set; } = Guid.NewGuid().ToString();
-    public int Order { get; set; }
-    public string Name { get; set; }
-    public string Publisher { get; set; }
-    public string ReleaseDate { get; set; }
-    public string Url { get; set; }
-    public string Summary { get; set; }
+    public string Name { get; set; } = string.Empty;
+    public string Publisher { get; set; } = string.Empty;
+    public string ReleaseDate { get; set; } = string.Empty;
+    public string? Url { get; set; } = string.Empty;
+    public string Summary { get; set; } = string.Empty;
 }
 
 public class Skill
 {
     [JsonIgnore]
     public string? Id { get; set; } = Guid.NewGuid().ToString();
-    public int Order { get; set; }
-    public string Name { get; set; }
-    public string Level { get; set; }
-    public List<string> Keywords { get; set; }
+    public string Name { get; set; } = string.Empty;
+    public string Level { get; set; } = string.Empty;
+    public List<string>? Keywords { get; set; }
 }
 
 public class LanguageItem
 {
     [JsonIgnore]
     public string? Id { get; set; } = Guid.NewGuid().ToString();
-    public int Order { get; set; }
-    public string Language { get; set; }
-    public string Fluency { get; set; }
+    public string Language { get; set; } = string.Empty;
+    public string Fluency { get; set; } = string.Empty;
 }
 
 public class Interest
 {
     [JsonIgnore]
     public string? Id { get; set; } = Guid.NewGuid().ToString();
-    public int Order { get; set; }
-    public string Name { get; set; }
-    public List<string> Keywords { get; set; }
+    public string Name { get; set; } = string.Empty;
+    public List<string>? Keywords { get; set; }
 }
 
 public class ReferenceItem
 {
     [JsonIgnore]
     public string? Id { get; set; } = Guid.NewGuid().ToString();
-    public int Order { get; set; }
-    public string Name { get; set; }
-    public string Reference { get; set; }
+    public string Name { get; set; } = string.Empty;
+    public string Reference { get; set; } = string.Empty;
 }
 
 public class Project
 {
     [JsonIgnore]
     public string? Id { get; set; } = Guid.NewGuid().ToString();
-    public int Order { get; set; }
-    public string Name { get; set; }
-    public string StartDate { get; set; }
-    public string EndDate { get; set; }
-    public string Description { get; set; }
-    public List<string> Highlights { get; set; }
-    public string Url { get; set; }
+    public string Name { get; set; } = string.Empty;
+    public string StartDate { get; set; } = string.Empty;
+    public string EndDate { get; set; } = string.Empty;
+    public string Description { get; set; } = string.Empty;
+    public List<string>? Highlights { get; set; }
+    public string? Url { get; set; } = string.Empty;
 }

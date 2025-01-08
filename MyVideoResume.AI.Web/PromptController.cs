@@ -21,7 +21,7 @@ public class PromptController : Controller
     [Route("summarize")]
     public async Task<ActionResult<ResponseResult>> SummarizeContent([FromBody] string content)
     {
-        var prompt = "You are an AI Assistant that helps people summarize thier resume.";
+        var prompt = "You are an AI Assistant that helps people summarize their resume.";
         var result = await _engine.Process(prompt, content);
         return result;
     }
@@ -30,7 +30,7 @@ public class PromptController : Controller
     [Route("match")]
     public async Task<ActionResult<ResponseResult>> MatchComparison([FromBody] MatchRequest request)
     {
-        var prompt = "You are an AI Assistant that helps people match thier Document to a Comparison Description.";
+        var prompt = "You are an AI Assistant that helps people match their Document to a Comparison Description.";
         var userInput = $"Document: {request.Reference}";
         var userJobInput = $"Comparison Description: {request.Comparison}";
         var result = await _engine.Process(prompt, new[] { userInput, userJobInput });

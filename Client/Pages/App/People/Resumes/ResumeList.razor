@@ -1,8 +1,59 @@
-@page "/resumes"@attribute [Authorize]@inherits BaseComponent<PageTitle>MyVideoResu.ME - Resumes</PageTitle>
-<RadzenRow>
-    <RadzenColumn Size="12">
-        <RadzenText Text="Resumes" TextStyle="Radzen.Blazor.TextStyle.DisplayH2" TagName="Radzen.Blazor.TagName.Auto"></RadzenText>        <RadzenCard>            <RadzenRow>                <RadzenColumn>                    Coming soon                </RadzenColumn>            </RadzenRow>
-        </RadzenCard>
-    </RadzenColumn>
-</RadzenRow>
+@page "/resumes"@using MyVideoResume.Abstractions.Core@using MyVideoResume.Abstractions.Resume@using MyVideoResume.Client.Pages.App.Jobs
+@using MyVideoResume.Client.Services.FeatureFlag@using static MyVideoResume.Client.Shared.Resume.ResumePreviewComponent@inherits ResumeComponent<PageTitle>MyVideoResu.ME - Resumes</PageTitle><RadzenRow>    <RadzenColumn Size="11">        <CreateResumeOptionsComponent ResumeCreated=@ResumeCreated></CreateResumeOptionsComponent>        <RadzenText Text="Resumes" TextStyle="Radzen.Blazor.TextStyle.DisplayH2" TagName="Radzen.Blazor.TagName.Auto"></RadzenText>        <RadzenCard>            <AuthorizeView>                <Authorized>                    <RadzenSelectBar @bind-Value=@ShowGrid TValue="bool">                        <Items>                            <RadzenSelectBarItem Icon="table_view" Text="Table" Value="true" />                            <RadzenSelectBarItem Icon="grid_view" Text="Tile" Value="false" />                        </Items>                    </RadzenSelectBar>                    <RadzenDataGrid Visible=@ShowGrid Responsive=true AllowFiltering="false" AllowColumnResize="true" AllowAlternatingRows="false" FilterMode="FilterMode.Simple" AllowSorting="true" PageSize="10" AllowPaging="true" PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true" Data="@ResumeItems" ColumnWidth="300px" LogicalFilterOperator="LogicalFilterOperator.Or" SelectionMode="DataGridSelectionMode.Single" @bind-Value=@SelectedResumeItems>                        <Columns>                            <RadzenDataGridColumn Width="50px" Title="#" Filterable="false" Sortable="false" TextAlign="TextAlign.Center">                                <Template Context="data">                                    @(ResumeItems.IndexOf(data) + 1)                                </Template>                            </RadzenDataGridColumn>                            <RadzenDataGridColumn Property="@nameof(ResumeSummaryItem.ResumeName)" Title="Resume Name" Frozen="true">                                <Template Context="data">                                    <div style=" max-width: 250px; "><RadzenText style="text-overflow:ellipsis; white-space: nowrap; overflow: hidden;" TextStyle="TextStyle.Body1" title="@(data.ResumeName)">@(data.ResumeName)</RadzenText></div>                                </Template>                            </RadzenDataGridColumn>                            <RadzenDataGridColumn Width="95px" Property="@nameof(ResumeSummaryItem.SentimentScore)" Title="Sentiment Score" Frozen="false" TextAlign="TextAlign.Center">                                <Template Context="data">                                    @if (data.SentimentScore.HasValue)
+                                    {                                        <RadzenText TextStyle="TextStyle.Subtitle1" TagName="TagName.H3" class="rz-mt-4">@data.SentimentScore</RadzenText>                                    }
+                                    else
+                                    {                                        <RadzenButton Variant="Variant.Text" Icon="mood" Text="Get" Click=@(() => OpenSentimentAnalysis(data)) />                                    }                                </Template>                            </RadzenDataGridColumn>                            <RadzenDataGridColumn Width="75px" Property="@nameof(ResumeSummaryItem.CreationDateTimeFormatted)" Title="Date Created" Frozen="false" />                            <RadzenDataGridColumn Title="Actions" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Frozen="false">                                <Template Context="data">                                    <RadzenCard Style="background-color: white; padding: 0px !important; margin:0px !important; ">                                        <RadzenButton ButtonStyle="ButtonStyle.Danger" Variant="Variant.Text" Icon="delete" Text="Delete" Click=@(()=> Delete(data)) Visible=@DisplayItem(data) />                                        <RadzenButton ButtonStyle="ButtonStyle.Dark" Variant="Variant.Text" Icon="edit" Text="Edit" Visible=@(DisplayItem(data) && FeatureFlagService.IsResumeBuilderEnabled) Click=@(()=> NavigateTo("resumes/builder", data.Id)) />                                        <RadzenButton Variant="Variant.Text" Icon="preview" Text="View" Click=@(()=> NavigateTo("resumes", data.Id)) />                                    </RadzenCard>                                </Template>                            </RadzenDataGridColumn>                            <RadzenDataGridColumn Width="125px" Title="Tools" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Frozen="false">                                <Template Context="data">                                    <RadzenSplitButton Variant="Variant.Flat" ButtonStyle="ButtonStyle.Light" Click=@(args => OpenAITools(args, data)) Text="Tools" Icon="tools_ladder">                                        <ChildContent>                                            <RadzenSplitButtonItem Text="Sentiment Analysis" Value="sentiment" Icon="mood" />                                            <RadzenSplitButtonItem Text="Job Match" Value="jobmatch" Icon="join_inner" />                                        </ChildContent>                                    </RadzenSplitButton>                                </Template>                            </RadzenDataGridColumn>                        </Columns>                    </RadzenDataGrid>                    <RadzenRow>                        <ResumeDisplayPreviewComponent Visible=@ShowPreview ResumeItems=@ResumeItems DeleteCompleted=@DeleteCompletedHandler></ResumeDisplayPreviewComponent>                    </RadzenRow>                </Authorized>                <NotAuthorized>                    <UnAuthorizedComponent Path=@Paths.Resume_View></UnAuthorizedComponent>                </NotAuthorized>            </AuthorizeView>        </RadzenCard>    </RadzenColumn></RadzenRow>@code {    protected async Task OpenSentimentAnalysis(ResumeSummaryItem item)
+    {
+        var text = "Calculate";
 
+        float floatValue = 0;
+        if (@item.SentimentScore.HasValue)
+        {
+            floatValue = @item.SentimentScore.Value;
+            text = "Recalculate";
+        }
+        var result = await DialogService.OpenAsync("Sentiment Analysis", ds =>    @<RadzenStack Orientation="Orientation.Vertical">        <RadzenCard Variant="Variant.Outlined">            <HappinessScale Value=@floatValue />        </RadzenCard>        <RadzenButton ButtonStyle="ButtonStyle.Primary" Text=@text Click=@(() => ProcessSentimentAnalysis(item))></RadzenButton>    </RadzenStack>                     );
+
+    }
+
+    protected async Task ProcessSentimentAnalysis(ResumeSummaryItem item)
+    {
+        var result = new ResponseResult<float>();
+        result = await ResumeWebService.GetSentimentAnalysisById(item.Id);
+        if (result.ErrorMessage.HasValue())
+        {
+            ShowErrorNotification("Failed to Process Sentiment", string.Empty);
+        }
+        else
+        {
+            ShowSuccessNotification("Sentiment Updated", string.Empty);
+            item.SentimentScore = result.Result;
+
+            DialogService.Close();
+            await OpenSentimentAnalysis(item);
+        }
+    }
+
+    protected async Task ProcessJobMatch(ResumeSummaryItem item)
+    {
+        var result = new ResponseResult<float>();
+        result = await ResumeWebService.GetSentimentAnalysisById(item.Id);
+        if (result.ErrorMessage.HasValue())
+        {
+            ShowErrorNotification("Failed to Process Sentiment", string.Empty);
+        }
+        else
+        {
+            ShowSuccessNotification("Sentiment Updated", string.Empty);
+            item.SentimentScore = result.Result;
+
+            DialogService.Close();
+            await OpenSentimentAnalysis(item);
+        }
+    }
+
+
+    protected async Task OpenJobMatchAnalysis(ResumeSummaryItem item)
+    {
+        var result = await DialogService.OpenAsync("Job Match", ds =>            @<JobMatchWizard ResumeSummaryItem=@item></JobMatchWizard>        );
+    }}

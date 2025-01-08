@@ -2,28 +2,27 @@
 @inherits BaseComponent
 @using static MyVideoResume.Client.Shared.Resume.ResumePreviewComponent
 
-@if (ResumeList.Count > 0)
-{
-    <RadzenRow Style="padding-bottom:15px">
-        <RadzenColumn Style="max-width: 100%">
-            <RadzenCard>
-                <div class="searchComponent" style="overflow:auto;">
-                    <RadzenStack Orientation="Orientation.Horizontal">
-                        @foreach (var resume in ResumeList)
-                        {
+<RadzenRow Style="padding-bottom:15px" Visible="@(ResumeList.Count > 0)">
+    <RadzenColumn Style="max-width: 100%">
+        <RadzenText Text="Featured Resumes" TextStyle="TextStyle.H3"></RadzenText>
+        <RadzenCard>
+            <div class="searchComponent" style="overflow:auto;">
+                <RadzenStack Orientation="Orientation.Horizontal">
+                    @foreach (var resume in ResumeList)
+                    {
 
-                            <RadzenColumn>
-                                <ResumePreviewComponent ResumeItem=@resume Mode="ResumePreviewMode.View"></ResumePreviewComponent>
-                            </RadzenColumn>
+                        <RadzenColumn Size="4" SizeXS="4" SizeSM="4" SizeMD="4" SizeLG="4" SizeXL="4" SizeXX="4">
+                            <ResumePreviewComponent ResumeItem=@resume Mode="ResumePreviewMode.View"></ResumePreviewComponent>
+                        </RadzenColumn>
 
-                        }
-                    </RadzenStack>
-                </div>
-            </RadzenCard>
-        </RadzenColumn>
-    </RadzenRow>
-}
-@code{
+                    }
+                </RadzenStack>
+            </div>
+        </RadzenCard>
+    </RadzenColumn>
+</RadzenRow>
+
+@code {
 
     [Inject]
     protected ResumeWebService Service { get; set; }

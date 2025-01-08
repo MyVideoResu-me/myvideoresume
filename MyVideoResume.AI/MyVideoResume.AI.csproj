@@ -15,11 +15,13 @@
 
 	<ItemGroup>
 		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="9.0.0" />
-		<PackageReference Include="Microsoft.AspNetCore.Http.Features" Version="2.2.0" />
+		<PackageReference Include="Microsoft.AspNetCore.Http.Features" Version="5.0.17" />
 		<PackageReference Include="Microsoft.ML.OnnxRuntime" Version="1.20.1" />
 		<PackageReference Include="Microsoft.ML.OnnxRuntimeGenAI" Version="0.5.2" />
 		<PackageReference Include="Microsoft.ML.OnnxRuntimeGenAI.Cuda" Version="0.5.2" />
-		<PackageReference Include="OpenAI" Version="2.0.0" />
+		<PackageReference Include="OpenAI" Version="2.1.0" />
+		<PackageReference Include="System.Security.Cryptography.Pkcs" Version="9.0.0" />
+		<PackageReference Include="System.Security.Cryptography.Xml" Version="9.0.0" />
 	</ItemGroup>
 
 	<ItemGroup>

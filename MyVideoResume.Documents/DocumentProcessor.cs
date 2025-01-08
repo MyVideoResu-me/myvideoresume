@@ -1,18 +1,56 @@
 ﻿
 using Docnet.Core;
 using Docnet.Core.Models;
+using Microsoft.AspNetCore.Http;
+using Spire.Doc;
 
 namespace MyVideoResume.Documents;
 
 public interface IDocumentProcessor
 {
-
+    string ConvertToString(IFormFile file);
+    string WordToString(Stream stream);
     string PdfToString(System.IO.Stream stream);
     string JSONToString(System.IO.Stream stream);
 }
 
 public class DocumentProcessor : IDocumentProcessor
 {
+
+    public string ConvertToString(IFormFile file)
+    {
+        var result = string.Empty;
+
+        switch (file.ContentType)
+        {
+            case "application/json":
+
+                result = JSONToString(file.OpenReadStream());
+                break;
+            case "application/pdf":
+                result = PdfToString(file.OpenReadStream());
+                break;
+            case "application/msword":
+            case "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
+                result = WordToString(file.OpenReadStream());
+                break;
+            default:
+                break;
+        }
+        return result;
+    }
+
+    public string WordToString(Stream stream)
+    {
+        var result = string.Empty;
+
+        using Document doc = new Document(stream);
+        result = doc.GetText();
+        doc.Close();
+
+        return result;
+    }
+
     public string JSONToString(Stream stream)
     {
         var result = string.Empty;

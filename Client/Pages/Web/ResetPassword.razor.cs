@@ -19,6 +19,7 @@ public partial class ResetPassword
 
     protected override async Task OnInitializedAsync()
     {
+        await base.OnInitializedAsync();
         user = new MyVideoResume.Data.Models.ApplicationUser();
     }
 

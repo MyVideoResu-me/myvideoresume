@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Azure.Core;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using MyVideoResume.Abstractions.Core;
@@ -11,33 +12,28 @@ namespace MyVideoResume.Application.Resume;
 public interface IResumePromptEngine : IPromptEngine
 {
     Task<ResponseResult> SummarizeResume(string resumeText);
-    Task<ResponseResult> ResumeParseJSON(IFormFile file);
+    Task<ResponseResult> ResumeParseJSON(string resumeText);
     Task<ResponseResult> JobResumeMatch(JobMatchRequest request);
 }
 
 public class ResumePromptEngine : OpenAIPromptEngine, IResumePromptEngine
 {
-    private readonly DocumentProcessor _documentProcessor;
-
-    public ResumePromptEngine(ILogger<ResumePromptEngine> logger, IConfiguration configuration, DocumentProcessor processor) : base(logger, configuration)
+    public ResumePromptEngine(ILogger<ResumePromptEngine> logger, IConfiguration configuration) : base(logger, configuration)
     {
-        _documentProcessor = processor;
     }
 
     public async Task<ResponseResult> SummarizeResume(string resumeText)
     {
-        var prompt = "You are an AI Assistant that helps people summarize thier resume.";
+        var prompt = "You are an AI Assistant that helps people summarize their resume.";
         var result = await this.Process(prompt, resumeText);
         return result;
     }
 
-    public async Task<ResponseResult> ResumeParseJSON(IFormFile file)
+    public async Task<ResponseResult> ResumeParseJSON(string resumeText)
     {
 
-        var prompt = @"you are a resume parser assistant. Respond with no formatting.
-
-I need you to parse the resume into the following JSON format:
-
+        var prompt = @"You are a resume parser assistant. I need you to parse the resume into JSON format. Do NOT summarize the content of the resume. Respond with no formatting.";
+        var jsonFormat = @"
 {
   ""basics"": {
     ""name"": ""John Doe"",
@@ -98,7 +94,7 @@ I need you to parse the resume into the following JSON format:
     ""title"": ""Award"",
     ""date"": ""2014-11-01"",
     ""awarder"": ""Company"",
-    ""summary"": ""There is no spoon.""
+    ""summary"": ""Description…""
   }],
   ""certificates"": [{
     ""name"": ""Certificate"",
@@ -152,12 +148,11 @@ I need you to parse the resume into the following JSON format:
         var result = new ResponseResult();
         try
         {
-            if (file != null)
-            {
-                var content = _documentProcessor.PdfToString(file.OpenReadStream());
-                var conversion = await this.Process(prompt, content);
-                result = conversion;
-            }
+            var userInput = $"JSON: {jsonFormat}";
+            var userJobInput = $"RESUME: {resumeText}";
+            var conversion = await this.Process(prompt, new[] { userInput, userJobInput });
+
+            result = conversion;
         }
         catch (Exception ex)
         {
@@ -169,7 +164,7 @@ I need you to parse the resume into the following JSON format:
 
     public async Task<ResponseResult> JobResumeMatch(JobMatchRequest request)
     {
-        var prompt = "You are an AI Assistant that helps people match thier Resume to a Job Description.";
+        var prompt = "You are an AI Assistant that helps people match their Resume to a Job Description.";
         var userInput = $"Resume: {request.Resume}";
         var userJobInput = $"Job Description: {request.Job}";
         var result = await this.Process(prompt, new[] { userInput, userJobInput });

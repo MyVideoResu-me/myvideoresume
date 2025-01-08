@@ -21,6 +21,9 @@ using MyVideoResume.Application;
 using Microsoft.Extensions.DependencyInjection;
 using Scalar.AspNetCore;
 using MyVideoResume.Workers;
+using MyVideoResume.Application.FeatureFlag;
+using MyVideoResume.Client.Services.FeatureFlag;
+using MyVideoResume.Application.Job;
 
 var builder = WebApplication.CreateBuilder(args);
 //Logging
@@ -40,7 +43,7 @@ var loggerConfiguration = new LoggerConfiguration()
 #else
 .WriteTo.Async(c => c.Console())
 .WriteTo.Async(c => c.File($"Logs/logs{DateTime.Now.ToEpochTime()}.txt"))
-.WriteTo.MSSqlServer(connectionString: loggingConnectionString, sinkOptions: new Serilog.Sinks.MSSqlServer.MSSqlServerSinkOptions { TableName = "Logs", AutoCreateSqlTable = true })
+//.WriteTo.MSSqlServer(connectionString: loggingConnectionString, sinkOptions: new Serilog.Sinks.MSSqlServer.MSSqlServerSinkOptions { TableName = "Logs", AutoCreateSqlTable = true })
 #endif
 ;
 
@@ -81,15 +84,22 @@ builder.Services.AddControllers().AddOData(opt =>
 });
 builder.Services.AddOpenApi();
 
+builder.Services.AddScoped<AccountService>();
+builder.Services.AddScoped<MenuService>();
 builder.Services.AddSingleton<DocumentProcessor>();
 builder.Services.AddSingleton<RecaptchaService>();
 builder.Services.AddSingleton<EmailService>();
-builder.Services.AddScoped<ResumeService>();
-builder.Services.AddScoped<AccountService>();
-builder.Services.AddScoped<MenuService>();
-builder.Services.AddSingleton<IResumePromptEngine, ResumePromptEngine>();
-builder.Services.AddScoped<SecurityWebService>();
+builder.Services.AddScoped<JobWebService>();
+builder.Services.AddSingleton<IJobPromptEngine, JobPromptEngine>();
+builder.Services.AddScoped<JobService>();
 builder.Services.AddScoped<ResumeWebService>();
+builder.Services.AddSingleton<IResumePromptEngine, ResumePromptEngine>();
+builder.Services.AddScoped<ResumeService>();
+builder.Services.AddSingleton<ResumeBackgroundJobService>();
+builder.Services.AddSingleton<IFeatureFlagService, SplitFeatureFlagService>();
+builder.Services.AddScoped<FeatureFlagClientService>();
+builder.Services.AddScoped<FeatureFlagWebService>();
+builder.Services.AddScoped<SecurityWebService>();
 builder.Services.AddScoped<DashboardWebService>();
 builder.Services.AddHttpClient("MyVideoResume.Server").ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler { UseCookies = true }).AddHeaderPropagation(o => o.Headers.Add("Cookie"));
 builder.Services.AddHeaderPropagation(o => o.Headers.Add("Cookie"));

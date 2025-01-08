@@ -3,7 +3,7 @@
 @attribute [Authorize]
 @inherits BaseComponent
 <RadzenStack style="overflow-y: scroll; height:435px" id="workContainer">
-    <RadzenDropZoneContainer TItem="Work" Data="WorkItems"
+    <RadzenDropZoneContainer data-bind="@WorkItems" TItem="Work" Data="WorkItems"
                              ItemRender="@OnItemRender"
                              ItemSelector="@ItemSelector"
                              CanDrop="@CanDrop"
@@ -16,7 +16,41 @@
             </RadzenDropZone>
         </ChildContent>
         <Template>
-            <ResumeWorkItemComponent Item=@context WorkItemDeleteCompleted=@Delete WorkItemSaveCompleted=@Save></ResumeWorkItemComponent>
+            <RadzenColumn Size=12>
+                <RadzenCard Variant="Variant.Outlined" Style="margin-bottom:8px;">
+                    <RadzenColumn Size="12" SizeMD="12">
+                        <RadzenButton Style="float: right" Size="ButtonSize.ExtraSmall" Icon="delete_forever" ButtonStyle="ButtonStyle.Danger" Click=@(() => Delete(context)) />
+                        <RadzenButton Style="float: right" Size="ButtonSize.ExtraSmall" Icon="save" ButtonStyle="ButtonStyle.Success" Click=@(() => @Save(context)) />
+                    </RadzenColumn>
+                    <RadzenColumn Size="12" SizeMD="4">
+                        <RadzenLabel Text="Business Name" Component="Work.Name" />
+                    </RadzenColumn>
+                    <RadzenColumn Size="12" SizeMD="8">
+                        <RadzenTextBox Style="width: 100%;" Name="Work.Name" @bind-Value=@context.Name />
+                        <RadzenRequiredValidator Component="Work.Name" Text="Business Name is required" />
+                    </RadzenColumn>
+                    <RadzenColumn Size="12" SizeMD="12">
+                        <RadzenLabel Text="Position/Title" Component="Work.Position" />
+                    </RadzenColumn>
+                    <RadzenColumn Size="12" SizeMD="12">
+                        <RadzenTextBox Style="width: 100%;" Name="Work.Position" @bind-Value=@context.Position />
+                        <RadzenRequiredValidator Component="Work.Position" Text="Position is required" />
+                    </RadzenColumn>
+                    <RadzenColumn Size="12" SizeMD="12">
+                        <RadzenLabel Text="Summary" Component="Work.Summary" />
+                    </RadzenColumn>
+                    <RadzenColumn Size="12" SizeMD="12">
+                        <RadzenTextArea Style="width: 100%;" Name="Work.Summary" @bind-Value=@context.Summary />
+                        <RadzenRequiredValidator Component="Work.Summary" Text="Summary is required" />
+                    </RadzenColumn>
+                    <RadzenColumn Size="12" SizeMD="4">
+                        <RadzenLabel Text="Url" Component="Work.Url" />
+                    </RadzenColumn>
+                    <RadzenColumn Size="12" SizeMD="8">
+                        <RadzenTextBox Style="width: 100%;" Name="Url" @bind-Value=@context.Url />
+                    </RadzenColumn>
+                </RadzenCard>
+            </RadzenColumn>
         </Template>
     </RadzenDropZoneContainer>
 
@@ -71,7 +105,6 @@
             // reorder items in same zone or place the item at specific index in new zone
             WorkItems.Remove(args.Item);
             var position = WorkItems.IndexOf(args.ToItem);
-            args.Item.Order = position;
             WorkItems.Insert(position, args.Item);
         }
     }
@@ -86,7 +119,6 @@
         var workItem = new Work()
             {
                 Id = Guid.NewGuid().ToString(),
-                Order = 0
             };
 
         WorkItems.Insert(0, workItem);
@@ -97,7 +129,6 @@
         // StateHasChanged();
         await JSRuntime.InvokeVoidAsync("scrollTopWork");
     }
-
 
     async Task Delete(Work workItem)
     {

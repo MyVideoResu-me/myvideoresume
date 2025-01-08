@@ -13,16 +13,13 @@ public class JobItemEntity : JobItem
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public Guid Id { get; set; }
 
-    public CompanyProfileEntity Company { get; set; }
+    public CompanyProfileEntity? Company { get; set; }
 
     [DeleteBehavior(DeleteBehavior.NoAction)]
-    public AddressEntity Address { get; set; }
+    public AddressEntity? Address { get; set; }
 
-    public BonusEntity Bonus { get; set; }
-    public EquityEntity Equity { get; set; }
+    public BonusEntity? Bonus { get; set; }
+    public EquityEntity? Equity { get; set; }
 
-    public SalaryEntity Salary { get; set; }
-
-    public int HiringTarget { get; set; }
-
+    public SalaryEntity? Salary { get; set; }
 }

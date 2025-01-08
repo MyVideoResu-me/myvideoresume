@@ -23,6 +23,8 @@ public partial class EditApplicationUser
 
     protected override async Task OnInitializedAsync()
     {
+        await base.OnInitializedAsync();
+
         user = await Security.GetUserById($"{Id}");
 
         userRoles = user.Roles.Select(role => role.Id);

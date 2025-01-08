@@ -25,6 +25,7 @@ public partial class AccountSettings
 
     protected override async Task OnInitializedAsync()
     {
+        await base.OnInitializedAsync();
         user = await Security.GetUserById($"{Security.User.Id}");
         jobPreferences = new Data.Models.JobPreferencesEntity();
     }

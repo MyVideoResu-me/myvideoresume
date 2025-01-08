@@ -1,0 +1,46 @@
+﻿@using MyVideoResume.Abstractions.Core
+@using MyVideoResume.Abstractions.Resume
+@using MyVideoResume.Abstractions.Resume.Formats.JSONResumeFormat
+@using MyVideoResume.Data.Models.Resume
+@using static MyVideoResume.Client.Shared.Resume.ResumePreviewComponent
+@inherits BaseComponent
+
+
+@if (Visible)
+{
+    if (ResumeItems != null && ResumeItems.Count > 0)
+    {
+        @foreach (var resume in ResumeItems)
+        {
+            <RadzenColumn Size="12" SizeXS="12" SizeSM="12" SizeMD="4" SizeLG="3" SizeXL="3" SizeXX="2">
+                <ResumePreviewComponent ResumeItem=@resume DeleteCompleted=@DeleteCompletedHandler Mode="ResumePreviewMode.Edit"></ResumePreviewComponent>
+            </RadzenColumn>
+        }
+
+    }
+    else
+    {
+        <div>No records to display.</div>
+    }
+}
+
+@code {
+    [Parameter]
+    public bool Visible { get; set; } = true;
+
+    [Parameter]
+    public List<ResumeSummaryItem> ResumeItems { get; set; }
+
+    [Parameter] public EventCallback<ResponseResult> DeleteCompleted { get; set; }
+
+    async Task DeleteCompletedHandler(ResponseResult result)
+    {
+        if (DeleteCompleted.HasDelegate)
+            await DeleteCompleted.InvokeAsync(result);
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+    }
+}

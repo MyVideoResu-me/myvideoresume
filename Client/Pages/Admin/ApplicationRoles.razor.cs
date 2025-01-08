@@ -19,6 +19,7 @@ public partial class ApplicationRoles
 
     protected override async Task OnInitializedAsync()
     {
+        await base.OnInitializedAsync();
         roles = await Security.GetRoles();
     }
 

@@ -36,6 +36,7 @@ public partial class ResumeViewer
 
     protected override async Task OnInitializedAsync()
     {
+        await base.OnInitializedAsync();
         try
         {
             var tempTitlePart = "View";
@@ -68,7 +69,5 @@ public partial class ResumeViewer
         {
             Logger.LogError(ex.Message, ex);
         }
-
-        await base.OnInitializedAsync();
     }
 }

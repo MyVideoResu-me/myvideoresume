@@ -1,19 +1,65 @@
-@page "/resumes/{slug}"@page "/resume/{slug}"@using MyVideoResume.Client.Pages.App.People.Resumes.Templates@inherits BaseComponent<PageTitle>@ResumePageTitle</PageTitle>@if (IsResumeDeleted)
-{    <RadzenRow>        <RadzenColumn Size="12">            <RadzenText Text="No Longer Available" TextStyle="Radzen.Blazor.TextStyle.DisplayH1" TagName="Radzen.Blazor.TagName.Auto"></RadzenText>        </RadzenColumn>    </RadzenRow>}
+@page "/resumes/{slug}"
+@page "/resume/{slug}"
+@using MyVideoResume.Client.Pages.App.People.Resumes.Templates
+@inherits BaseComponent
+
+
+<PageTitle>@ResumePageTitle</PageTitle>
+@if (IsResumeDeleted)
+{
+    <RadzenRow>
+        <RadzenColumn Size="12">
+            <RadzenText Text="No Longer Available" TextStyle="Radzen.Blazor.TextStyle.DisplayH1" TagName="Radzen.Blazor.TagName.Auto"></RadzenText>
+        </RadzenColumn>
+    </RadzenRow>
+
+}
 else
 {
     if (Resume.Privacy_ShowResume != Abstractions.Resume.DisplayPrivacy.ToPublic)
-    {        <AuthorizeView>            <Authorized>                <RadzenRow>                    <RadzenColumn Size="12">                        @if (!string.IsNullOrEmpty(Resume.ResumeTemplate?.Name))
-                        {                            <DynamicComponent Type="ComponentType" Parameters="ComponentParameters"></DynamicComponent>                        }
+    {
+        <AuthorizeView>
+            <Authorized>
+                <RadzenRow>
+                    <RadzenColumn Size="12">
+                        @if (!string.IsNullOrEmpty(Resume.ResumeTemplate?.Name))
+                        {
+                            <DynamicComponent Type="ComponentType" Parameters="ComponentParameters"></DynamicComponent>
+                        }
                         else
-                        {                            <StandardTemplate Resume=@Resume></StandardTemplate>                        }                    </RadzenColumn>                </RadzenRow>            </Authorized>            <NotAuthorized>                <RadzenRow>                    <RadzenColumn Size="12">                        Login                    </RadzenColumn>                </RadzenRow>            </NotAuthorized>        </AuthorizeView>    }
+                        {
+                            <StandardTemplate Resume=@Resume></StandardTemplate>
+                        }
+                    </RadzenColumn>
+                </RadzenRow>
+            </Authorized>
+            <NotAuthorized>
+                <RadzenRow>
+                    <RadzenColumn Size="12">
+                        Login
+                    </RadzenColumn>
+                </RadzenRow>
+            </NotAuthorized>
+        </AuthorizeView>
+    }
     else
     {
         //View if Public
         //View if Logged in
         //View if not deleted
-        //TODO When marked NonPublic => Prompt for the user to login to see the Profile        <RadzenRow>            <RadzenColumn Size="12">                @if (!string.IsNullOrEmpty(Resume.ResumeTemplate?.Name))
-                {                    <DynamicComponent Type="ComponentType" Parameters="ComponentParameters"></DynamicComponent>                }
+        //TODO When marked NonPublic => Prompt for the user to login to see the Profile
+        <RadzenRow>
+            <RadzenColumn Size="12">
+                @if (!string.IsNullOrEmpty(Resume.ResumeTemplate?.Name))
+                {
+                    <DynamicComponent Type="ComponentType" Parameters="ComponentParameters"></DynamicComponent>
+                }
                 else
-                {                    <StandardTemplate Resume=@Resume></StandardTemplate>                }            </RadzenColumn>        </RadzenRow>    }
-}
+                {
+                    <StandardTemplate Resume=@Resume></StandardTemplate>
+                }
+            </RadzenColumn>
+        </RadzenRow>
+    }
+}
+

@@ -40,6 +40,8 @@ public partial class SummarizeResumeTool
 
     protected override async Task OnInitializedAsync()
     {
+        await base.OnInitializedAsync();
+
         try
         {
             Resume = await localStorage.GetItemAsync<string>("textresume");
@@ -48,6 +50,5 @@ public partial class SummarizeResumeTool
         {
             Logger.LogError(ex.Message, ex);
         }
-        await base.OnInitializedAsync();
     }
 }
