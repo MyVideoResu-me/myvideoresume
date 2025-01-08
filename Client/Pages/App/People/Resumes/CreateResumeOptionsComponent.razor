@@ -40,7 +40,7 @@
                 {
                     var result = await DialogService.OpenAsync("Upload File to Create Resume", ds =>
                     @<RadzenCard Variant="Variant.Outlined">
-                        <ResumeUploadToJsonComponent Url=@Paths.Resume_API_CreateFromFile UploadCompleted=@UploadCompletedHandler></ResumeUploadToJsonComponent>
+                        <UploadToJsonComponent Url=@Paths.Resume_API_CreateFromFile UploadCompleted=@UploadCompletedHandler></UploadToJsonComponent>
                     </RadzenCard>
                     );
                 }

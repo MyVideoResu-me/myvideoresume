@@ -10,6 +10,7 @@ using MyVideoResume.Abstractions.Resume;
 using MyVideoResume.Application.Resume;
 using MyVideoResume.Data;
 using MyVideoResume.Data.Models;
+using MyVideoResume.Data.Models.Jobs;
 using MyVideoResume.Web.Common;
 
 namespace MyVideoResume.Application.Job;
@@ -35,14 +36,53 @@ public partial class JobService
         _serviceScopeFactory = serviceScopeFactory;
     }
 
+    public async Task<ResponseResult> DeleteJob(string userId, string id)
+    {
+
+        var result = new ResponseResult();
+        result.ErrorMessage = "Failed to Delete";
+        try
+        {
+            var item = _dataContext.Jobs.FirstOrDefault(x => x.Id == Guid.Parse(id) && x.UserId == userId);
+            if (item != null)
+            {
+                item.Slug = string.Empty;
+                item.Privacy_ShowJob = DisplayPrivacy.ToSelf;
+                item.UserId = string.Empty;
+                item.DeletedDateTime = DateTime.UtcNow;
+                _dataContext.Jobs.Remove(item);
+                _dataContext.SaveChanges();
+                result.Result = "Operation Successful";
+                result.ErrorMessage = string.Empty;
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.Message, ex);
+            result.ErrorMessage = ex.Message;
+        }
+        return result;
+    }
+
+
     public async Task<JobPreferencesEntity> GetJobPreferences(string userId)
     {
         throw new NotImplementedException();
     }
 
-    public async Task<ResponseResult<JobSummaryItem>> SaveJobByUrl(string url)
+    public async Task<ResponseResult<JobItemEntity>> CreateJob(string id, JobItemEntity item)
     {
-        var result = new ResponseResult<JobSummaryItem>();
+        var result = new ResponseResult<JobItemEntity>();
+        _dataContext.Jobs.Add(item);
+        item.UserId = id;
+        _dataContext.SaveChanges();
+        result.Result = item;
+        return result;
+    }
+
+    public async Task<ResponseResult<JobItemEntity>> SaveJobByUrl(string url)
+    {
+        var result = new ResponseResult<JobItemEntity>();
 
         //call the URL
         using IServiceScope scope = _serviceScopeFactory.CreateScope();

@@ -16,7 +16,7 @@
 @code {
     public RadzenUpload RadzenUploadRef { get; set; }
     [Parameter] public bool DisableDownload { get; set; } = true;
-    [Parameter] public string Result { get; set; } = "Upload Resume";
+    [Parameter] public string Result { get; set; } = "Upload file";
     [Parameter] public EventCallback<string> UploadCompleted { get; set; }
     [Parameter] public string Url { get; set; } = Paths.Resume_API_Parse;
 

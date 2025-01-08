@@ -3,7 +3,9 @@ using Microsoft.AspNetCore.Mvc;
 using MyVideoResume.Abstractions.Core;
 using MyVideoResume.Abstractions.Job;
 using MyVideoResume.Application.Job;
+using MyVideoResume.Application.Resume;
 using MyVideoResume.Data.Models;
+using MyVideoResume.Data.Models.Jobs;
 using MyVideoResume.Data.Models.Resume;
 using MyVideoResume.Documents;
 using MyVideoResume.Web.Common;
@@ -122,28 +124,28 @@ public partial class JobController : ControllerBase
 
     //}
 
-    //[Authorize]
-    //[HttpPost("{resumeId}")]
-    //public async Task<ActionResult<ResponseResult>> Delete(string resumeId)
-    //{
-    //    var result = new ResponseResult();
-    //    try
-    //    {
-    //        var id = User.FindFirstValue(ClaimTypes.NameIdentifier);
-    //        result = await _service.DeleteResume(id, resumeId);
-    //    }
-    //    catch (Exception ex)
-    //    {
-    //        _logger.LogError(ex.Message, ex);
-    //        result.Result = ex.Message;
-    //    }
-    //    return result;
-    //}
+    [Authorize]
+    [HttpPost("{jobId}")]
+    public async Task<ActionResult<ResponseResult>> Delete(string jobId)
+    {
+        var result = new ResponseResult();
+        try
+        {
+            var id = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            result = await _service.DeleteJob(id, jobId);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.Message, ex);
+            result.Result = ex.Message;
+        }
+        return result;
+    }
 
     [HttpPost("Extract")]
-    public async Task<ActionResult<ResponseResult<JobSummaryItem>>> Extract([FromBody] string url)
+    public async Task<ActionResult<ResponseResult<JobItemEntity>>> Extract([FromBody] string url)
     {
-        var result = new ResponseResult<JobSummaryItem>();
+        var result = new ResponseResult<JobItemEntity>();
         try
         {
             result = await _service.SaveJobByUrl(url);
@@ -156,15 +158,30 @@ public partial class JobController : ControllerBase
         return result;
     }
 
-    [HttpPost("Parse")]
-    public async Task<ActionResult<ResponseResult<string>>> Parse(IFormFile file)
+    [Authorize]
+    [HttpPost("CreateFromFile")]
+    public async Task<ActionResult<ResponseResult<JobItemEntity>>> CreateFromFile(IFormFile file)
     {
-        var result = new ResponseResult<string>();
+        var result = new ResponseResult<JobItemEntity>();
         try
         {
             if (file != null)
             {
-                result = await _engine.JobParseJSON(file);
+                //Lets Verify if the user is logged in.. If so, we'll create a resume.
+                var id = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+                var fileasstring = _documentProcessor.ConvertToString(file);
+                var temppdfresult = await _engine.ExtractJob(fileasstring);
+                if (!temppdfresult.ErrorMessage.HasValue())
+                {
+                    //Remove the Markdown from the Response
+                    var job = temppdfresult.Result;
+                    result = await _service.CreateJob(id, job);
+                }
+                else
+                {
+                    result.ErrorMessage = temppdfresult.ErrorMessage;
+                }
             }
         }
         catch (Exception ex)
@@ -174,56 +191,4 @@ public partial class JobController : ControllerBase
         }
         return result;
     }
-
-    //[Authorize]
-    //[HttpPost("CreateFromFile")]
-    //public async Task<ActionResult<ResponseResult<ResumeInformationEntity>>> CreateFromFile(IFormFile file)
-    //{
-    //    var result = new ResponseResult<ResumeInformationEntity>();
-    //    try
-    //    {
-    //        if (file != null)
-    //        {
-    //            //Lets Verify if the user is logged in.. If so, we'll create a resume.
-    //            var id = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-    //            switch (file.ContentType)
-    //            {
-    //                case "application/json":
-    //                    {
-    //                        var resumeJson = _documentProcessor.JSONToString(file.OpenReadStream());
-    //                        result = await _service.CreateResume(id, resumeJson);
-    //                        break;
-    //                    }
-    //                case "application/pdf":
-    //                    {
-    //                        var tempresult = await _engine.ResumeParseJSON(file);
-    //                        if (!tempresult.ErrorMessage.HasValue())
-    //                        {
-    //                            //Remove the Markdown from the Response
-    //                            var resume = tempresult.Result;
-    //                            result = await _service.CreateResume(id, resume);
-    //                        }
-    //                        else
-    //                        {
-    //                            result.ErrorMessage = tempresult.ErrorMessage;
-    //                        }
-    //                        break;
-    //                    }
-    //                case "application/msword":
-    //                    break;
-    //                default:
-    //                    {
-    //                        break;
-    //                    }
-    //            }
-    //        }
-    //    }
-    //    catch (Exception ex)
-    //    {
-    //        _logger.LogError(ex.Message, ex);
-    //        result.ErrorMessage = ex.Message;
-    //    }
-    //    return result;
-    //}
 }

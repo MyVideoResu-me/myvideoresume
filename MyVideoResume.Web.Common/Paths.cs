@@ -17,7 +17,9 @@ public static class Paths
     public const string Resume_API_Parse = "api/resume/parse";
     public const string Resume_API_Sentiment = "api/resume/sentimentprediction";
     public const string Jobs_View = "/jobs";
+    public const string Jobs_CreateNew = "/jobs/builder/new";
     public const string Jobs_API_View = "api/job/GetPublicJobs";
+    public const string Jobs_API_CreateFromFile = "api/job/createFromFile";
     public const string Jobs_API_SummaryItems = "api/job/GetSummaryItems";
     public const string Jobs_API_ViewById = "api/job/{id}";
     public const string Jobs_API_Save = "api/job/save";

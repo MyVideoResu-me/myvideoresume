@@ -99,7 +99,8 @@ public partial class JobWebService
         var result = new ResponseResult();
         try
         {
-            var uri = new Uri($"{_navigationManager.BaseUri}{string.Format(Paths.Jobs_API_ViewById, id)}");
+            //var uri = new Uri($"{_navigationManager.BaseUri}{string.Format(Paths.Jobs_API_ViewById, id)}");
+            var uri = new Uri($"{_navigationManager.BaseUri}api/job/{id}");
             var content = new FormUrlEncodedContent(new Dictionary<string, string> { { "id", id } });
             var response = await _httpClient.PostAsync(uri, content);
             result = await response.ReadAsync<ResponseResult>();

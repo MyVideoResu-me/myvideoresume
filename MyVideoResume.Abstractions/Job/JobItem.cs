@@ -1,4 +1,5 @@
 ﻿using MyVideoResume.Abstractions.Core;
+using MyVideoResume.Abstractions.Resume;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -72,6 +73,8 @@ public class JobBase : CommonBase
 public class JobItem : JobBase
 {
     public string UserId { get; set; }
+    public DisplayPrivacy Privacy_ShowJob { get; set; } = DisplayPrivacy.ToPublic;
+
     public List<Industry>? Industry { get; set; }
     public List<ExperienceLevel>? Seniority { get; set; }
     public List<JobType>? EmploymentType { get; set; } = new List<JobType>();

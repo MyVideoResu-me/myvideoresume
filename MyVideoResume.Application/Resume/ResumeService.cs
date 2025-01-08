@@ -310,7 +310,7 @@ public class ResumeService
                     CreationDateTime = DateTime.UtcNow,
                     UserId = userId,
                     ResumeSerialized = resumeText,
-                    Name = tempMetaresume.Basics.Name,
+                    Name = tempMetaresume.Basics?.Name,
                     Privacy_ShowResume = DisplayPrivacy.ToPublic,
                     Privacy_ShowContactDetails = DisplayPrivacy.ToPublic,
                     ResumeTemplate = standardTemplate,

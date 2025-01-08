@@ -136,7 +136,6 @@ public partial class ResumeWebService
         {
             var uri = new Uri($"{_navigationManager.BaseUri}api/resume/{resumeId}");
             var content = new FormUrlEncodedContent(new Dictionary<string, string> { { "resumeId", resumeId } });
-
             var response = await _httpClient.PostAsync(uri, content);
             result = await response.ReadAsync<ResponseResult>();
         }
