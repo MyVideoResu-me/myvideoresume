@@ -122,7 +122,7 @@
         Busy = true;
         if (JobContent.HasValue())
         {
-            var result = await ResumeService.Match(JobContent, ResumeSummaryItem.ResumeSerialized);
+            var result = await ResumeService.Match(JobContent, Item.JobSerialized);
             if (result.ErrorMessage.HasValue())
             {
                 ShowMatchProcessingError = true;
