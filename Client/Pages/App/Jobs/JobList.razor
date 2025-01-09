@@ -2,8 +2,6 @@
 @using MyVideoResume.Abstractions.Job
 @using MyVideoResume.Data.Models.Jobs
 @inherits BaseComponent
-@inject JobWebService Service
-
 
 <PageTitle>MyVideoResu.ME - Jobs</PageTitle>
 <RadzenRow>
@@ -13,7 +11,7 @@
         <RadzenCard>
             <AuthorizeView>
                 <Authorized>
-@*                     <RadzenSelectBar @bind-Value=@ShowGrid TValue="bool">
+                    @*                     <RadzenSelectBar @bind-Value=@ShowGrid TValue="bool">
                         <Items>
                             <RadzenSelectBarItem Icon="table_view" Text="Table" Value="true" />
                             <RadzenSelectBarItem Icon="grid_view" Text="Tile" Value="false" />
@@ -26,7 +24,7 @@
                                     @(Items.IndexOf(data) + 1)
                                 </Template>
                             </RadzenDataGridColumn>
-                                    <RadzenDataGridColumn Property="@nameof(JobItemEntity.Title)" Title="Job Title" Frozen="true">
+                            <RadzenDataGridColumn Property="@nameof(JobItemEntity.Title)" Title="Job Title" Frozen="true">
                                 <Template Context="data">
                                     <div style=" max-width: 250px; "><RadzenText style="text-overflow:ellipsis; white-space: nowrap; overflow: hidden;" TextStyle="TextStyle.Body1" title="@(data.Title)">@(data.Title)</RadzenText></div>
                                 </Template>
@@ -36,14 +34,23 @@
                                 <Template Context="data">
                                     <RadzenCard Style="background-color: white; padding: 0px !important; margin:0px !important; ">
                                         <RadzenButton ButtonStyle="ButtonStyle.Danger" Variant="Variant.Text" Icon="delete" Text="Delete" Click=@(()=> Delete(data)) Visible=@DisplayItem(data) />
-                                        <RadzenButton ButtonStyle="ButtonStyle.Dark" Variant="Variant.Text" Icon="edit" Text="Edit" Visible=@DisplayItem(data) Click=@(()=> NavigateTo("resumes/builder", data.Id)) />
-                                        <RadzenButton ButtonStyle="ButtonStyle.Dark" Variant="Variant.Text" Icon="preview" Text="View" Click=@(()=> NavigateTo("resumes", data.Id)) />
+                                        <RadzenButton ButtonStyle="ButtonStyle.Dark" Variant="Variant.Text" Icon="edit" Text="Edit" Visible=@DisplayItem(data) Click=@(()=> NavigateTo("jobs/builder", data.Id)) />
+                                        <RadzenButton ButtonStyle="ButtonStyle.Dark" Variant="Variant.Text" Icon="preview" Text="View" Click=@(()=> NavigateTo("jobs", data.Id)) />
                                     </RadzenCard>
                                 </Template>
                             </RadzenDataGridColumn>
-</Columns>
+                            <RadzenDataGridColumn Width="125px" Title="Tools" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Frozen="false">
+                                <Template Context="data">
+                                    <RadzenSplitButton Variant="Variant.Flat" ButtonStyle="ButtonStyle.Light" Click=@(args => OpenAITools(args, data)) Text="Tools" Icon="tools_ladder">
+                                        <ChildContent>
+                                            <RadzenSplitButtonItem Text="Job Match" Value="jobmatch" Icon="join_inner" />
+                                        </ChildContent>
+                                    </RadzenSplitButton>
+                                </Template>
+                            </RadzenDataGridColumn>
+                        </Columns>
                     </RadzenDataGrid>
-@*                     <RadzenRow Visible=@ShowPreview>
+                    @*                     <RadzenRow Visible=@ShowPreview>
                         <JobDisplayPreviewComponent Items=@Items DeleteCompleted=@DeleteCompletedHandler></JobDisplayPreviewComponent>
                     </RadzenRow>
  *@                </Authorized>
@@ -55,3 +62,11 @@
     </RadzenColumn>
 </RadzenRow>
 
+@code{
+    protected async Task OpenJobMatchAnalysis(JobSummaryItem item)
+    {
+        var result = await DialogService.OpenAsync("Job Match", ds =>
+            @<JobResumeMatchWizard Item=@item></JobResumeMatchWizard>
+        );
+    }
+}

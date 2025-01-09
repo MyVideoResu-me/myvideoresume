@@ -34,26 +34,7 @@
         }
     }
 
-    protected async Task ProcessJobMatch(ResumeSummaryItem item)
-    {
-        var result = new ResponseResult<float>();
-        result = await ResumeWebService.GetSentimentAnalysisById(item.Id);
-        if (result.ErrorMessage.HasValue())
-        {
-            ShowErrorNotification("Failed to Process Sentiment", string.Empty);
-        }
-        else
-        {
-            ShowSuccessNotification("Sentiment Updated", string.Empty);
-            item.SentimentScore = result.Result;
-
-            DialogService.Close();
-            await OpenSentimentAnalysis(item);
-        }
-    }
-
-
     protected async Task OpenJobMatchAnalysis(ResumeSummaryItem item)
     {
-        var result = await DialogService.OpenAsync("Job Match", ds =>            @<JobMatchWizard ResumeSummaryItem=@item></JobMatchWizard>        );
+        var result = await DialogService.OpenAsync("Job Match", ds =>            @<ResumeJobMatchWizard ResumeSummaryItem=@item></ResumeJobMatchWizard>        );
     }}

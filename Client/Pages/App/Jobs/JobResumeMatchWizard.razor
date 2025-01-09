@@ -1,6 +1,8 @@
 ﻿@using Markdig
+@using MyVideoResume.Abstractions.Job
 @using MyVideoResume.Abstractions.Resume
 @using MyVideoResume.Client.Services.FeatureFlag
+@using MyVideoResume.Data.Models.Jobs
 @inherits BaseComponent
 
 <RadzenSteps Change="@OnChange" @ref=@Steps>
@@ -66,7 +68,7 @@
 @code {
     [Inject] public JobWebService JobService { get; set; }
     [Inject] public ResumeWebService ResumeService { get; set; }
-    [Parameter] public ResumeSummaryItem ResumeSummaryItem { get; set; }
+    [Parameter] public JobSummaryItem Item { get; set; }
     public string JobUrl { get; set; }
     public string JobContent { get; set; }
     public string MatchContent { get; set; }
