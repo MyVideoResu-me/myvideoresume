@@ -17,6 +17,7 @@
                         <RadzenMenuItem Icon="more_horiz">
                             <RadzenMenuItem Text="Edit" Path=@Paths.Jobs_View Icon="edit" Click=@(()=> Edit()) Visible=@FeatureFlagService.IsResumeBuilderEnabled></RadzenMenuItem>
                             <RadzenMenuItem Text="Json" Icon="download" Click=@(()=> DownloadJsonFile(Resume))></RadzenMenuItem>
+                            <RadzenMenuItem Text="Html" Icon="download" Click=@(()=> DownloadHtmlFile(Resume))></RadzenMenuItem>
                         </RadzenMenuItem>
                     </RadzenMenu>
                 </div>

@@ -1,0 +1,29 @@
+﻿@using MyVideoResume.Abstractions.Core
+@using MyVideoResume.Data.Models.Resume
+@using System.Text.Json
+@inherits BaseComponent
+
+<UploadToJsonComponent Url=@Paths.Resume_API_CreateFromFile UploadCompleted=@UploadCompletedHandler></UploadToJsonComponent>
+
+@code {
+    [Parameter] public EventCallback<ResponseResult<ResumeInformationEntity>> UploadCompleted { get; set; }
+    async Task UploadCompletedHandler(string result)
+    {
+        var response = new ResponseResult<ResumeInformationEntity>();
+        if (!result.HasValue())
+        {
+            var errorText = "Failed Creating Resume";
+            ShowErrorNotification(errorText, string.Empty);
+            response.ErrorMessage = errorText;
+        }
+        else
+        {
+            ShowSuccessNotification("Resume Created", string.Empty);
+            var resume = JsonSerializer.Deserialize<ResumeInformationEntity>(result, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            response.Result = resume;
+        }
+
+        if (UploadCompleted.HasDelegate)
+            await UploadCompleted.InvokeAsync(response);
+    }
+}

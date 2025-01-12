@@ -53,9 +53,9 @@ public partial class Dashboard
         }
     }
 
-    async Task UploadCompletedHandler(string result)
+    async Task UploadCompletedHandler(ResponseResult<ResumeInformationEntity> result)
     {
-        if (!result.HasValue())
+        if (result.ErrorMessage.HasValue())
         {
             ShowErrorNotification("Failed Creating Resume", string.Empty);
         }

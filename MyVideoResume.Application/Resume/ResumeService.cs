@@ -231,7 +231,7 @@ public class ResumeService
         {
             if (userId.HasValue() && resumeText.HasValue()) //should validate that its a real user account...
             {
-                var resumeInformation = JsonSerializer.Deserialize<ResumeInformationEntity>(resumeText);
+                var resumeInformation = JsonSerializer.Deserialize<ResumeInformationEntity>(resumeText, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
                 if (resumeInformation != null)
                 {
                     string? existingId = null;

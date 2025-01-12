@@ -1,29 +1,22 @@
-﻿@using Markdig
+﻿@using BlazorTemplater
+@using Markdig
+@using MyVideoResume.Abstractions.Core
 @using MyVideoResume.Abstractions.Job
 @using MyVideoResume.Abstractions.Resume
+@using MyVideoResume.Client.Pages.App.People.Resumes.Templates
 @using MyVideoResume.Client.Services.FeatureFlag
 @using MyVideoResume.Data.Models.Jobs
+@using System.Text.Json
+@using MyVideoResume.Data.Models.Resume
 @inherits BaseComponent
 
-<RadzenSteps Change="@OnChange" @ref=@Steps>
+<RadzenSteps Change="@OnChange" @ref=@Steps Style="width:100%">
     <Steps>
-        <RadzenStepsItem Text="Add Job">
-            <RadzenRow>
-                <RadzenStack Orientation="Orientation.Vertical">
-                    <RadzenText Text="Enter the Website (URL) of the Job Description" />
-                    <div hidden=@(!ShowUrlError)><span style="color:red"><strong>Website (URL) is required.</strong></span></div>
-                </RadzenStack>
-            </RadzenRow>
-            <RadzenTextBox Placeholder="https://somewebsitejob.com/" @bind-Value=@JobUrl />
-        </RadzenStepsItem>
-        <RadzenStepsItem Text="Review Job">
-            <RadzenRow>
-                @if (FailToLoadJob)
-                {
-                    <span style="color:red"><strong>The Website (url) entered has blocked the request.</strong></span>
-
-                    <div> Please Copy and Paste the Job Description below.</div>
-                    <RadzenHtmlEditor @bind-Value=@JobContent style="height: 375px; width:450px;" @ref=@Editor>
+        <RadzenStepsItem Text="Add Resume">
+            <RadzenRow Style="width:100%">
+                <RadzenCard Variant="Variant.Outlined">
+                    <ResumeUploadComponent UploadCompleted=@UploadCompletedHandler></ResumeUploadComponent>
+                    <RadzenHtmlEditor @bind-Value=@Content style="height: 375px; width:100%;">
                         <RadzenHtmlEditorUndo />
                         <RadzenHtmlEditorRedo />
                         <RadzenHtmlEditorSeparator />
@@ -33,13 +26,8 @@
                         <RadzenHtmlEditorStrikeThrough />
                         <RadzenHtmlEditorSeparator />
                     </RadzenHtmlEditor>
-                }
-                else
-                {
-                    <iframe src=@JobUrl
-                            style="height:375px; width: 450px"></iframe>
-                }
 
+                </RadzenCard>
             </RadzenRow>
         </RadzenStepsItem>
         <RadzenStepsItem Text="Run Match">
@@ -50,7 +38,7 @@
         </RadzenStepsItem>
         <RadzenStepsItem Text="See Results">
             <RadzenRow>
-                <RadzenHtmlEditor @bind-Value=@MatchContent style="height: 375px; width:450px;" @ref=@Editor>
+                <RadzenHtmlEditor @bind-Value=@MatchContent style="height: 375px; width:100%;">
                     <RadzenHtmlEditorUndo />
                     <RadzenHtmlEditorRedo />
                     <RadzenHtmlEditorSeparator />
@@ -69,50 +57,17 @@
     [Inject] public JobWebService JobService { get; set; }
     [Inject] public ResumeWebService ResumeService { get; set; }
     [Parameter] public JobSummaryItem Item { get; set; }
-    public string JobUrl { get; set; }
-    public string JobContent { get; set; }
+    public string Content { get; set; }
     public string MatchContent { get; set; }
-    public bool FailToLoadJob { get; set; } = false;
-    public RadzenHtmlEditor Editor { get; set; }
     public RadzenSteps Steps { get; set; }
     public bool Busy { get; set; }
-    public bool ShowUrlError { get; set; } = false;
     public bool ShowMatchProcessingError { get; set; } = false;
 
     async Task OnChange(int index)
     {
-        if (index == 1)
+        if (!Content.HasValue())
         {
-            if (JobUrl.HasValue())
-            {
-                var result = await JobService.Extract(JobUrl);
-                if (result.ErrorMessage.HasValue())
-                {
-                    FailToLoadJob = true;
-                    Steps.SelectedIndex = 1;
-                }
-                else
-                {
-                    JobContent = result.Result.JobSerialized;
-                }
-                ShowUrlError = false;
-            }
-            else
-            {
-                Steps.SelectedIndex = 0;
-                ShowUrlError = true;
-            }
-        }
-        else if (index == 2)
-        {
-
-        }
-        else if (index == 3)
-        {
-            if (JobContent.HasValue() && !MatchContent.HasValue())
-            {
-                ProcessJobMatch();
-            }
+            Steps.SelectedIndex = 0;
         }
     }
 
@@ -120,9 +75,9 @@
     protected async Task ProcessJobMatch()
     {
         Busy = true;
-        if (JobContent.HasValue())
+        if (Content.HasValue())
         {
-            var result = await ResumeService.Match(JobContent, Item.JobSerialized);
+            var result = await ResumeService.Match(Content, Item.JobSerialized);
             if (result.ErrorMessage.HasValue())
             {
                 ShowMatchProcessingError = true;
@@ -130,7 +85,7 @@
             else
             {
                 ShowMatchProcessingError = false;
-                Steps.SelectedIndex = 3;
+                Steps.SelectedIndex = 2;
                 var markdownResult = result.Result;
                 MatchContent = Markdown.ToHtml(markdownResult);
             }
@@ -143,4 +98,32 @@
     {
         await base.OnInitializedAsync();
     }
+
+
+    async Task UploadCompletedHandler(ResponseResult<ResumeInformationEntity> result)
+    {
+        if (result.ErrorMessage.HasValue())
+        {
+            ShowErrorNotification("Failed Processing Resume", string.Empty);
+        }
+        else
+        {
+            var resumeText = new ComponentRenderer<BasicTemplate>()
+            .AddService<MenuService>(MenuService)
+            .AddService<NavigationManager>(NavigationManager)
+            .AddService<AuthenticationStateProvider>(AuthenticationStateProvider)
+            .AddService<HttpClient>(Http)
+            .AddService<IJSRuntime>(JSRuntime)
+            .AddService<DialogService>(DialogService)
+            .AddService<TooltipService>(TooltipService)
+            .AddService<ContextMenuService>(ContextMenuService)
+            .AddService<NotificationService>(NotificationService)
+            .AddService<SecurityWebService>(Security)
+            .Set(c => c.Resume, result.Result)
+            .Render();
+
+            Content = resumeText;
+        }
+    }
+
 }

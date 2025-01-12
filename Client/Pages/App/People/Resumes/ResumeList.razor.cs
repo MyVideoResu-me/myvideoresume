@@ -73,9 +73,9 @@ public partial class ResumeList
             ResumeItems = await ResumeWebService.GetResumeSummaryItems();
     }
 
-    protected async Task ResumeCreated(string result)
+    protected async Task ResumeCreated(ResponseResult<ResumeInformationEntity> result)
     {
-        if (result.HasValue())
+        if (!result.ErrorMessage.HasValue())
             ResumeItems = await ResumeWebService.GetResumeSummaryItems();
     }
 

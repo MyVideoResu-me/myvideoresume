@@ -17,9 +17,6 @@ public partial class ResumeToJSONConverterTool
     public string Result { get; set; } = "Upload";
 
 
-    public UploadToJsonComponent ResumeUploadToJsonComponent { get; set; }
-
-
     private async Task DownloadFile()
     {
         var temp = Result;

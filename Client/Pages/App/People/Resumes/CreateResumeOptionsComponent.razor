@@ -1,4 +1,6 @@
-﻿@using MyVideoResume.Client.Services.FeatureFlag
+﻿@using MyVideoResume.Abstractions.Core
+@using MyVideoResume.Client.Services.FeatureFlag
+@using MyVideoResume.Data.Models.Resume
 @inherits BaseComponent
 
 <div style="float:right">
@@ -14,7 +16,7 @@
 
 @code {
     [Inject] public FeatureFlagClientService Service { get; set; }
-    [Parameter] public EventCallback<string> ResumeCreated { get; set; }
+    [Parameter] public EventCallback<ResponseResult<ResumeInformationEntity>> ResumeCreated { get; set; }
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
@@ -39,18 +41,18 @@
                 if (args == null || args?.Value == "pdf" || args?.Value == "json" || args?.Value == "word")
                 {
                     var result = await DialogService.OpenAsync("Upload File to Create Resume", ds =>
-                    @<RadzenCard Variant="Variant.Outlined">
-                        <UploadToJsonComponent Url=@Paths.Resume_API_CreateFromFile UploadCompleted=@UploadCompletedHandler></UploadToJsonComponent>
-                    </RadzenCard>
-                    );
+    @<RadzenCard Variant="Variant.Outlined">
+        <ResumeUploadComponent UploadCompleted=@UploadCompletedHandler></ResumeUploadComponent>
+    </RadzenCard>
+            );
                 }
             }
         }
     }
 
-    async Task UploadCompletedHandler(string result)
+    async Task UploadCompletedHandler(ResponseResult<ResumeInformationEntity> result)
     {
-        if (!result.HasValue())
+        if (result.ErrorMessage.HasValue())
         {
             ShowErrorNotification("Failed Creating Resume", string.Empty);
         }

@@ -12,6 +12,8 @@ using System.Text.Json;
 using MyVideoResume.Abstractions.Resume.Formats.JSONResumeFormat;
 using AgeCalculator.Extensions;
 using MyVideoResume.Client.Pages.App.People.Resumes.Templates;
+using BlazorTemplater;
+using static System.Net.WebRequestMethods;
 
 namespace MyVideoResume.Client.Shared;
 
@@ -45,7 +47,26 @@ public class ResumeComponent : BasicTemplate
     [Inject] protected ResumeWebService ResumeWebService { get; set; }
     [Inject] protected FeatureFlagClientService FeatureFlagService { get; set; }
 
-    protected async Task DownloadJsonFile(ResumeInformationEntity resume) 
+    protected async Task DownloadHtmlFile(ResumeInformationEntity resume)
+    {
+        var resumeText = new ComponentRenderer<BasicTemplate>()
+        .AddService<MenuService>(MenuService)
+        .AddService<NavigationManager>(NavigationManager)
+        .AddService<AuthenticationStateProvider>(AuthenticationStateProvider)
+        .AddService<HttpClient>(Http)
+        .AddService<IJSRuntime>(JSRuntime)
+        .AddService<DialogService>(DialogService)
+        .AddService<TooltipService>(TooltipService)
+        .AddService<ContextMenuService>(ContextMenuService)
+        .AddService<NotificationService>(NotificationService)
+        .AddService<SecurityWebService>(Security)
+        .Set(c => c.Resume, resume)
+        .Render();
+
+        await JSRuntime.InvokeVoidAsync("saveTextAsFile", resumeText, $"HtmlResume-{DateTime.Now.ToString("yyyy-MM-dd")}.html");
+    }
+
+    protected async Task DownloadJsonFile(ResumeInformationEntity resume)
     {
         var metaResume = resume.MetaResume;
         var jsonResume = JsonSerializer.Serialize<JSONResume>(metaResume);
