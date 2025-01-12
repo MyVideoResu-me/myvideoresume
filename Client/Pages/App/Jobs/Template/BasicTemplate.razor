@@ -1,10 +1,26 @@
 ﻿@using MyVideoResume.Abstractions.Resume
 @using MyVideoResume.Data.Models.Jobs
-@inherits BaseComponent
-@* @layout EmptyLayout
- *@
+@inherits JobBaseComponent
+@layout EmptyLayout
+
 @if (Item != null)
 {
+    <RadzenRow>
+        <RadzenColumn Style="max-width: 100%">
+            @if (Security.User.Id == Item.UserId)
+            {
+                <div style="float: right; padding-right: 35px">
+                    <RadzenMenu Responsive="false">
+                        <RadzenMenuItem Icon="more_horiz">
+                            <RadzenMenuItem Text="Edit" Path=@Paths.Jobs_View Icon="edit" Click=@(()=> Edit()) Visible=@FeatureFlagService.IsJobBuilderEnabled></RadzenMenuItem>
+                            <RadzenMenuItem Text="Json" Icon="download" Click=@(()=> DownloadAsJson(Item))></RadzenMenuItem>
+                            <RadzenMenuItem Text="Html" Icon="download" Click=@(()=> DownloadAsHtml(Item))></RadzenMenuItem>
+                        </RadzenMenuItem>
+                    </RadzenMenu>
+                </div>
+            }
+        </RadzenColumn>
+    </RadzenRow>
     <RadzenRow>
         <RadzenStack AlignItems="AlignItems.Normal" Orientation="Orientation.Vertical">
             <RadzenText Text=@Item.Title TextStyle="Radzen.Blazor.TextStyle.DisplayH2" TagName="Radzen.Blazor.TagName.Auto"></RadzenText>
@@ -30,19 +46,19 @@
             <RadzenColumn Style="max-width: 100%">
                 <RadzenCard>
                     <RadzenText Text="Requirements" TextStyle="Radzen.Blazor.TextStyle.DisplayH5" TagName="Radzen.Blazor.TagName.Auto"></RadzenText>
-                        <div style="padding:15px;">
-                                <RadzenRow>
-                                    <RadzenColumn SizeSM="12">
-                                        <RadzenText TextStyle="TextStyle.Body1"><b>Highlights</b></RadzenText>
-                                        <ul>
-                                            @foreach (var i in Item.Requirements)
-                                            {
-                                                <li>@i</li>
-                                            }
-                                        </ul>
-                                    </RadzenColumn>
-                                </RadzenRow>
-                        </div>
+                    <div style="padding:15px;">
+                        <RadzenRow>
+                            <RadzenColumn SizeSM="12">
+                                <RadzenText TextStyle="TextStyle.Body1"><b>Highlights</b></RadzenText>
+                                <ul>
+                                    @foreach (var i in Item.Requirements)
+                                    {
+                                        <li>@i</li>
+                                    }
+                                </ul>
+                            </RadzenColumn>
+                        </RadzenRow>
+                    </div>
                 </RadzenCard>
             </RadzenColumn>
         </RadzenRow>
@@ -71,6 +87,7 @@
         </RadzenRow>
     }
 }
+<script src="resumeActions.js"></script>
 
 @code {
     private const string placeholder = "Placeholder";
@@ -86,4 +103,16 @@
             Requirements = new()
         };
 
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+    }
+
+
+    protected void Edit()
+    {
+        if (FeatureFlagService.IsJobBuilderEnabled)
+            NavigateTo($"{Paths.Jobs_Edit}{Item.Id.ToString()}");
+
+    }
 }

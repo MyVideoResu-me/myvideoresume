@@ -42,40 +42,10 @@ public static class EnumExtensions
     }
 }
 
-public class ResumeComponent : BasicTemplate
-{
-    [Inject] protected ResumeWebService ResumeWebService { get; set; }
-    [Inject] protected FeatureFlagClientService FeatureFlagService { get; set; }
-
-    protected async Task DownloadHtmlFile(ResumeInformationEntity resume)
-    {
-        var resumeText = new ComponentRenderer<BasicTemplate>()
-        .AddService<MenuService>(MenuService)
-        .AddService<NavigationManager>(NavigationManager)
-        .AddService<AuthenticationStateProvider>(AuthenticationStateProvider)
-        .AddService<HttpClient>(Http)
-        .AddService<IJSRuntime>(JSRuntime)
-        .AddService<DialogService>(DialogService)
-        .AddService<TooltipService>(TooltipService)
-        .AddService<ContextMenuService>(ContextMenuService)
-        .AddService<NotificationService>(NotificationService)
-        .AddService<SecurityWebService>(Security)
-        .Set(c => c.Resume, resume)
-        .Render();
-
-        await JSRuntime.InvokeVoidAsync("saveTextAsFile", resumeText, $"HtmlResume-{DateTime.Now.ToString("yyyy-MM-dd")}.html");
-    }
-
-    protected async Task DownloadJsonFile(ResumeInformationEntity resume)
-    {
-        var metaResume = resume.MetaResume;
-        var jsonResume = JsonSerializer.Serialize<JSONResume>(metaResume);
-        await JSRuntime.InvokeVoidAsync("saveTextAsFile", jsonResume, $"JsonResume-{DateTime.Now.ToString("yyyy-MM-dd")}.json");
-    }
-}
-
 public class BaseComponent : LayoutComponentBase
 {
+    [Inject] protected FeatureFlagClientService FeatureFlagService { get; set; }
+
     [Inject] protected MenuService MenuService { get; set; }
 
     [Inject] protected AuthenticationStateProvider AuthenticationStateProvider { get; set; }
@@ -132,5 +102,19 @@ public class BaseComponent : LayoutComponentBase
     {
         return string.IsNullOrEmpty(componentName) ? null
             : Type.GetType($"{namespacevalue}.{componentName}");
+    }
+
+    protected async Task DownloadHtmlFile(string content, string fileName)
+    {
+        await DownloadFile(content, fileName, "html");
+    }
+    protected async Task DownloadJsonFile(string content, string filename)
+    {
+        await DownloadFile(content, filename, "json");
+    }
+
+    private async Task DownloadFile(string content, string filename, string fileextension)
+    {
+        await JSRuntime.InvokeVoidAsync("saveTextAsFile", content, $"{filename}-{DateTime.Now.ToString("yyyy-MM-dd")}.{fileextension}");
     }
 }
