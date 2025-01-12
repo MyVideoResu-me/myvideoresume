@@ -82,7 +82,7 @@ public partial class JobWebService
         var result = new JobItemEntity();
         try
         {
-            var uri = new Uri($"{_navigationManager.BaseUri}{string.Format(Paths.Jobs_API_ViewById, id)}");
+            var uri = new Uri($"{_navigationManager.BaseUri}api/job/{id}");
             var response = await _httpClient.GetAsync(uri);
             result = await response.ReadAsync<JobItemEntity>();
         }

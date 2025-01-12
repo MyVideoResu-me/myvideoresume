@@ -35,7 +35,7 @@
                                     <RadzenCard Style="background-color: white; padding: 0px !important; margin:0px !important; ">
                                         <RadzenButton ButtonStyle="ButtonStyle.Danger" Variant="Variant.Text" Icon="delete" Text="Delete" Click=@(()=> Delete(data)) Visible=@DisplayItem(data) />
                                         <RadzenButton ButtonStyle="ButtonStyle.Dark" Variant="Variant.Text" Icon="edit" Text="Edit" Visible=@DisplayItem(data) Click=@(()=> NavigateTo("jobs/builder", data.Id)) />
-                                        <RadzenButton ButtonStyle="ButtonStyle.Dark" Variant="Variant.Text" Icon="preview" Text="View" Click=@(()=> NavigateTo("jobs", data.Id)) />
+                                        <RadzenButton ButtonStyle="ButtonStyle.Dark" Variant="Variant.Text" Icon="preview" Text="View" Click=@(()=> NavigateTo(Paths.Jobs_View, data.Id)) />
                                     </RadzenCard>
                                 </Template>
                             </RadzenDataGridColumn>

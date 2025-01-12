@@ -36,6 +36,14 @@ public partial class JobService
         _serviceScopeFactory = serviceScopeFactory;
     }
 
+    public async Task<JobItemEntity> GetJob(string id, string userId)
+    {
+        var item = _dataContext.Jobs.FirstOrDefault(x => x.Id == Guid.Parse(id) && x.UserId == userId);
+
+        return item;
+    }
+
+
     public async Task<ResponseResult> DeleteJob(string userId, string id)
     {
 

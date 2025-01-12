@@ -1,0 +1,89 @@
+﻿@using MyVideoResume.Abstractions.Resume
+@using MyVideoResume.Data.Models.Jobs
+@inherits BaseComponent
+@* @layout EmptyLayout
+ *@
+@if (Item != null)
+{
+    <RadzenRow>
+        <RadzenStack AlignItems="AlignItems.Normal" Orientation="Orientation.Vertical">
+            <RadzenText Text=@Item.Title TextStyle="Radzen.Blazor.TextStyle.DisplayH2" TagName="Radzen.Blazor.TagName.Auto"></RadzenText>
+        </RadzenStack>
+    </RadzenRow>
+    <RadzenRow Style="padding-bottom:15px">
+        <RadzenColumn Style="max-width: 100%">
+            <RadzenCard>
+                <RadzenText Text="Summary" TextStyle="Radzen.Blazor.TextStyle.DisplayH5" TagName="Radzen.Blazor.TagName.Auto"></RadzenText>
+                <div style="padding:15px;">
+                    <RadzenRow>
+                        <RadzenColumn SizeSM="12">
+                            <RadzenText TextStyle="TextStyle.Body1">@Item.Description</RadzenText>
+                        </RadzenColumn>
+                    </RadzenRow>
+                </div>
+            </RadzenCard>
+        </RadzenColumn>
+    </RadzenRow>
+    @if (Item.Requirements != null && Item.Requirements.Count > 0)
+    {
+        <RadzenRow Style="padding-bottom:15px">
+            <RadzenColumn Style="max-width: 100%">
+                <RadzenCard>
+                    <RadzenText Text="Requirements" TextStyle="Radzen.Blazor.TextStyle.DisplayH5" TagName="Radzen.Blazor.TagName.Auto"></RadzenText>
+                        <div style="padding:15px;">
+                                <RadzenRow>
+                                    <RadzenColumn SizeSM="12">
+                                        <RadzenText TextStyle="TextStyle.Body1"><b>Highlights</b></RadzenText>
+                                        <ul>
+                                            @foreach (var i in Item.Requirements)
+                                            {
+                                                <li>@i</li>
+                                            }
+                                        </ul>
+                                    </RadzenColumn>
+                                </RadzenRow>
+                        </div>
+                </RadzenCard>
+            </RadzenColumn>
+        </RadzenRow>
+    }
+    @if (Item.Responsibilities != null && Item.Responsibilities.Count > 0)
+    {
+        <RadzenRow Style="padding-bottom:15px">
+            <RadzenColumn Style="max-width: 100%">
+                <RadzenCard>
+                    <RadzenText Text="Responsibilities" TextStyle="Radzen.Blazor.TextStyle.DisplayH5" TagName="Radzen.Blazor.TagName.Auto"></RadzenText>
+                    <div style="padding:15px;">
+                        <RadzenRow>
+                            <RadzenColumn SizeSM="12">
+                                <RadzenText TextStyle="TextStyle.Body1"><b>Highlights</b></RadzenText>
+                                <ul>
+                                    @foreach (var i in Item.Responsibilities)
+                                    {
+                                        <li>@i</li>
+                                    }
+                                </ul>
+                            </RadzenColumn>
+                        </RadzenRow>
+                    </div>
+                </RadzenCard>
+            </RadzenColumn>
+        </RadzenRow>
+    }
+}
+
+@code {
+    private const string placeholder = "Placeholder";
+    [Parameter]
+    public JobItemEntity Item { get; set; } = new JobItemEntity()
+        {
+            Description = placeholder,
+            Privacy_ShowJob = DisplayPrivacy.ToPublic,
+            Title = placeholder,
+            Address = new(),
+            Company = new(),
+            Responsibilities = new(),
+            Requirements = new()
+        };
+
+}
