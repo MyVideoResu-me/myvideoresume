@@ -58,7 +58,10 @@
                 <RadzenPanelMenuItem Text="PDF to JSON" Path=@Paths.Tools_PdfToJson Icon="convert_to_text" title="PDF to JSON" />
 
             </RadzenPanelMenuItem>
-            <RadzenPanelMenuItem Text="Tasks" Path="tasks" Icon="task_alt" title="Tasks" />
+            <RadzenPanelMenuItem Text="Tasks" Icon="task_alt" title="Tasks">
+                <RadzenPanelMenuItem Text="Tasks" Path=@Paths.Tasks_View Icon="task_alt" title="Tasks" />
+                <RadzenPanelMenuItem Text="Schedule" Path=@Paths.Tasks_Schedule Icon="query_stats" title="Schedule" />
+            </RadzenPanelMenuItem>
             <RadzenPanelMenuItem Text="Outreach" Path="feed" Icon="campaign" title="Outreach" />
             <RadzenPanelMenuItem Text="Help / About" Icon="info" title="Help / About">
                 <RadzenPanelMenuItem Text="How To Articles" Path="Articles/HowTo" Icon="question_mark" title="How To Articles" />

@@ -1,0 +1,45 @@
+﻿@using MyVideoResume.Data.Models.Business
+@inherits BaseComponent
+
+<RadzenTemplateForm TItem="Appointment" Data="@model" Submit=@OnSubmit>
+    <RadzenStack Gap="1rem">
+        <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Wrap="FlexWrap.Wrap">
+            <RadzenLabel Text="Title" Style="width: 4rem;" />
+            <RadzenTextBox @bind-Value="@model.Text" Name="Text" Style="width: 12rem;" />
+            <RadzenRequiredValidator Component="Text" Text="Title is required" />
+        </RadzenStack>
+        <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Wrap="FlexWrap.Wrap">
+            <RadzenLabel Text="Start" Style="width: 4rem;" />
+            <RadzenDatePicker @bind-Value="@model.Start" Name="Start" ShowTime="true" Style="width: 12rem;" />
+            <RadzenRequiredValidator Component="Start" Text="Start is required" />
+        </RadzenStack>
+        <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Wrap="FlexWrap.Wrap">
+            <RadzenLabel Text="End" Style="width: 4rem;" />
+            <RadzenDatePicker Name="End" @bind-Value="@model.End" ShowTime="true" Style="width: 12rem;" />
+            <RadzenRequiredValidator Component="End" Text="End is required" />
+        </RadzenStack>
+        <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.End">
+            <RadzenButton ButtonType="ButtonType.Submit" Text="Save" />
+        </RadzenStack>
+    </RadzenStack>
+</RadzenTemplateForm>
+@code {
+    [Parameter]
+    public DateTime Start { get; set; }
+
+    [Parameter]
+    public DateTime End { get; set; }
+
+    Appointment model = new Appointment();
+
+    protected override void OnParametersSet()
+    {
+        model.Start = Start;
+        model.End = End;
+    }
+
+    void OnSubmit(Appointment model)
+    {
+        DialogService.Close(model);
+    }
+}
