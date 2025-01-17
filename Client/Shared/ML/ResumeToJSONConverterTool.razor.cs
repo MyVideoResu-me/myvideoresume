@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using Blazored.LocalStorage;
-using MyVideoResume.Client.Shared.Resume;
 
 namespace MyVideoResume.Client.Shared.ML;
 

@@ -10,7 +10,7 @@ using MyVideoResume.Data.Models.Resume;
 using Radzen;
 using System.Text.Json;
 
-namespace MyVideoResume.Client.Shared;
+namespace MyVideoResume.Client.Pages.App.People.Resumes;
 
 public class ResumeComponent : BasicTemplate
 {
@@ -19,17 +19,17 @@ public class ResumeComponent : BasicTemplate
     protected async Task DownloadAsHtml(ResumeInformationEntity resume)
     {
         var resumeText = new ComponentRenderer<BasicTemplate>()
-        .AddService<FeatureFlagClientService>(FeatureFlagService)
-        .AddService<MenuService>(MenuService)
-        .AddService<NavigationManager>(NavigationManager)
-        .AddService<AuthenticationStateProvider>(AuthenticationStateProvider)
-        .AddService<HttpClient>(Http)
-        .AddService<IJSRuntime>(JSRuntime)
-        .AddService<DialogService>(DialogService)
-        .AddService<TooltipService>(TooltipService)
-        .AddService<ContextMenuService>(ContextMenuService)
-        .AddService<NotificationService>(NotificationService)
-        .AddService<SecurityWebService>(Security)
+        .AddService(FeatureFlagService)
+        .AddService(MenuService)
+        .AddService(NavigationManager)
+        .AddService(AuthenticationStateProvider)
+        .AddService(Http)
+        .AddService(JSRuntime)
+        .AddService(DialogService)
+        .AddService(TooltipService)
+        .AddService(ContextMenuService)
+        .AddService(NotificationService)
+        .AddService(Security)
         .Set(c => c.Resume, resume)
         .Render();
 

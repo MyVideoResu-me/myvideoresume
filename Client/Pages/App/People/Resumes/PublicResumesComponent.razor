@@ -1,6 +1,5 @@
 ﻿@using MyVideoResume.Abstractions.Resume
 @inherits BaseComponent
-@using static MyVideoResume.Client.Shared.Resume.ResumePreviewComponent
 
 <RadzenRow Style="padding-bottom:15px" Visible="@(ResumeList.Count > 0)">
     <RadzenColumn Style="max-width: 100%">
@@ -12,7 +11,7 @@
                     {
 
                         <RadzenColumn Size="4" SizeXS="4" SizeSM="4" SizeMD="4" SizeLG="4" SizeXL="4" SizeXX="4">
-                            <ResumePreviewComponent ResumeItem=@resume Mode="ResumePreviewMode.View"></ResumePreviewComponent>
+                            <ResumePreviewComponent ResumeItem=@resume Mode="PreviewMode.View"></ResumePreviewComponent>
                         </RadzenColumn>
 
                     }

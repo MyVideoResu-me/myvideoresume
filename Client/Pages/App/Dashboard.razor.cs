@@ -12,7 +12,6 @@ using Microsoft.JSInterop;
 using MyVideoResume.Abstractions.Core;
 using MyVideoResume.Abstractions.Resume;
 using MyVideoResume.Client.Services;
-using MyVideoResume.Client.Shared.Resume;
 using MyVideoResume.Data;
 using MyVideoResume.Data.Models.Resume;
 using MyVideoResume.Web.Common;

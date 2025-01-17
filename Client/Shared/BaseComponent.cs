@@ -17,6 +17,11 @@ using static System.Net.WebRequestMethods;
 
 namespace MyVideoResume.Client.Shared;
 
+public enum PreviewMode
+{
+    View,
+    Edit
+}
 
 public static class EnumExtensions
 {
