@@ -1,7 +1,7 @@
 ﻿@using MyVideoResume.Data.Models.Business
 @inherits BaseComponent
 
-<RadzenTemplateForm TItem="Appointment" Data="@model" Submit=@OnSubmit>
+<RadzenTemplateForm TItem="AppointmentEntity" Data="@model" Submit=@OnSubmit>
     <RadzenStack Gap="1rem">
         <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Wrap="FlexWrap.Wrap">
             <RadzenLabel Text="Title" Style="width: 6rem;" />
@@ -25,16 +25,16 @@
 </RadzenTemplateForm>
 @code {
     [Parameter]
-    public Appointment Appointment { get; set; }
+    public AppointmentEntity Appointment { get; set; }
 
-    Appointment model = new Appointment();
+    AppointmentEntity model = new AppointmentEntity();
 
     protected override void OnParametersSet()
     {
         model = Appointment;
     }
 
-    void OnSubmit(Appointment model)
+    void OnSubmit(AppointmentEntity model)
     {
         DialogService.Close(model);
     }

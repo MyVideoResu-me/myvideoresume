@@ -26,7 +26,7 @@ public enum JobStatus
     Hired
 }
 
-public class JobBase : CommonBase
+public class JobBase : GISData
 {
     public string UserId { get; set; }
     public string Title { get; set; }

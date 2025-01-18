@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MyVideoResume.Data.Models.Business;
 
-public class Appointment
+public class AppointmentEntity
 {
     public DateTime Start { get; set; }
     public DateTime End { get; set; }

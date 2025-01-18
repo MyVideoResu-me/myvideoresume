@@ -7,6 +7,11 @@ namespace MyVideoResume.Web.Common;
 
 public static class Paths
 {
+    public const string Site_Root = "/";
+    public const string Site_About = "/about";
+    public const string Site_Help = "articles/how-to";
+    public const string Site_ContactUs = "/work-with-us";
+    public const string Site_ReleaseNotes = "/release-notes";
     public const string FeatureFlags_API = "api/featureflag";
     public const string Dashboard_View = "/dashboard";
     public const string Resume_View = "/resumes";

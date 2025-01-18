@@ -7,7 +7,7 @@
 		<StaticWebAssetProjectMode>Default</StaticWebAssetProjectMode>
 		<ServiceWorkerAssetsManifest>service-worker-assets.js</ServiceWorkerAssetsManifest>
 		<ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
-		<Version>1.1.0.0</Version>
+		<Version>1.2.0.0</Version>
 	</PropertyGroup>
 	<ItemGroup>
 		<PackageReference Include="AgeCalculator" Version="1.4.1" />

@@ -1,12 +1,12 @@
 @page "/schedule"@using MyVideoResume.Data.Models.Business
-@inherits BaseComponent<PageTitle>MyVideoResu.ME - Schedule</PageTitle><RadzenRow>    <RadzenColumn Size="12">        <RadzenText Text="Schedule" TextStyle="Radzen.Blazor.TextStyle.DisplayH2" TagName="Radzen.Blazor.TagName.Auto"></RadzenText>        <RadzenCard>            <RadzenRow>                <RadzenColumn>                    <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="0.5rem" class="rz-p-4 rz-mb-6 rz-border-radius-1" Style="border: var(--rz-grid-cell-border);">                        <RadzenLabel Text="Schedule Start Month:" />                        <RadzenSelectBar @bind-Value="@startMonth" TextProperty="Text" ValueProperty="Value" Data="@(Enum.GetValues(typeof(Month)).Cast<Month>().Select(t => new { Text = $"{t}", Value = t }))" Size="ButtonSize.Small" class="rz-display-xl-flex" />                    </RadzenStack>                    <RadzenScheduler @ref=@scheduler SlotRender=@OnSlotRender style="height: 768px;" TItem="Appointment" Data=@appointments StartProperty="Start" EndProperty="End"                                     TextProperty="Text" SelectedIndex="1"                                     SlotSelect=@OnSlotSelect AppointmentSelect=@OnAppointmentSelect AppointmentRender=@OnAppointmentRender MonthSelect=@OnMonthSelect>                        <RadzenMonthView />                        <RadzenYearPlannerView StartMonth="@startMonth" />                        <RadzenYearTimelineView StartMonth="@startMonth" />                        <RadzenYearView StartMonth="@startMonth" />                    </RadzenScheduler>                </RadzenColumn>            </RadzenRow>
+@inherits BaseComponent<PageTitle>MyVideoResu.ME - Schedule</PageTitle><RadzenRow>    <RadzenColumn Size="12">        <RadzenText Text="Schedule" TextStyle="Radzen.Blazor.TextStyle.DisplayH2" TagName="Radzen.Blazor.TagName.Auto"></RadzenText>        <RadzenCard>            <RadzenRow>                <RadzenColumn>                    <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="0.5rem" class="rz-p-4 rz-mb-6 rz-border-radius-1" Style="border: var(--rz-grid-cell-border);">                        <RadzenLabel Text="Schedule Start Month:" />                        <RadzenSelectBar @bind-Value="@startMonth" TextProperty="Text" ValueProperty="Value" Data="@(Enum.GetValues(typeof(Month)).Cast<Month>().Select(t => new { Text = $"{t}", Value = t }))" Size="ButtonSize.Small" class="rz-display-xl-flex" />                    </RadzenStack>                    <RadzenScheduler @ref=@scheduler SlotRender=@OnSlotRender style="height: 768px;" TItem="AppointmentEntity" Data=@appointments StartProperty="Start" EndProperty="End"                                     TextProperty="Text" SelectedIndex="1"                                     SlotSelect=@OnSlotSelect AppointmentSelect=@OnAppointmentSelect AppointmentRender=@OnAppointmentRender MonthSelect=@OnMonthSelect>                        <RadzenMonthView />                        <RadzenYearPlannerView StartMonth="@startMonth" />                        <RadzenYearTimelineView StartMonth="@startMonth" />                        <RadzenYearView StartMonth="@startMonth" />                    </RadzenScheduler>                </RadzenColumn>            </RadzenRow>
         </RadzenCard>
     </RadzenColumn>
-</RadzenRow>@code {    RadzenScheduler<Appointment> scheduler;
+</RadzenRow>@code {    RadzenScheduler<AppointmentEntity> scheduler;
     Dictionary<DateTime, string> events = new Dictionary<DateTime, string>();
     Month startMonth = Month.January;
 
-    IList<Appointment> appointments = new List<Appointment>    {        new Appointment { Start = DateTime.Today.AddDays(-2), End = DateTime.Today.AddDays(-2), Text = "Birthday" },        new Appointment { Start = DateTime.Today.AddDays(-11), End = DateTime.Today.AddDays(-10), Text = "Day off" },        new Appointment { Start = DateTime.Today.AddDays(-10), End = DateTime.Today.AddDays(-8), Text = "Work from home" },        new Appointment { Start = DateTime.Today.AddHours(10), End = DateTime.Today.AddHours(12), Text = "Online meeting" },        new Appointment { Start = DateTime.Today.AddHours(10), End = DateTime.Today.AddHours(13), Text = "Skype call" },        new Appointment { Start = DateTime.Today.AddHours(14), End = DateTime.Today.AddHours(14).AddMinutes(30), Text = "Dentist appointment" },        new Appointment { Start = DateTime.Today.AddDays(1), End = DateTime.Today.AddDays(12), Text = "Vacation" },    };
+    IList<AppointmentEntity> appointments = new List<AppointmentEntity>    {        new AppointmentEntity { Start = DateTime.Today.AddDays(-2), End = DateTime.Today.AddDays(-2), Text = "Birthday" },        new AppointmentEntity { Start = DateTime.Today.AddDays(-11), End = DateTime.Today.AddDays(-10), Text = "Day off" },        new AppointmentEntity { Start = DateTime.Today.AddDays(-10), End = DateTime.Today.AddDays(-8), Text = "Work from home" },        new AppointmentEntity { Start = DateTime.Today.AddHours(10), End = DateTime.Today.AddHours(12), Text = "Online meeting" },        new AppointmentEntity { Start = DateTime.Today.AddHours(10), End = DateTime.Today.AddHours(13), Text = "Skype call" },        new AppointmentEntity { Start = DateTime.Today.AddHours(14), End = DateTime.Today.AddHours(14).AddMinutes(30), Text = "Dentist appointment" },        new AppointmentEntity { Start = DateTime.Today.AddDays(1), End = DateTime.Today.AddDays(12), Text = "Vacation" },    };
 
     void OnSlotRender(SchedulerSlotRenderEventArgs args)
     {
@@ -29,7 +29,7 @@
 
         if (args.View.Text != "Year")
         {
-            Appointment data = await DialogService.OpenAsync<AddAppointmentPage>("Add Appointment",
+            AppointmentEntity data = await DialogService.OpenAsync<AddAppointmentPage>("Add Appointment",
                 new Dictionary<string, object> { { "Start", args.Start }, { "End", args.End } });
 
             if (data != null)
@@ -47,7 +47,7 @@
         await Task.CompletedTask;
     }
 
-    async Task OnAppointmentSelect(SchedulerAppointmentSelectEventArgs<Appointment> args)
+    async Task OnAppointmentSelect(SchedulerAppointmentSelectEventArgs<AppointmentEntity> args)
     {
      //   console.Log($"AppointmentSelect: Appointment={args.Data.Text}");
 
@@ -56,7 +56,7 @@
         await scheduler.Reload();
     }
 
-    void OnAppointmentRender(SchedulerAppointmentRenderEventArgs<Appointment> args)
+    void OnAppointmentRender(SchedulerAppointmentRenderEventArgs<AppointmentEntity> args)
     {
         // Never call StateHasChanged in AppointmentRender - would lead to infinite loop
 

@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Components.Routing;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.Web.Virtualization;
 using Microsoft.JSInterop;
+using MyVideoResume.Abstractions.Core;
 using MyVideoResume.Abstractions.Resume;
 using MyVideoResume.Abstractions.Resume.Formats.JSONResumeFormat;
 using MyVideoResume.Client.Pages.App.People.Resumes.Templates;

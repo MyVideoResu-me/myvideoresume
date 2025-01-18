@@ -14,19 +14,7 @@ public enum ResumeType
     Pdf = 3,
 }
 
-public enum DisplayPrivacy
-{
-    [Description("Visible to Public")]
-    ToPublic = 0,
-    [Description("Visible to Recruiters")]
-    ToRecruiters = 1,
-    [Description("Visible to Connections")]
-    ToConnections = 2,
-    [Description("Visible to Self (Private)")]
-    ToSelf = 10
-}
-
-public class ResumeInformation : CommonBase
+public class ResumeInformation : GISData
 {
     public string UserId { get; set; }
 
