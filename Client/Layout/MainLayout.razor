@@ -1,6 +1,5 @@
 @using MyVideoResume.Web.Common
 @inherits BaseComponent
-@inject CookieThemeService CookieThemeService
 <RadzenComponents />
 
 <RadzenLayout>
@@ -10,7 +9,7 @@
                 <RadzenSidebarToggle Click="@MenuService.SidebarToggleClick"></RadzenSidebarToggle>
             </RadzenColumn>
             <RadzenColumn SizeXS="1" Size="1">
-                <a href="/"><RadzenImage Path="images/logo-login.png" AlternateText="MyVideoResu.me" style="height: 20px;"></RadzenImage></a>
+                <a href="/"><RadzenImage Path=@Logo AlternateText="MyVideoResu.me" style="height: 20px;"></RadzenImage></a>
             </RadzenColumn>
             <RadzenColumn SizeXS="10" Size="9">
                 <RadzenStack AlignItems="AlignItems.Center" Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.End" Gap="0.5rem" class="rz-px-2">
