@@ -1,3 +1,11 @@
+.rz-header {
+    background-color: #ffffff !important;
+}
+
+.rz-sidebar-toggle {
+    color: #4f4f50 !important;
+    background-color: #ffffff !important;
+}
 
 #blazor-error-ui {
     background: lightyellow;
