@@ -90,11 +90,11 @@
                             }
                             @if (ShowContentSection())
                             {
-                                <RadzenTabsItem Text="Content">
+                                @*                                 <RadzenTabsItem Text="Content">
                                     <RadzenColumn Size="12" SizeXS="12" SizeSM="12" SizeMD="5" SizeLG="3" SizeXL="3" SizeXX="3" style="overflow:auto;">
                                     </RadzenColumn>
                                 </RadzenTabsItem>
-                            }
+ *@                     }
                         </Tabs>
 
                     </RadzenTabs>
@@ -113,8 +113,8 @@
                 <div style="padding:15px;">
                     <RadzenRow>
                         <RadzenColumn SizeSM="12">
-                            @Resume.MetaResume.Basics?.Id
-                            <RadzenText TextStyle="TextStyle.Body1">@Resume.MetaResume.Basics?.Summary</RadzenText>
+                            @*                             @Resume.MetaResume.Basics?.Id
+ *@                            <RadzenText TextStyle="TextStyle.Body1">@Resume.MetaResume.Basics?.Summary</RadzenText>
                         </RadzenColumn>
                     </RadzenRow>
                 </div>
@@ -134,8 +134,8 @@
                 <RadzenCard>
                     @foreach (var item in Resume.MetaResume.Work.OrderByDescending(x => x.EndDate))
                     {
-                        @item.Id
-                        <div style="padding:15px;">
+@*                         @item.Id
+ *@                        <div style="padding:15px;">
                             @if (DisplayMetaData(item.Id))
                             {
                                 <div style="float: right"><RadzenButton Size="ButtonSize.Large" Icon="play_circle" Click=@((args) => OpenMetaData(args, item.Id))></RadzenButton></div>
@@ -190,8 +190,8 @@
                 <RadzenCard>
                     @foreach (var item in Resume.MetaResume.Education)
                     {
-                        @item.Id
-                        <div style="padding:15px;">
+   @*                      @item.Id
+    *@                     <div style="padding:15px;">
                             <RadzenRow>
                                 <RadzenColumn SizeSM="12">
                                     <RadzenText TextStyle="TextStyle.Body1">@item.Institution</RadzenText>
@@ -228,8 +228,8 @@
                 <RadzenCard>
                     @foreach (var item in Resume.MetaResume.Volunteer)
                     {
-                        @item.Id
-                        <div style="padding:15px;">
+      @*                   @item.Id
+       *@                  <div style="padding:15px;">
                             <RadzenRow>
                                 <RadzenColumn SizeSM="12">
                                     <RadzenText TextStyle="TextStyle.Body1">@item.Organization</RadzenText>
@@ -330,7 +330,7 @@
         {
             var result = await DialogService.OpenAsync("Meta Data", ds =>
     @<RadzenStack Orientation="Orientation.Vertical">
-        <RadzenCard Variant="Variant.Outlined" >
+        <RadzenCard Variant="Variant.Outlined">
             @if(metaItem.Url.Contains("youtube.com")){
             <div><iframe width="100%" height="315" src=@metaItem.Url title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe></div>
 
