@@ -9,6 +9,9 @@ namespace MyVideoResume.Abstractions.Business;
 
 public class CompanyProfile : CommonBase
 {
+    //User who owns the Task
+    public string UserId { get; set; }
+
     public string Name { get; set; }
 
     public string? Description { get; set; }

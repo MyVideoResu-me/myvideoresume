@@ -1,4 +1,5 @@
-﻿using MyVideoResume.Abstractions.Business;
+﻿using Microsoft.EntityFrameworkCore;
+using MyVideoResume.Abstractions.Business;
 using MyVideoResume.Abstractions.Core;
 using System;
 using System.Collections.Generic;
@@ -16,6 +17,9 @@ public class CompanyProfileEntity : CompanyProfile
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public Guid Id { get; set; }
+
+    [DeleteBehavior(DeleteBehavior.NoAction)]
+    public UserProfileEntity UserProfile { get; set; }
 
     public AddressEntity? MailingAddress { get; set; }
 

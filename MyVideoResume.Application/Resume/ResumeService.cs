@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Primitives;
 using MyVideoResume.Abstractions.Core;
 using MyVideoResume.Abstractions.Resume;
+using MyVideoResume.Abstractions.Resume.Formats.JSONResumeFormat;
 using MyVideoResume.Data;
 using MyVideoResume.Data.Models.Resume;
 using MyVideoResume.Web.Common;
@@ -269,7 +270,7 @@ public class ResumeService
                 var profile = _dataContext.UserProfiles.Include(x => x.ResumeItems).FirstOrDefault(x => x.UserId == userId);
                 if (profile == null)
                 {
-                    profile = await _accountService.CreateProfile(userId);
+                    profile = await _accountService.CreateUserProfile(userId);
                 }
                 if (profile.ResumeItems == null)
                     profile.ResumeItems = new List<ResumeInformationEntity>();
@@ -286,6 +287,46 @@ public class ResumeService
 
                 //Save the Resume to get an object to populate into 
                 var tempMetaresume = JsonSerializer.Deserialize<MetaResumeEntity>(resumeText, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                if (tempMetaresume.Basics?.Id == null)
+                {
+                    tempMetaresume.Basics.Id = Guid.NewGuid().ToString();                    
+                }
+                if (tempMetaresume.Education != null && tempMetaresume.Education.Count > 0) {
+
+                    foreach (var item in tempMetaresume.Education) {
+                        if (item.Id == null)
+                            item.Id = Guid.NewGuid().ToString();
+                    }
+                }
+                if (tempMetaresume.Work != null && tempMetaresume.Work.Count > 0)
+                {
+
+                    foreach (var item in tempMetaresume.Work)
+                    {
+                        if (item.Id == null)
+                            item.Id = Guid.NewGuid().ToString();
+                    }
+                }
+                if (tempMetaresume.Volunteer != null && tempMetaresume.Volunteer.Count > 0)
+                {
+
+                    foreach (var item in tempMetaresume.Volunteer)
+                    {
+                        if (item.Id == null)
+                            item.Id = Guid.NewGuid().ToString();
+                    }
+                }
+                if (tempMetaresume.Skills != null && tempMetaresume.Skills.Count > 0)
+                {
+
+                    foreach (var item in tempMetaresume.Skills)
+                    {
+                        if (item.Id == null)
+                            item.Id = Guid.NewGuid().ToString();
+                    }
+                }
+
+
                 //Does the Meta Resume Exist?
                 var existingMetaResume = GetMetaResume().FirstOrDefault(x => x.Id == tempMetaresume.Id && userId == userId);
                 if (existingMetaResume != null)

@@ -1,22 +1,30 @@
 ﻿using MyVideoResume.Abstractions.Core;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace MyVideoResume.Abstractions.Business;
 
-public interface IAppointment {
+public enum ActionItemStatus
+{
+    Planning,
+    ToDo,
+    Open,
+    InProgress,
+    Closed,
+    Descoped,
+}
+
+public interface IActionItem {
     DateTime Start { get; set; }
     DateTime End { get; set; }
     string Text { get; set; }
-
+    ActionItemStatus Status { get; set; }
 }
 
-public class Appointment: CommonBase, IAppointment
+public class Appointment: ToDo, IActionItem
 {
-    public DateTime Start { get; set; }
-    public DateTime End { get; set; }
-    public string Text { get; set; }
 }

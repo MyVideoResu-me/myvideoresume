@@ -6,6 +6,7 @@ using MyVideoResume.Data.Models;
 using MyVideoResume.Application;
 using MyVideoResume.Services;
 using DocumentFormat.OpenXml.EMMA;
+using DocumentFormat.OpenXml.Spreadsheet;
 
 namespace MyVideoResume.Server.Controllers;
 
@@ -69,8 +70,8 @@ public partial class AccountController : Controller
 
             var claims = new List<Claim>()
             {
-                new Claim(ClaimTypes.Name, "admin"),
-                new Claim(ClaimTypes.Email, "admin")
+                new Claim(ClaimTypes.Name, "Admin"),
+                new Claim(ClaimTypes.Email, "Admin")
             };
 
             roleManager.Roles.ToList().ForEach(r => claims.Add(new Claim(ClaimTypes.Role, r.Name)));
@@ -146,10 +147,18 @@ If you didn't request this code, you can safely ignore this email. Someone else 
         }
         else
         {
+            //Why do this here?
+            //Lots of users (bots) can create accounts; When a user get's to this point they have a valid token and thus a real user.
             //Verify they have a User Profile
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            await accountService.CreateProfile(userId);
+
+            //Create the User's Profile
+            var userProfile = await accountService.CreateUserProfile(userId);
+
+            //Create a Company Profile and Associate it with the userProfile
+            await accountService.CreateCompanyProfile(userId, userProfile);
         }
+
         if (!string.IsNullOrWhiteSpace(redirectUrl))
             return Redirect(redirectUrl);
 
@@ -205,7 +214,14 @@ If you didn't request this code, you can safely ignore this email. Someone else 
             return BadRequest("Invalid user name or password.");
         }
 
-        var user = new ApplicationUser { UserName = userName, Email = userName };
+        var roles = roleManager.Roles.ToDictionary(z => z.Name, y => y);
+        var roleList = new List<ApplicationRole>
+        {
+            roles[Enum.GetName(MyVideoResumeRoles.AccountAdmin)],
+            roles[Enum.GetName(MyVideoResumeRoles.AccountOwner)]
+        };
+
+        var user = new ApplicationUser { UserName = userName, Email = userName, Roles = roleList };
         var result = await userManager.CreateAsync(user, password);
 
         if (result.Succeeded)

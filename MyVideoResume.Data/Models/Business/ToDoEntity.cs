@@ -7,11 +7,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using MyVideoResume.Abstractions.Core;
 
 namespace MyVideoResume.Data.Models.Business;
 
-[Table("Appointments")]
-public class AppointmentEntity: Appointment
+[Table("ToDos")]
+public class ToDoEntity: ToDo
 {
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -20,5 +21,7 @@ public class AppointmentEntity: Appointment
     [DeleteBehavior(DeleteBehavior.NoAction)]
     public UserProfileEntity UserProfile { get; set; }
 
-    public AddressEntity? Location { get; set; }
+    [DeleteBehavior(DeleteBehavior.NoAction)]
+    public CompanyProfileEntity? CompanyProfile { get; set; }
+
 }
