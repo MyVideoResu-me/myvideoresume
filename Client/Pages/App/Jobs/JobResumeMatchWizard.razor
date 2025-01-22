@@ -109,6 +109,7 @@
         else
         {
             var resumeText = new ComponentRenderer<BasicTemplate>()
+            .AddService<FeatureFlagClientService>(FeatureFlagService)
             .AddService<MenuService>(MenuService)
             .AddService<NavigationManager>(NavigationManager)
             .AddService<AuthenticationStateProvider>(AuthenticationStateProvider)
