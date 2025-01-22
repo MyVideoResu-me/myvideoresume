@@ -24,6 +24,8 @@ using MyVideoResume.Workers;
 using MyVideoResume.Application.FeatureFlag;
 using MyVideoResume.Client.Services.FeatureFlag;
 using MyVideoResume.Application.Job;
+using AutoMapper;
+using MyVideoResume.Mapper;
 
 var builder = WebApplication.CreateBuilder(args);
 //Logging
@@ -129,6 +131,14 @@ builder.Services.AddControllers().AddOData(o =>
 builder.Services.AddScoped<AuthenticationStateProvider, ApplicationAuthenticationStateProvider>();
 
 builder.Services.AddWorkers(builder.Configuration.GetConnectionString("Workers"));
+
+var mapperConfiguration = new MapperConfiguration(configuration =>
+{
+    var profile = new MappingProfile();
+    configuration.AddProfile(profile);
+});
+var mapper = mapperConfiguration.CreateMapper();
+builder.Services.AddSingleton(mapper);
 
 builder.Host.UseSerilog();
 

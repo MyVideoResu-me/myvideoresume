@@ -1,4 +1,5 @@
-﻿using BlazorTemplater;
+﻿using AutoMapper;
+using BlazorTemplater;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.JSInterop;
@@ -15,6 +16,7 @@ namespace MyVideoResume.Client.Pages.App.People.Resumes;
 public class ResumeComponent : BasicTemplate
 {
     [Inject] protected ResumeWebService ResumeWebService { get; set; }
+    [Inject] protected IMapper Mapper { get; set; }
 
     protected async Task DownloadAsHtml(ResumeInformationEntity resume)
     {
@@ -38,8 +40,9 @@ public class ResumeComponent : BasicTemplate
 
     protected async Task DownloadAsJson(ResumeInformationEntity resume)
     {
-        var metaResume = resume.MetaResume;
-        var jsonResume = JsonSerializer.Serialize<JSONResume>(metaResume);
+        var metaResume = resume.MetaResume as JSONResume;
+        var vm = Mapper.Map<JSONResume, ExportJSONResume>(metaResume);
+        var jsonResume = JsonSerializer.Serialize<ExportJSONResume>(vm);
         await DownloadJsonFile(jsonResume, "JsonResume");
     }
 }

@@ -11,6 +11,7 @@
 	</PropertyGroup>
 	<ItemGroup>
 		<PackageReference Include="AgeCalculator" Version="1.4.1" />
+		<PackageReference Include="AutoMapper" Version="13.0.1" />
 		<PackageReference Include="Blazor.Bootstrap" Version="3.2.0" />
 		<PackageReference Include="Blazored.LocalStorage" Version="4.5.0" />
 		<PackageReference Include="BlazorTemplater" Version="1.5.1" />

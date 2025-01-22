@@ -291,11 +291,19 @@ public class ResumeService
                 var tempMetaresume = JsonSerializer.Deserialize<MetaResumeEntity>(resumeText, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
                 if (tempMetaresume.Basics?.Id == null)
                 {
-                    tempMetaresume.Basics.Id = Guid.NewGuid().ToString();                    
+                    tempMetaresume.Basics.Id = Guid.NewGuid().ToString();
                 }
-                if (tempMetaresume.Education != null && tempMetaresume.Education.Count > 0) {
 
-                    foreach (var item in tempMetaresume.Education) {
+                if (tempMetaresume.Basics != null && tempMetaresume.Basics?.Location != null && tempMetaresume.Basics?.Location?.Id == null)
+                {
+                    tempMetaresume.Basics.Location.Id = Guid.NewGuid().ToString();
+                }
+
+                if (tempMetaresume.Education != null && tempMetaresume.Education.Count > 0)
+                {
+
+                    foreach (var item in tempMetaresume.Education)
+                    {
                         if (item.Id == null)
                             item.Id = Guid.NewGuid().ToString();
                     }
