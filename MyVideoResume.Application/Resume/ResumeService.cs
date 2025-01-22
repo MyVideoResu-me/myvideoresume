@@ -127,7 +127,8 @@ public class ResumeService
             .Include(x => x.MetaResume).ThenInclude(x => x.Skills)
             .Include(x => x.MetaData)
             .Include(x => x.UserProfile)
-            .Include(x => x.ResumeTemplate);
+            .Include(x => x.ResumeTemplate)
+            .AsSingleQuery();
         return items;
     }
 
@@ -145,7 +146,8 @@ public class ResumeService
             .Include(x => x.Education)
             .Include(x => x.Interests)
             .Include(x => x.Volunteer)
-            .Include(x => x.Skills);
+            .Include(x => x.Skills)
+            .AsSingleQuery();
         return items;
     }
 
