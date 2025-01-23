@@ -10,6 +10,8 @@ using Microsoft.JSInterop;
 using MyVideoResume.Abstractions.Core;
 using MyVideoResume.Abstractions.Job;
 using MyVideoResume.Abstractions.Resume;
+using MyVideoResume.Client.Services;
+using MyVideoResume.Data.Models.Jobs;
 using MyVideoResume.Web.Common;
 using Radzen;
 using Radzen.Blazor;
@@ -18,6 +20,7 @@ namespace MyVideoResume.Client.Pages.App.Jobs;
 
 public partial class JobList
 {
+    [Inject] JobWebService Service { get; set; }
     public bool ShowGrid { get; set; } = true;
     public bool ShowPreview { get { return !ShowGrid; } }
     List<JobSummaryItem> Items { get; set; } = new List<JobSummaryItem>();
@@ -69,4 +72,18 @@ public partial class JobList
         if (result.HasValue())
             Items = await Service.GetJobSummaryItems();
     }
+    async Task OpenAITools(RadzenSplitButtonItem args, JobSummaryItem item)
+    {
+        if (args != null)
+            switch (args.Value)
+            {
+                case "jobmatch":
+                default:
+                    await OpenJobMatchAnalysis(item);
+                    break;
+            }
+        else
+            await OpenJobMatchAnalysis(item);
+    }
+
 }

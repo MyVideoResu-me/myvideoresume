@@ -56,19 +56,9 @@ public partial class SecurityWebService
         }
 #endif
 
-        if (roles.Contains("Everybody"))
-        {
-            return true;
-        }
-
-        if (!IsAuthenticated())
+        if (IsNotAuthenticated())
         {
             return false;
-        }
-
-        if (roles.Contains("Authenticated"))
-        {
-            return true;
         }
 
         return roles.Any(role => Principal.IsInRole(role));

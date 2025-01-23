@@ -16,7 +16,7 @@
 }
 else
 {
-    if (Resume.Privacy_ShowResume != Abstractions.Resume.DisplayPrivacy.ToPublic)
+    if (Resume.Privacy_ShowResume != DisplayPrivacy.ToPublic)
     {
         <AuthorizeView>
             <Authorized>
@@ -36,7 +36,7 @@ else
             <NotAuthorized>
                 <RadzenRow>
                     <RadzenColumn Size="12">
-                        Login
+                        <UnAuthorizedComponent Path=@Paths.Resume_View></UnAuthorizedComponent>
                     </RadzenColumn>
                 </RadzenRow>
             </NotAuthorized>

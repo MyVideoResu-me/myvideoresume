@@ -7,7 +7,7 @@
 
 <RadzenCard Variant="Variant.Outlined" class="rz-p-4">
     <RadzenUpload @ref="RadzenUploadRef" ChooseText="Drag and drop here or click to choose files" Auto="false" Url=@Url Progress=@TrackProgress Complete=@CompleteUpload Style="width: 100%" InputAttributes="@(new Dictionary<string,object>(){ { "aria-label", "select file" }})" />
-    <RadzenButton ButtonStyle="ButtonStyle.Danger" Text="Upload File" Click=@UploadFile class="rz-mt-4" />
+    <RadzenButton ButtonStyle="ButtonStyle.Danger" Text="Upload File" Click=@UploadFile class="rz-mt-4" IsBusy=@isBusy />
     <RadzenProgressBar Value=@progress class="rz-mt-6" Visible=@showProgress />
     <RadzenButton Text="Cancel" Click=@(args => CancelUpload()) class="rz-mt-4" Visible=@showProgress />
     <RadzenLabel Visible=@showComplete class="rz-mt-6" Text=@completionMessage />
@@ -20,9 +20,11 @@
     [Parameter] public EventCallback<string> UploadCompleted { get; set; }
     [Parameter] public string Url { get; set; } = Paths.Resume_API_Parse;
 
+
     int progress;
     bool showProgress;
     bool showComplete;
+    bool isBusy;
     string completionMessage;
     bool cancelUpload = false;
 
@@ -56,6 +58,7 @@
         // Verify that the User Is Logged in
         if (RadzenUploadRef.HasValue)
         {
+            isBusy = true;
             await RadzenUploadRef.Upload();
         }
     }
@@ -63,6 +66,7 @@
 
     async Task CompleteUpload(UploadCompleteEventArgs args)
     {
+        isBusy = false;
         if (!args.Cancelled)
             completionMessage = "Upload Complete!";
         else

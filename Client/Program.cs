@@ -11,6 +11,8 @@ using MyVideoResume.Web.Common;
 using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
 using System;
 using MyVideoResume.Client.Services.FeatureFlag;
+using AutoMapper;
+using MyVideoResume.Mapper;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.Services.AddBlazorBootstrap();
@@ -44,5 +46,14 @@ builder.Services.AddScoped<DashboardWebService>();
 builder.Services.AddScoped<ResumeWebService>();
 builder.Services.AddScoped<MenuService>();
 builder.Services.AddScoped<AuthenticationStateProvider, ApplicationAuthenticationStateProvider>();
+
+var mapperConfiguration = new MapperConfiguration(configuration =>
+{
+    var profile = new MappingProfile();
+    configuration.AddProfile(profile);
+});
+var mapper = mapperConfiguration.CreateMapper();
+builder.Services.AddSingleton(mapper);
+
 var host = builder.Build();
 await host.RunAsync();

@@ -9,13 +9,17 @@
 @if (Resume != null && Resume.MetaResume != null)
 {
     <RadzenRow>
-        <RadzenColumn Style="max-width: 100%">
-            <RadzenText Text="Summary" TextStyle="Radzen.Blazor.TextStyle.DisplayH5" TagName="Radzen.Blazor.TagName.Auto"></RadzenText>
-        </RadzenColumn>
+        <RadzenStack AlignItems="AlignItems.Normal" Orientation="Orientation.Vertical">
+            <RadzenText Text=@Title() TextStyle="Radzen.Blazor.TextStyle.DisplayH2" TagName="Radzen.Blazor.TagName.Auto"></RadzenText>
+            <RadzenText Text=@Resume.MetaResume.Basics.Email TextStyle="Radzen.Blazor.TextStyle.Body1" TagName="Radzen.Blazor.TagName.Auto"></RadzenText>
+            <RadzenText Text=@Resume.MetaResume.Basics.Phone TextStyle="Radzen.Blazor.TextStyle.Body1" TagName="Radzen.Blazor.TagName.Auto"></RadzenText>
+            <RadzenLink Path=@Resume.MetaResume.Basics.Url Text="My Website" Icon="globe" target="_blank" Visible=Resume.MetaResume.Basics.Url.HasValue() />
+        </RadzenStack>
     </RadzenRow>
     <RadzenRow Style="padding-bottom:15px">
         <RadzenColumn Style="max-width: 100%">
             <RadzenCard>
+                <RadzenText Text="Summary" TextStyle="Radzen.Blazor.TextStyle.DisplayH5" TagName="Radzen.Blazor.TagName.Auto"></RadzenText>
                 <div style="padding:15px;">
                     <RadzenRow>
                         <RadzenColumn SizeSM="12">
@@ -28,15 +32,10 @@
     </RadzenRow>
     @if (Resume.MetaResume.Work != null && Resume.MetaResume.Work.Count > 0)
     {
-        <RadzenRow>
-            <RadzenColumn Style="max-width: 100%">
-                <RadzenText Text="Work Experience" TextStyle="Radzen.Blazor.TextStyle.DisplayH5" TagName="Radzen.Blazor.TagName.Auto"></RadzenText>
-
-            </RadzenColumn>
-        </RadzenRow>
         <RadzenRow Style="padding-bottom:15px">
             <RadzenColumn Style="max-width: 100%">
                 <RadzenCard>
+                    <RadzenText Text="Work Experience" TextStyle="Radzen.Blazor.TextStyle.DisplayH5" TagName="Radzen.Blazor.TagName.Auto"></RadzenText>
                     @foreach (var item in Resume.MetaResume.Work.OrderByDescending(x => x.EndDate))
                     {
                         <div style="padding:15px;">
@@ -79,15 +78,10 @@
 
     @if (Resume.MetaResume.Education != null && Resume.MetaResume.Education.Count > 0)
     {
-        <RadzenRow>
-            <RadzenColumn Style="max-width: 100%">
-                <RadzenText Text="Education" TextStyle="Radzen.Blazor.TextStyle.DisplayH5" TagName="Radzen.Blazor.TagName.Auto"></RadzenText>
-
-            </RadzenColumn>
-        </RadzenRow>
         <RadzenRow Style="padding-bottom:15px">
             <RadzenColumn Style="max-width: 100%">
                 <RadzenCard>
+                    <RadzenText Text="Education" TextStyle="Radzen.Blazor.TextStyle.DisplayH5" TagName="Radzen.Blazor.TagName.Auto"></RadzenText>
                     @foreach (var item in Resume.MetaResume.Education)
                     {
                         <div style="padding:15px;">
@@ -116,15 +110,10 @@
 
     @if (Resume.MetaResume.Volunteer != null && Resume.MetaResume.Volunteer.Count > 0)
     {
-        <RadzenRow>
-            <RadzenColumn Style="max-width: 100%">
-                <RadzenText Text="Volunteering" TextStyle="Radzen.Blazor.TextStyle.DisplayH5" TagName="Radzen.Blazor.TagName.Auto"></RadzenText>
-
-            </RadzenColumn>
-        </RadzenRow>
         <RadzenRow Style="padding-bottom:15px">
             <RadzenColumn Style="max-width: 100%">
                 <RadzenCard>
+                    <RadzenText Text="Volunteering" TextStyle="Radzen.Blazor.TextStyle.DisplayH5" TagName="Radzen.Blazor.TagName.Auto"></RadzenText>
                     @foreach (var item in Resume.MetaResume.Volunteer)
                     {
                         <div style="padding:15px;">
@@ -153,14 +142,10 @@
 
     @if (Resume.MetaResume.Skills != null && Resume.MetaResume.Skills.Count > 0)
     {
-        <RadzenRow>
-            <RadzenColumn Style="max-width: 100%">
-                <RadzenText Text="Skills" TextStyle="Radzen.Blazor.TextStyle.DisplayH5" TagName="Radzen.Blazor.TagName.Auto"></RadzenText>
-            </RadzenColumn>
-        </RadzenRow>
         <RadzenRow Style="padding-bottom:15px">
             <RadzenColumn Style="max-width: 100%">
                 <RadzenCard>
+                    <RadzenText Text="Skills" TextStyle="Radzen.Blazor.TextStyle.DisplayH5" TagName="Radzen.Blazor.TagName.Auto"></RadzenText>
                     @foreach (var item in Resume.MetaResume.Skills)
                     {
                         <div style="padding:15px;">
@@ -181,6 +166,55 @@
             </RadzenColumn>
         </RadzenRow>
     }
+
+    @if (ShowProjectsSection())
+    {
+        <RadzenRow>
+            <RadzenColumn Style="max-width: 100%">
+                <RadzenText Text="Projects" TextStyle="Radzen.Blazor.TextStyle.DisplayH5" TagName="Radzen.Blazor.TagName.Auto"></RadzenText>
+            </RadzenColumn>
+        </RadzenRow>
+        <RadzenRow Style="padding-bottom:15px">
+            <RadzenColumn Style="max-width: 100%">
+                <RadzenCard>
+                    @foreach (var item in Resume.MetaResume.Projects.OrderByDescending(x => x.EndDate))
+                    {
+                        <div style="padding:15px;">
+                            <RadzenRow>
+                                <RadzenColumn SizeSM="12">
+                                    @if (!string.IsNullOrWhiteSpace(item.Url))
+                                    {
+                                        <a href="@item.Url"><RadzenText TextStyle="TextStyle.Body1">@item.Name</RadzenText></a>
+                                    }
+                                    else
+                                    {
+                                        <RadzenText TextStyle="TextStyle.Body1">@item.Name</RadzenText>
+                                    }
+                                    <RadzenText TextStyle="TextStyle.Body1"><b> @(item.Description)</b></RadzenText>
+                                    <RadzenText TextStyle="TextStyle.Body2">@ToFrom(item.StartDate, item.EndDate)</RadzenText>
+                                </RadzenColumn>
+                            </RadzenRow>
+                            @if (item.Highlights?.Count > 0)
+                            {
+                                <RadzenRow>
+                                    <RadzenColumn SizeSM="12">
+                                        <RadzenText TextStyle="TextStyle.Body1"><b>Highlights</b></RadzenText>
+                                        <ul>
+                                            @foreach (var i in item.Highlights)
+                                            {
+                                                <li>@i</li>
+                                            }
+                                        </ul>
+                                    </RadzenColumn>
+                                </RadzenRow>
+                            }
+                        </div>
+                    }
+                </RadzenCard>
+            </RadzenColumn>
+        </RadzenRow>
+    }
+
 }
 
 @code {
@@ -198,7 +232,7 @@
     protected string ToFrom(string to, string from)
     {
         var result = "";
-        if (!string.IsNullOrEmpty(to) && !string.IsNullOrEmpty(from))
+        if (to.HasValue() && from.HasValue())
         {
             var endDateText = string.Empty;
 
@@ -214,6 +248,13 @@
             }
             result = $"{DateTime.Parse(to).ToString("yyyy-MM")} - {endDateText}";
         }
+        else if (to.HasValue() || from.HasValue())
+        {
+            if (to.HasValue())
+                result = $"{DateTime.Parse(to).ToString("yyyy-MM")}";
+            if (from.HasValue())
+                result = $"{DateTime.Parse(from).ToString("yyyy-MM")}";
+        }
         return result;
     }
 
@@ -227,6 +268,36 @@
 
         return Resume.MetaResume.Basics.Name;
     }
+
+    protected bool ShowWorkSection()
+    {
+        return Resume.MetaResume.Work != null && Resume.MetaResume.Work.Count > 0;
+    }
+    protected bool ShowVolunteerSection()
+    {
+        return Resume.MetaResume.Volunteer != null && Resume.MetaResume.Volunteer.Count > 0;
+    }
+    protected bool ShowProjectsSection()
+    {
+        return Resume.MetaResume.Projects != null && Resume.MetaResume.Projects.Count > 0;
+    }
+    protected bool ShowReferencesSection()
+    {
+        return Resume.MetaResume.References != null && Resume.MetaResume.References.Count > 0;
+    }
+    protected bool ShowSkillsSection()
+    {
+        return Resume.MetaResume.Skills != null && Resume.MetaResume.Skills.Count > 0;
+    }
+    protected bool ShowEducationSection()
+    {
+        return Resume.MetaResume.Education != null && Resume.MetaResume.Education.Count > 0;
+    }
+    protected bool ShowAwardsSection()
+    {
+        return Resume.MetaResume.Awards != null && Resume.MetaResume.Awards.Count > 0;
+    }
+
 
     protected string YearsMonths(string to, string from)
     {

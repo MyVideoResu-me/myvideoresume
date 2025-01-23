@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using Blazored.LocalStorage;
-using MyVideoResume.Client.Shared.Resume;
 
 namespace MyVideoResume.Client.Shared.ML;
 
@@ -15,9 +14,6 @@ public partial class ResumeToJSONConverterTool
 
     public bool DisableDownload { get; set; } = true;
     public string Result { get; set; } = "Upload";
-
-
-    public UploadToJsonComponent ResumeUploadToJsonComponent { get; set; }
 
 
     private async Task DownloadFile()

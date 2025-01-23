@@ -82,7 +82,7 @@ public partial class JobWebService
         var result = new JobItemEntity();
         try
         {
-            var uri = new Uri($"{_navigationManager.BaseUri}{string.Format(Paths.Jobs_API_ViewById, id)}");
+            var uri = new Uri($"{_navigationManager.BaseUri}api/job/{id}");
             var response = await _httpClient.GetAsync(uri);
             result = await response.ReadAsync<JobItemEntity>();
         }
@@ -133,11 +133,11 @@ public partial class JobWebService
         return r;
     }
 
-    public async Task<ResponseResult<JobSummaryItem>> Extract(string url)
+    public async Task<ResponseResult<JobItemEntity>> Extract(string url)
     {
         var uri = new Uri($"{_navigationManager.BaseUri}{Paths.Jobs_API_Extract}");
         var response = await _httpClient.PostAsJsonAsync<string>(uri, url);
-        var r = await response.ReadAsync<ResponseResult<JobSummaryItem>>();
+        var r = await response.ReadAsync<ResponseResult<JobItemEntity>>();
         return r;
     }
 }

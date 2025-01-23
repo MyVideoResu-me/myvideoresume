@@ -10,10 +10,10 @@ namespace MyVideoResume.Abstractions.Resume.Formats.MyVideoResumeFormat;
 
 public enum MetaType
 {
-    Hyperlink,
-    Video,
-    Image,
-    Content
+    Hyperlink=0,
+    Video=1,
+    Image=2,
+    Content=3
 }
 
 public class MetaData : CommonBase

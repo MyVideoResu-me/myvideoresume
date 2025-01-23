@@ -13,7 +13,7 @@ public class Importer<T> where T : class, new()
 
     public virtual T Import(string jsonString)
     {
-        var result = JsonSerializer.Deserialize<T>(jsonString);
+        var result = JsonSerializer.Deserialize<T>(jsonString, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
         if (result == null)
         {
             result = new T();

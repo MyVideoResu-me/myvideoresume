@@ -7,6 +7,11 @@ namespace MyVideoResume.Web.Common;
 
 public static class Paths
 {
+    public const string Site_Root = "/";
+    public const string Site_About = "/about";
+    public const string Site_Help = "articles/how-to";
+    public const string Site_ContactUs = "/work-with-us";
+    public const string Site_ReleaseNotes = "/release-notes";
     public const string FeatureFlags_API = "api/featureflag";
     public const string Dashboard_View = "/dashboard";
     public const string Resume_View = "/resumes";
@@ -17,6 +22,7 @@ public static class Paths
     public const string Resume_API_Parse = "api/resume/parse";
     public const string Resume_API_Sentiment = "api/resume/sentimentprediction";
     public const string Jobs_View = "/jobs";
+    public const string Jobs_Edit = "/jobs/Edit";
     public const string Jobs_CreateNew = "/jobs/builder/new";
     public const string Jobs_API_View = "api/job/GetPublicJobs";
     public const string Jobs_API_CreateFromFile = "api/job/createFromFile";
@@ -25,6 +31,8 @@ public static class Paths
     public const string Jobs_API_Save = "api/job/save";
     public const string Jobs_API_Extract = "api/job/extract";
     public const string AI_API_Sentiment = "sentiment/sentimentprediction";
+    public const string Tasks_View = "/tasks";
+    public const string Tasks_Schedule = "/schedule";
     public const string Tools_Sentiment = "Tools/SentimentAnalysis";
     public const string Tools_SummarizeResume = "Tools/SummarizeResume";
     public const string Tools_JobMatch = "Tools/JobResumeMatch";

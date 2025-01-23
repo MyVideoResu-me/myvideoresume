@@ -42,11 +42,6 @@
 </RadzenCard>
 
 @code {
-    public enum ResumePreviewMode
-    {
-        View,
-        Edit
-    }
 
     [Parameter] public EventCallback<ResponseResult> DeleteCompleted { get; set; }
 
@@ -54,17 +49,17 @@
     public JobSummaryItem ResumeItem { get; set; } = null;
 
     [Parameter]
-    public ResumePreviewMode Mode { get; set; } = ResumePreviewMode.View;
+    public PreviewMode Mode { get; set; } = PreviewMode.View;
 
     public bool DisplayItem()
     {
         var result = false;
         switch (Mode)
         {
-            case ResumePreviewMode.View:
+            case PreviewMode.View:
                 result = false;
                 break;
-            case ResumePreviewMode.Edit:
+            case PreviewMode.Edit:
                 result = ResumeItem.UserId == Security.User.Id;
                 break;
             default:

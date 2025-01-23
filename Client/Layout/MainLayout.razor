@@ -1,6 +1,5 @@
 @using MyVideoResume.Web.Common
 @inherits BaseComponent
-@inject CookieThemeService CookieThemeService
 <RadzenComponents />
 
 <RadzenLayout>
@@ -10,7 +9,7 @@
                 <RadzenSidebarToggle Click="@MenuService.SidebarToggleClick"></RadzenSidebarToggle>
             </RadzenColumn>
             <RadzenColumn SizeXS="1" Size="1">
-                <a href="/"><RadzenImage Path="images/logo-login.png" AlternateText="MyVideoResu.me" style="width: 60px; height: 20px;"></RadzenImage></a>
+                <a href="/"><RadzenImage Path=@Logo AlternateText="MyVideoResu.me" style="height: 20px;"></RadzenImage></a>
             </RadzenColumn>
             <RadzenColumn SizeXS="10" Size="9">
                 <RadzenStack AlignItems="AlignItems.Center" Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.End" Gap="0.5rem" class="rz-px-2">
@@ -26,8 +25,8 @@
                                 <ChildContent>
                                     <RadzenProfileMenuItem Path="account/settings" Icon="manage_accounts" Text="My Account" title="My Account" />
                                     <RadzenProfileMenuItem Path="dashboard" Icon="manage_accounts" Text="Dashboard" />
-                                    <RadzenProfileMenuItem Path="admin/application-users" Icon="person" Text="Users" Visible="@Security.IsInRole("admin")" />
-                                    <RadzenProfileMenuItem Path="admin/application-roles" Icon="security" Text="Roles" Visible="@Security.IsInRole("admin")" />
+                                    <RadzenProfileMenuItem Path="admin/application-users" Icon="person" Text="Users" Visible="@Security.IsInRole("Admin")" />
+                                    <RadzenProfileMenuItem Path="admin/application-roles" Icon="security" Text="Roles" Visible="@Security.IsInRole("Admin")" />
                                     <RadzenProfileMenuItem Text="Logout" Value="Logout" Icon="power_settings_new" />
                                 </ChildContent>
                                 <Template>
@@ -58,11 +57,16 @@
                 <RadzenPanelMenuItem Text="PDF to JSON" Path=@Paths.Tools_PdfToJson Icon="convert_to_text" title="PDF to JSON" />
 
             </RadzenPanelMenuItem>
-            <RadzenPanelMenuItem Text="Tasks" Path="tasks" Icon="task_alt" title="Tasks" />
+            <RadzenPanelMenuItem Text="Tasks" Icon="task_alt" title="Tasks">
+                <RadzenPanelMenuItem Text="Tasks" Path=@Paths.Tasks_View Icon="task_alt" title="Tasks" />
+                <RadzenPanelMenuItem Text="Schedule" Path=@Paths.Tasks_Schedule Icon="query_stats" title="Schedule" />
+            </RadzenPanelMenuItem>
             <RadzenPanelMenuItem Text="Outreach" Path="feed" Icon="campaign" title="Outreach" />
             <RadzenPanelMenuItem Text="Help / About" Icon="info" title="Help / About">
-                <RadzenPanelMenuItem Text="How To Articles" Path="Articles/HowTo" Icon="question_mark" title="How To Articles" />
-                <RadzenPanelMenuItem Text="About" Path="about" Icon="store" title="About" />
+                <RadzenPanelMenuItem Text="How To Articles" Path=@Paths.Site_Help Icon="question_mark" title="How To Articles" />
+                <RadzenPanelMenuItem Text="About" Path=@Paths.Site_About Icon="store" title="About" />
+                <RadzenPanelMenuItem Text="Contact Us" Path=@Paths.Site_ContactUs Icon="store" title="About" />
+                <RadzenPanelMenuItem Text="What's New?" Path=@Paths.Site_ReleaseNotes Icon="store" title="What's New? Release Notes" />
             </RadzenPanelMenuItem>
         </RadzenPanelMenu>
     </RadzenSidebar>

@@ -1,0 +1,51 @@
+@page "/jobs/{slug}"
+@page "/job/{slug}"
+@using MyVideoResume.Client.Pages.App.Jobs.Template
+@inherits BaseComponent
+
+
+<PageTitle>@PageTitle</PageTitle>
+@if (IsDeleted)
+{
+    <RadzenRow>
+        <RadzenColumn Size="12">
+            <RadzenText Text="No Longer Available" TextStyle="Radzen.Blazor.TextStyle.DisplayH1" TagName="Radzen.Blazor.TagName.Auto"></RadzenText>
+        </RadzenColumn>
+    </RadzenRow>
+
+}
+else
+{
+    if (Item.Privacy_ShowJob != DisplayPrivacy.ToPublic)
+    {
+        <AuthorizeView>
+            <Authorized>
+                <RadzenRow>
+                    <RadzenColumn Size="12">
+                        <BasicTemplate Item=@Item></BasicTemplate>
+                    </RadzenColumn>
+                </RadzenRow>
+            </Authorized>
+            <NotAuthorized>
+                <RadzenRow>
+                    <RadzenColumn Size="12">
+                        <UnAuthorizedComponent Path=@Paths.Jobs_View></UnAuthorizedComponent>
+                    </RadzenColumn>
+                </RadzenRow>
+            </NotAuthorized>
+        </AuthorizeView>
+    }
+    else
+    {
+        //View if Public
+        //View if Logged in
+        //View if not deleted
+        //TODO When marked NonPublic => Prompt for the user to login to see the Profile
+        <RadzenRow>
+            <RadzenColumn Size="12">
+                <StandardTemplate Item=@Item></StandardTemplate>
+            </RadzenColumn>
+        </RadzenRow>
+    }
+}
+

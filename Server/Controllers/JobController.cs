@@ -42,20 +42,22 @@ public partial class JobController : ControllerBase
         return null;
     }
 
-    //[HttpGet("{id}")]
-    //public async Task<ActionResult<JobItemEntity>> Get(string id)
-    //{
-    //    var result = new JobItemEntity();
-    //    try
-    //    {
-    //        result = await _service.GetJob(id);
-    //    }
-    //    catch (Exception ex)
-    //    {
-    //        _logger.LogError(ex.Message, ex);
-    //    }
-    //    return result;
-    //}
+    [HttpGet("{id}")]
+    [Authorize]
+    public async Task<ActionResult<JobItemEntity>> Get(string id)
+    {
+        var result = new JobItemEntity();
+        try
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            result = await _service.GetJob(id, userId);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.Message, ex);
+        }
+        return result;
+    }
 
     [HttpGet("GetPublicJobs")]
     public async Task<ActionResult<List<JobSummaryItem>>> GetPublicJobs()

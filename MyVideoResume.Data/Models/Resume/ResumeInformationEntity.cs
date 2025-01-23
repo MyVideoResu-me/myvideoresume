@@ -25,4 +25,17 @@ public class ResumeInformationEntity : ResumeInformation
 
     [DeleteBehavior(DeleteBehavior.NoAction)]
     public ResumeTemplateEntity? ResumeTemplate { get; set; }
+
+    [JsonIgnore]
+    public Dictionary<string, MetaDataEntity> MetaDataLookup
+    {
+        get
+        {
+            if (MetaData != null)
+                return MetaData.ToDictionary(K => K.ReferenceId, Y => Y);
+            else
+                return new Dictionary<string, MetaDataEntity>();
+        }
+    }
+
 }

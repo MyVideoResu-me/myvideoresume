@@ -1,6 +1,10 @@
-﻿@using Markdig
+﻿@using BlazorTemplater
+@using Markdig
 @using MyVideoResume.Abstractions.Resume
 @using MyVideoResume.Client.Services.FeatureFlag
+@using System.Text.Json
+@using MyVideoResume.Data.Models.Jobs
+
 @inherits BaseComponent
 
 <RadzenSteps Change="@OnChange" @ref=@Steps>
@@ -21,23 +25,17 @@
                     <span style="color:red"><strong>The Website (url) entered has blocked the request.</strong></span>
 
                     <div> Please Copy and Paste the Job Description below.</div>
-                    <RadzenHtmlEditor @bind-Value=@JobContent style="height: 375px; width:450px;" @ref=@Editor>
-                        <RadzenHtmlEditorUndo />
-                        <RadzenHtmlEditorRedo />
-                        <RadzenHtmlEditorSeparator />
-                        <RadzenHtmlEditorBold />
-                        <RadzenHtmlEditorItalic />
-                        <RadzenHtmlEditorUnderline />
-                        <RadzenHtmlEditorStrikeThrough />
-                        <RadzenHtmlEditorSeparator />
-                    </RadzenHtmlEditor>
                 }
-                else
-                {
-                    <iframe src=@JobUrl
-                            style="height:375px; width: 450px"></iframe>
-                }
-
+                <RadzenHtmlEditor @bind-Value=@JobContent style="height: 375px; width:450px;" @ref=@Editor>
+                    <RadzenHtmlEditorUndo />
+                    <RadzenHtmlEditorRedo />
+                    <RadzenHtmlEditorSeparator />
+                    <RadzenHtmlEditorBold />
+                    <RadzenHtmlEditorItalic />
+                    <RadzenHtmlEditorUnderline />
+                    <RadzenHtmlEditorStrikeThrough />
+                    <RadzenHtmlEditorSeparator />
+                </RadzenHtmlEditor>
             </RadzenRow>
         </RadzenStepsItem>
         <RadzenStepsItem Text="Run Match">
@@ -66,6 +64,7 @@
 @code {
     [Inject] public JobWebService JobService { get; set; }
     [Inject] public ResumeWebService ResumeService { get; set; }
+    [Inject] protected JobWebService JobWebService { get; set; }
     [Parameter] public ResumeSummaryItem ResumeSummaryItem { get; set; }
     public string JobUrl { get; set; }
     public string JobContent { get; set; }
@@ -91,7 +90,23 @@
                 }
                 else
                 {
-                    JobContent = result.Result.JobSerialized;
+                    var htmlText = new ComponentRenderer<MyVideoResume.Client.Pages.App.Jobs.Template.BasicTemplate>()
+                    .AddService<JobWebService>(JobWebService)
+                    .AddService<FeatureFlagClientService>(FeatureFlagService)
+                    .AddService<MenuService>(MenuService)
+                    .AddService<NavigationManager>(NavigationManager)
+                    .AddService<AuthenticationStateProvider>(AuthenticationStateProvider)
+                    .AddService<HttpClient>(Http)
+                    .AddService<IJSRuntime>(JSRuntime)
+                    .AddService<DialogService>(DialogService)
+                    .AddService<TooltipService>(TooltipService)
+                    .AddService<ContextMenuService>(ContextMenuService)
+                    .AddService<NotificationService>(NotificationService)
+                    .AddService<SecurityWebService>(Security)
+                    .Set(c => c.Item, JsonSerializer.Deserialize<JobItemEntity>(result.Result.JobSerialized, new JsonSerializerOptions { PropertyNameCaseInsensitive = true }))
+                    .Render();
+
+                    JobContent = htmlText;
                 }
                 ShowUrlError = false;
             }

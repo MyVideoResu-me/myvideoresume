@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 using MyVideoResume.Abstractions.Core;
 using MyVideoResume.Abstractions.Job;
@@ -12,6 +13,7 @@ using MyVideoResume.Data;
 using MyVideoResume.Data.Models;
 using MyVideoResume.Data.Models.Jobs;
 using MyVideoResume.Web.Common;
+using PuppeteerSharp;
 
 namespace MyVideoResume.Application.Job;
 
@@ -35,6 +37,14 @@ public partial class JobService
         _httpClient = httpClientFactory.CreateClient(Constants.HttpClientFactory);
         _serviceScopeFactory = serviceScopeFactory;
     }
+
+    public async Task<JobItemEntity> GetJob(string id, string userId)
+    {
+        var item = _dataContext.Jobs.FirstOrDefault(x => x.Id == Guid.Parse(id) && x.UserId == userId);
+
+        return item;
+    }
+
 
     public async Task<ResponseResult> DeleteJob(string userId, string id)
     {
@@ -83,17 +93,43 @@ public partial class JobService
     public async Task<ResponseResult<JobItemEntity>> SaveJobByUrl(string url)
     {
         var result = new ResponseResult<JobItemEntity>();
+        var response = string.Empty;
+        // Download the Chromium revision if it does not already exist
+        await new BrowserFetcher().DownloadAsync();
+        using (var browser = await Puppeteer.LaunchAsync(new LaunchOptions { Headless = true, AcceptInsecureCerts = true, Args = new string[] { "--no-sandbox", "--disable-web-security" } }))
+        using (var page = await browser.NewPageAsync())
+        {
+            var res = await page.GoToAsync(url);
 
-        //call the URL
-        using IServiceScope scope = _serviceScopeFactory.CreateScope();
-        var headerPropagationValues = scope.ServiceProvider.GetRequiredService<HeaderPropagationValues>();
-        headerPropagationValues.Headers = new Dictionary<string, StringValues>(StringComparer.OrdinalIgnoreCase);
-        //eventually set headers coming from other sources (e.g. consuming a queue) 
-        headerPropagationValues.Headers.Add("User-Agent", "background-service");
+            response = await res.TextAsync();
 
-        var response = await _httpClient.GetStringAsync(url);
-        //call the AI
-        result = await _engine.ExtractJob(response);
+            if (res.Status == System.Net.HttpStatusCode.Forbidden || response.Contains("You have been blocked"))
+            {
+                result.ErrorMessage = "Failed to Load Job.";
+            }
+            else
+            {
+                result = await _engine.ExtractJob(response);
+            }
+            //var jsSelectAllAnchors = @"Array.from(document.querySelectorAll('a')).map(a => a.href);";
+            //var urls = await page.EvaluateExpressionAsync<string[]>(jsSelectAllAnchors);
+            //foreach (string url in urls)
+            //{
+            //    Console.WriteLine($"Url: {url}");
+            //}
+            //Console.WriteLine("Press any key to continue...");
+            //Console.ReadLine();
+        }
+
+        ////call the URL
+        //using IServiceScope scope = _serviceScopeFactory.CreateScope();
+        //var headerPropagationValues = scope.ServiceProvider.GetRequiredService<HeaderPropagationValues>();
+        //headerPropagationValues.Headers = new Dictionary<string, StringValues>(StringComparer.OrdinalIgnoreCase);
+        ////eventually set headers coming from other sources (e.g. consuming a queue) 
+        //headerPropagationValues.Headers.Add("User-Agent", "background-service");
+
+        //var response = await _httpClient.GetStringAsync(url);
+        ////call the AI
 
         return result;
     }
@@ -118,7 +154,7 @@ public partial class JobService
                 query = query.Where(x => x.UserId == userId);
             }
 
-            result = query.Select(x => new JobSummaryItem() { UserId = x.UserId, CreationDateTimeFormatted = x.CreationDateTime.Value.ToString("yyyy-MM-dd"), Id = x.Id.ToString(), Responsibilities = x.Responsibilities, Requirements = x.Requirements, Slug = x.Slug, Title = x.Title, Description = x.Description, ATSApplyUrl = x.ATSApplyUrl, OriginalWebsiteUrl = x.OriginalWebsiteUrl }).ToList();
+            result = query.Select(x => new JobSummaryItem() { JobSerialized = x.JobSerialized, UserId = x.UserId, CreationDateTimeFormatted = x.CreationDateTime.Value.ToString("yyyy-MM-dd"), Id = x.Id.ToString(), Responsibilities = x.Responsibilities, Requirements = x.Requirements, Slug = x.Slug, Title = x.Title, Description = x.Description, ATSApplyUrl = x.ATSApplyUrl, OriginalWebsiteUrl = x.OriginalWebsiteUrl }).ToList();
         }
         catch (Exception ex)
         {

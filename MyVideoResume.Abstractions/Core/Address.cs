@@ -8,22 +8,31 @@ using System.Threading.Tasks;
 namespace MyVideoResume.Abstractions.Core;
 
 public class Address : Location
-{
+{    
+    //User who owns the Task
+    public string UserId { get; set; }
+
     public string City { get; set; }
 
     public string Country { get; set; }
 
     public string Line1 { get; set; }
 
-    public string Line2 { get; set; }
+    public string? Line2 { get; set; }
 
-    public string PostalCode { get; set; }
+    public string PostalZipCode { get; set; }
 
-    public string State { get; set; }
+    public string StateProvince { get; set; }
 }
-public class Location : CommonBase
+
+public class Location : GISData
 {
-    public int? Latitude { get; set; }
-    public int? Longitude { get; set; }
     public string? Name { get; set; }
+}
+
+public class GISData : CommonBase
+{
+    public double? Latitude { get; set; }
+    public double? Longitude { get; set; }
+
 }

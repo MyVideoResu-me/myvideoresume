@@ -8,7 +8,7 @@ namespace MyVideoResume.Client.Pages.Web;
 public partial class RegisterApplicationUser
 {
     protected Data.Models.ApplicationUser user;
-    protected bool isBusy;
+    protected bool IsBusy { get; set; }
     protected bool errorVisible;
     protected string error;
 
@@ -40,6 +40,8 @@ public partial class RegisterApplicationUser
 
     protected async Task FormSubmit()
     {
+        IsBusy = true;
+
         try
         {
             if (Configuration.GetValue<bool>("Security:IsCaptchaEnabled"))
@@ -50,7 +52,6 @@ public partial class RegisterApplicationUser
             else
                 isCaptchaValid = true;
 
-            isBusy = true;
 
             if (isCaptchaValid)
             {
@@ -64,11 +65,13 @@ public partial class RegisterApplicationUser
             error = ex.Message;
         }
 
-        isBusy = false;
+        IsBusy = false;
     }
 
     protected async Task CancelClick()
     {
+        IsBusy = false;
+
         DialogService.Close(false);
     }
 }

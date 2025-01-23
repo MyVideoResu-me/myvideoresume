@@ -23,6 +23,10 @@
     [Parameter]
     public string QuerySelected { get; set; } = "";
 
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+    }
 
     void Search(string item)
     {

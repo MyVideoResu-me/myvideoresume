@@ -16,7 +16,8 @@
                     <RadzenMenu Responsive="false">
                         <RadzenMenuItem Icon="more_horiz">
                             <RadzenMenuItem Text="Edit" Path=@Paths.Jobs_View Icon="edit" Click=@(()=> Edit()) Visible=@FeatureFlagService.IsResumeBuilderEnabled></RadzenMenuItem>
-                            <RadzenMenuItem Text="Json" Icon="download" Click=@(()=> DownloadJsonFile(Resume))></RadzenMenuItem>
+                            <RadzenMenuItem Text="Json" Icon="download" Click=@(()=> DownloadAsJson(Resume))></RadzenMenuItem>
+                            <RadzenMenuItem Text="Html" Icon="download" Click=@(()=> DownloadAsHtml(Resume))></RadzenMenuItem>
                         </RadzenMenuItem>
                     </RadzenMenu>
                 </div>
@@ -39,6 +40,15 @@
                 <div class="searchComponent">
                     <RadzenTabs>
                         <Tabs>
+
+                            @if (ShowContentSection())
+                            {
+                                @*                                 <RadzenTabsItem Text="Content">
+                                    <RadzenColumn Size="12" SizeXS="12" SizeSM="12" SizeMD="5" SizeLG="3" SizeXL="3" SizeXX="3" style="overflow:auto;">
+                                    </RadzenColumn>
+                                </RadzenTabsItem>
+                                *@                     
+                            }
                             @if (ShowWorkSection())
                             {
                                 <RadzenTabsItem Text="Work">
@@ -55,6 +65,53 @@
                                                             <RadzenText TextStyle="TextStyle.Subtitle1" class="rz-m-0">@item.Name</RadzenText>
                                                             <RadzenText TextStyle="TextStyle.Overline" class="rz-m-0">@YearsMonths(item.StartDate, item.EndDate)</RadzenText>
 
+                                                        </ChildContent>
+                                                    </RadzenTimelineItem>
+                                                }
+                                            </Items>
+                                        </RadzenTimeline>
+                                    </RadzenColumn>
+                                </RadzenTabsItem>
+                            }
+                            @if (ShowEducationSection())
+                            {
+                                <RadzenTabsItem Text="Education">
+                                    <RadzenColumn Size="12" SizeXS="12" SizeSM="12" SizeMD="5" SizeLG="3" SizeXL="3" SizeXX="3" style="overflow:auto;">
+                                        <RadzenTimeline @ref=Timeline Orientation="Orientation.Horizontal" LinePosition="LinePosition.Center" Reverse="false">
+                                            <Items>
+                                                @foreach (var item in Resume.MetaResume.Education.OrderByDescending(x => x.EndDate).ToList())
+                                                {
+                                                    <RadzenTimelineItem PointStyle="PointStyle.Dark">
+                                                        <LabelContent>
+                                                            <RadzenText TextStyle="TextStyle.Subtitle2" class="rz-m-0 rz-color-primary">@ToFrom(item.StartDate, item.EndDate)</RadzenText>
+                                                        </LabelContent>
+                                                        <ChildContent>
+                                                            <RadzenText TextStyle="TextStyle.Subtitle1" class="rz-m-0">@item.Institution</RadzenText>
+                                                            <RadzenText TextStyle="TextStyle.Subtitle1" class="rz-m-0" Visible=@(item.StudyType.HasValue() && item.Area.HasValue())>@item.StudyType, @(item.Area)</RadzenText>
+                                                            <RadzenText TextStyle="TextStyle.Overline" class="rz-m-0">@YearsMonths(item.StartDate, item.EndDate)</RadzenText>
+                                                        </ChildContent>
+                                                    </RadzenTimelineItem>
+                                                }
+                                            </Items>
+                                        </RadzenTimeline>
+                                    </RadzenColumn>
+                                </RadzenTabsItem>
+                            }
+
+                            @if (ShowProjectsSection())
+                            {
+                                <RadzenTabsItem Text="Projects">
+                                    <RadzenColumn Size="12" SizeXS="12" SizeSM="12" SizeMD="5" SizeLG="3" SizeXL="3" SizeXX="3" style="overflow:auto;">
+                                        <RadzenTimeline @ref=Timeline Orientation="Orientation.Horizontal" LinePosition="LinePosition.Center" Reverse="false">
+                                            <Items>
+                                                @foreach (var item in Resume.MetaResume.Projects.OrderByDescending(x => x.StartDate).ToList())
+                                                {
+                                                    <RadzenTimelineItem PointStyle="PointStyle.Dark">
+                                                        <LabelContent>
+                                                            <RadzenText TextStyle="TextStyle.Subtitle2" class="rz-m-0 rz-color-primary">@ToFrom(item.StartDate, null)</RadzenText>
+                                                        </LabelContent>
+                                                        <ChildContent>
+                                                            <RadzenText TextStyle="TextStyle.Subtitle1" class="rz-m-0">@item.Name</RadzenText>
                                                         </ChildContent>
                                                     </RadzenTimelineItem>
                                                 }
@@ -87,6 +144,29 @@
                                     </RadzenColumn>
                                 </RadzenTabsItem>
                             }
+                            @if (ShowAwardsSection())
+                            {
+                                <RadzenTabsItem Text="Awards">
+                                    <RadzenColumn Size="12" SizeXS="12" SizeSM="12" SizeMD="5" SizeLG="3" SizeXL="3" SizeXX="3" style="overflow:auto;">
+                                        <RadzenTimeline @ref=Timeline Orientation="Orientation.Horizontal" LinePosition="LinePosition.Center" Reverse="false">
+                                            <Items>
+                                                @foreach (var item in Resume.MetaResume.Awards.OrderByDescending(x => x.Date).ToList())
+                                                {
+                                                    <RadzenTimelineItem PointStyle="PointStyle.Dark">
+                                                        <LabelContent>
+                                                            <RadzenText TextStyle="TextStyle.Subtitle2" class="rz-m-0 rz-color-primary">@ToFrom(item.Date, null)</RadzenText>
+                                                        </LabelContent>
+                                                        <ChildContent>
+                                                            <RadzenText TextStyle="TextStyle.Subtitle1" class="rz-m-0">@item.Title</RadzenText>
+                                                            <RadzenText TextStyle="TextStyle.Subtitle1" class="rz-m-0">@item.Awarder</RadzenText>
+                                                        </ChildContent>
+                                                    </RadzenTimelineItem>
+                                                }
+                                            </Items>
+                                        </RadzenTimeline>
+                                    </RadzenColumn>
+                                </RadzenTabsItem>
+                            }
                         </Tabs>
 
                     </RadzenTabs>
@@ -105,6 +185,11 @@
                 <div style="padding:15px;">
                     <RadzenRow>
                         <RadzenColumn SizeSM="12">
+                            @*                             @Resume.MetaResume.Basics?.Id *@
+                            @if (DisplayMetaData(@Resume.MetaResume.Basics.Id))
+                            {
+                                <div style="float: right"><RadzenButton Size="ButtonSize.Large" Icon="play_circle" Click=@((args) => OpenMetaData(args, @Resume.MetaResume.Basics.Id))></RadzenButton></div>
+                            }
                             <RadzenText TextStyle="TextStyle.Body1">@Resume.MetaResume.Basics?.Summary</RadzenText>
                         </RadzenColumn>
                     </RadzenRow>
@@ -112,7 +197,7 @@
             </RadzenCard>
         </RadzenColumn>
     </RadzenRow>
-    @if (Resume.MetaResume.Work != null && Resume.MetaResume.Work.Count > 0)
+    @if (ShowWorkSection())
     {
         <RadzenRow>
             <RadzenColumn Style="max-width: 100%">
@@ -125,7 +210,12 @@
                 <RadzenCard>
                     @foreach (var item in Resume.MetaResume.Work.OrderByDescending(x => x.EndDate))
                     {
-                        <div style="padding:15px;">
+                        @*                         @item.Id
+ *@                        <div style="padding:15px;">
+                            @if (DisplayMetaData(item.Id))
+                            {
+                                <div style="float: right"><RadzenButton Size="ButtonSize.Large" Icon="play_circle" Click=@((args) => OpenMetaData(args, item.Id))></RadzenButton></div>
+                            }
                             <RadzenRow>
                                 <RadzenColumn SizeSM="12">
                                     @if (!string.IsNullOrWhiteSpace(item.Url))
@@ -163,7 +253,7 @@
     }
 
 
-    @if (Resume.MetaResume.Education != null && Resume.MetaResume.Education.Count > 0)
+    @if (ShowEducationSection())
     {
         <RadzenRow>
             <RadzenColumn Style="max-width: 100%">
@@ -176,7 +266,12 @@
                 <RadzenCard>
                     @foreach (var item in Resume.MetaResume.Education)
                     {
-                        <div style="padding:15px;">
+                        @*                      @item.Id
+    *@                     <div style="padding:15px;">
+                            @if (DisplayMetaData(item.Id))
+                            {
+                                <div style="float: right"><RadzenButton Size="ButtonSize.Large" Icon="play_circle" Click=@((args) => OpenMetaData(args, item.Id))></RadzenButton></div>
+                            }
                             <RadzenRow>
                                 <RadzenColumn SizeSM="12">
                                     <RadzenText TextStyle="TextStyle.Body1">@item.Institution</RadzenText>
@@ -200,7 +295,7 @@
         </RadzenRow>
     }
 
-    @if (Resume.MetaResume.Volunteer != null && Resume.MetaResume.Volunteer.Count > 0)
+    @if (ShowVolunteerSection())
     {
         <RadzenRow>
             <RadzenColumn Style="max-width: 100%">
@@ -213,7 +308,12 @@
                 <RadzenCard>
                     @foreach (var item in Resume.MetaResume.Volunteer)
                     {
-                        <div style="padding:15px;">
+                        @*                   @item.Id
+       *@                  <div style="padding:15px;">
+                            @if (DisplayMetaData(item.Id))
+                            {
+                                <div style="float: right"><RadzenButton Size="ButtonSize.Large" Icon="play_circle" Click=@((args) => OpenMetaData(args, item.Id))></RadzenButton></div>
+                            }
                             <RadzenRow>
                                 <RadzenColumn SizeSM="12">
                                     <RadzenText TextStyle="TextStyle.Body1">@item.Organization</RadzenText>
@@ -237,7 +337,7 @@
         </RadzenRow>
     }
 
-    @if (Resume.MetaResume.Skills != null && Resume.MetaResume.Skills.Count > 0)
+    @if (ShowSkillsSection())
     {
         <RadzenRow>
             <RadzenColumn Style="max-width: 100%">
@@ -250,6 +350,10 @@
                     @foreach (var item in Resume.MetaResume.Skills)
                     {
                         <div style="padding:15px;">
+                            @if (DisplayMetaData(item.Id))
+                            {
+                                <div style="float: right"><RadzenButton Size="ButtonSize.Large" Icon="play_circle" Click=@((args) => OpenMetaData(args, item.Id))></RadzenButton></div>
+                            }
                             <RadzenText TextStyle="TextStyle.Body1">@item.Name</RadzenText>
                             <RadzenRow>
                                 <RadzenColumn SizeSM="4">
@@ -267,9 +371,63 @@
             </RadzenColumn>
         </RadzenRow>
     }
+    @if (ShowProjectsSection())
+    {
+        <RadzenRow>
+            <RadzenColumn Style="max-width: 100%">
+                <RadzenText Text="Projects" TextStyle="Radzen.Blazor.TextStyle.DisplayH5" TagName="Radzen.Blazor.TagName.Auto"></RadzenText>
+            </RadzenColumn>
+        </RadzenRow>
+        <RadzenRow Style="padding-bottom:15px">
+            <RadzenColumn Style="max-width: 100%">
+                <RadzenCard>
+                    @foreach (var item in Resume.MetaResume.Projects.OrderByDescending(x => x.EndDate))
+                    {
+                        @*                         @item.Id
+ *@                        <div style="padding:15px;">
+                            @if (DisplayMetaData(item.Id))
+                            {
+                                <div style="float: right"><RadzenButton Size="ButtonSize.Large" Icon="play_circle" Click=@((args) => OpenMetaData(args, item.Id))></RadzenButton></div>
+                            }
+                            <RadzenRow>
+                                <RadzenColumn SizeSM="12">
+                                    @if (!string.IsNullOrWhiteSpace(item.Url))
+                                    {
+                                        <a href="@item.Url"><RadzenText TextStyle="TextStyle.Body1">@item.Name</RadzenText></a>
+                                    }
+                                    else
+                                    {
+                                        <RadzenText TextStyle="TextStyle.Body1">@item.Name</RadzenText>
+                                    }
+                                    <RadzenText TextStyle="TextStyle.Body1"><b> @(item.Description)</b></RadzenText>
+                                    <RadzenText TextStyle="TextStyle.Body2">@ToFrom(item.StartDate, null)</RadzenText>
+                                </RadzenColumn>
+                            </RadzenRow>
+                            @if (item.Highlights?.Count > 0)
+                            {
+                                <RadzenRow>
+                                    <RadzenColumn SizeSM="12">
+                                        <RadzenText TextStyle="TextStyle.Body1"><b>Highlights</b></RadzenText>
+                                        <ul>
+                                            @foreach (var i in item.Highlights)
+                                            {
+                                                <li>@i</li>
+                                            }
+                                        </ul>
+                                    </RadzenColumn>
+                                </RadzenRow>
+                            }
+                        </div>
+                    }
+                </RadzenCard>
+            </RadzenColumn>
+        </RadzenRow>
+    }
 }
 
 <script src="resumeActions.js"></script>
+<link href="//vjs.zencdn.net/8.21.1/video-js.min.css" rel="stylesheet">
+<script src="//vjs.zencdn.net/8.21.1/video.min.js"></script>
 
 @code {
     public enum DisplayMode { Edit, View }
@@ -278,28 +436,84 @@
     protected string ResumeName { get; set; }
     protected bool IsOwner { get; set; } = false;
 
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+
+        if (Resume != null)
+        {
+            if (!string.IsNullOrEmpty(Resume.UserId))
+            {
+                if (Security.User.Id == Resume.UserId)
+                    IsOwner = true;
+            }
+        }
+    }
+
+    protected bool DisplayMetaData(string id)
+    {
+        var display = false;
+        MetaDataEntity metaItem = null;
+        if (Resume.MetaDataLookup.TryGetValue(id, out metaItem))
+        {
+            display = true;
+        }
+        return display;
+    }
+
+    protected async Task OpenMetaData(MouseEventArgs args, string id)
+    {
+        //To Do (Handle the Different Formats)
+
+        MetaDataEntity metaItem = null;
+        if (Resume.MetaDataLookup.TryGetValue(id, out metaItem))
+        {
+            var result = await DialogService.OpenAsync("Meta Data", ds =>
+    @<RadzenStack Orientation="Orientation.Vertical">
+        <RadzenCard Variant="Variant.Outlined">
+            @if(metaItem.Url.Contains("youtube.com")){
+            <div><iframe width="100%" height="315" src=@metaItem.Url title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe></div>
+
+        }
+        else
+        {
+            <video id="my-player"
+                   class="video-js"
+                   controls
+                   preload="auto"
+                   poster="//vjs.zencdn.net/v/oceans.png"
+                   data-setup='{}'>
+                <source src=@metaItem.Url />
+                <p class="vjs-no-js">
+                    To view this video please enable JavaScript, and consider upgrading to a
+                    web browser that
+                    <a href="https://videojs.com/html5-video-support/" target="_blank">
+                        supports HTML5 video
+                    </a>
+                </p>
+            </video>
+        }
+        </RadzenCard>
+    </RadzenStack>
+    );
+        }
+    }
+
+
     protected void Edit()
     {
         if (FeatureFlagService.IsResumeBuilderEnabled)
             NavigateTo($"{Paths.Resume_Edit}{Resume.Id.ToString()}");
     }
-
-    protected bool ShowWorkSection()
+    protected bool ShowContentSection()
     {
-        return Resume.MetaResume.Work != null && Resume.MetaResume.Work.Count > 0;
+        return Resume.MetaData != null && Resume.MetaData.Count > 0;
     }
-
-    protected bool ShowVolunteerSection()
-    {
-        return Resume.MetaResume.Volunteer != null && Resume.MetaResume.Volunteer.Count > 0;
-    }
-
     public bool ShowEditOptions()
     {
         var showSection = IsOwner && Mode == DisplayMode.View;
         return showSection;
     }
-
     protected bool ShowContactOptions()
     {
         //Check if the section isn't null
@@ -315,22 +529,5 @@
             }
         }
         return showSection;
-    }
-
-
-
-
-    protected override async Task OnInitializedAsync()
-    {
-        await base.OnInitializedAsync();
-
-        if (Resume != null)
-        {
-            if (!string.IsNullOrEmpty(Resume.UserId))
-            {
-                if (Security.User.Id == Resume.UserId)
-                    IsOwner = true;
-            }
-        }
     }
 }

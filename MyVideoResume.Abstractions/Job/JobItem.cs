@@ -26,7 +26,7 @@ public enum JobStatus
     Hired
 }
 
-public class JobBase : CommonBase
+public class JobBase : GISData
 {
     public string UserId { get; set; }
     public string Title { get; set; }
@@ -72,7 +72,8 @@ public class JobBase : CommonBase
 
 public class JobItem : JobBase
 {
-    public string UserId { get; set; }
+    public string? ExternalJobId { get; set; }
+    public JobOrigin? Origin { get; set; }
     public DisplayPrivacy Privacy_ShowJob { get; set; } = DisplayPrivacy.ToPublic;
 
     public List<Industry>? Industry { get; set; }

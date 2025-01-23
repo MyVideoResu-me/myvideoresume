@@ -1,22 +1,8 @@
-using System.Net.Http;
-using System.Security.Policy;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Authorization;
-using Microsoft.AspNetCore.Components.Forms;
-using Microsoft.AspNetCore.Components.Routing;
-using Microsoft.AspNetCore.Components.Web;
-using Microsoft.AspNetCore.Components.Web.Virtualization;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.JSInterop;
 using MyVideoResume.Abstractions.Core;
 using MyVideoResume.Abstractions.Resume;
-using MyVideoResume.Client.Shared.Resume;
 using MyVideoResume.Data.Models.Resume;
 using MyVideoResume.Web.Common;
-using Radzen;
 using Radzen.Blazor;
-using static MyVideoResume.Client.Shared.Resume.ResumePreviewComponent;
 
 namespace MyVideoResume.Client.Pages.App.People.Resumes;
 
@@ -73,9 +59,9 @@ public partial class ResumeList
             ResumeItems = await ResumeWebService.GetResumeSummaryItems();
     }
 
-    protected async Task ResumeCreated(string result)
+    protected async Task ResumeCreated(ResponseResult<ResumeInformationEntity> result)
     {
-        if (result.HasValue())
+        if (!result.ErrorMessage.HasValue())
             ResumeItems = await ResumeWebService.GetResumeSummaryItems();
     }
 

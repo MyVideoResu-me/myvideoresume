@@ -12,9 +12,16 @@ using System.Text.Json;
 using MyVideoResume.Abstractions.Resume.Formats.JSONResumeFormat;
 using AgeCalculator.Extensions;
 using MyVideoResume.Client.Pages.App.People.Resumes.Templates;
+using BlazorTemplater;
+using static System.Net.WebRequestMethods;
 
 namespace MyVideoResume.Client.Shared;
 
+public enum PreviewMode
+{
+    View,
+    Edit
+}
 
 public static class EnumExtensions
 {
@@ -40,21 +47,10 @@ public static class EnumExtensions
     }
 }
 
-public class ResumeComponent : BasicTemplate
-{
-    [Inject] protected ResumeWebService ResumeWebService { get; set; }
-    [Inject] protected FeatureFlagClientService FeatureFlagService { get; set; }
-
-    protected async Task DownloadJsonFile(ResumeInformationEntity resume) 
-    {
-        var metaResume = resume.MetaResume;
-        var jsonResume = JsonSerializer.Serialize<JSONResume>(metaResume);
-        await JSRuntime.InvokeVoidAsync("saveTextAsFile", jsonResume, $"JsonResume-{DateTime.Now.ToString("yyyy-MM-dd")}.json");
-    }
-}
-
 public class BaseComponent : LayoutComponentBase
 {
+    [Inject] protected FeatureFlagClientService FeatureFlagService { get; set; }
+
     [Inject] protected MenuService MenuService { get; set; }
 
     [Inject] protected AuthenticationStateProvider AuthenticationStateProvider { get; set; }
@@ -111,5 +107,19 @@ public class BaseComponent : LayoutComponentBase
     {
         return string.IsNullOrEmpty(componentName) ? null
             : Type.GetType($"{namespacevalue}.{componentName}");
+    }
+
+    protected async Task DownloadHtmlFile(string content, string fileName)
+    {
+        await DownloadFile(content, fileName, "html");
+    }
+    protected async Task DownloadJsonFile(string content, string filename)
+    {
+        await DownloadFile(content, filename, "json");
+    }
+
+    private async Task DownloadFile(string content, string filename, string fileextension)
+    {
+        await JSRuntime.InvokeVoidAsync("saveTextAsFile", content, $"{filename}-{DateTime.Now.ToString("yyyy-MM-dd")}.{fileextension}");
     }
 }

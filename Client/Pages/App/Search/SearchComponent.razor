@@ -12,8 +12,9 @@
     [Parameter]
     public string QuerySelected { get; set; } = "";
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
+        await base.OnInitializedAsync();
     }
 
     void Search()

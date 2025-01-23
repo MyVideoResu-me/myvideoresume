@@ -1,0 +1,12 @@
+﻿@using MyVideoResume.Client.Pages.App.Jobs
+@using MyVideoResume.Data.Models.Jobs
+@inherits JobBaseComponent
+@layout MainLayout
+
+<BasicTemplate Item=@Item></BasicTemplate>
+
+@code {
+    [Parameter]
+    public JobItemEntity Item { get; set; } = new JobItemEntity();
+
+}

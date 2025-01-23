@@ -32,7 +32,7 @@ public class ResumePromptEngine : OpenAIPromptEngine, IResumePromptEngine
     public async Task<ResponseResult> ResumeParseJSON(string resumeText)
     {
 
-        var prompt = @"You are a resume parser assistant. I need you to parse the resume into JSON format. Do NOT summarize the content of the resume. Respond with no formatting.";
+        var prompt = @"You are a resume parser assistant. I need you to parse the resume into JSON format. Do NOT summarize the content of the resume. Conform to the JSON format provided. Respond with no formatting.";
         var jsonFormat = @"
 {
   ""basics"": {
@@ -62,9 +62,10 @@ public class ResumePromptEngine : OpenAIPromptEngine, IResumePromptEngine
     ""url"": ""https://company.com"",
     ""startDate"": ""2013-01-01"",
     ""endDate"": ""2014-01-01"",
-    ""summary"": ""Description…"",
+    ""summary"": ""Summary Description of all the highlights…"",
     ""highlights"": [
-      ""Started the company""
+      ""Started the company"",
+      ""Another accomplishment""
     ]
   }],
   ""volunteer"": [{

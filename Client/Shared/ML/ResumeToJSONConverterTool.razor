@@ -7,7 +7,7 @@
             <RadzenRow>
                 <h2>Resume Parser (Convert PDF to JSON)</h2>
             </RadzenRow>
-            <UploadToJsonComponent @ref=ResumeUploadToJsonComponent UploadCompleted=@UploadCompletedHandler></UploadToJsonComponent>
+            <UploadToJsonComponent UploadCompleted=@UploadCompletedHandler></UploadToJsonComponent>
             <RadzenCard>
                 <RadzenButton Click=@(args => DownloadFile()) Disabled=@DisableDownload>Download JSON Resume</RadzenButton>
                 <button id="copyButton" onclick="copyToClipboard()" class="rz-button rz-button-md rz-variant-filled rz-primary rz-shade-default">Copy JSON Resume To Clipboard</button>
