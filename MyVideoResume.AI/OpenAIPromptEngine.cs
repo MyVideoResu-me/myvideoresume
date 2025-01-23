@@ -33,7 +33,8 @@ public class OpenAIPromptEngine : IPromptEngine
         if (client == null)
         {
             var key = _configuration.GetValue<string>("AI:OpenAIKey");
-            client = new(model: "gpt-4o-mini", apiKey: key);
+            var model = _configuration.GetValue<string>("AI:OpenAIModel");
+            client = new(model: model, apiKey: key);
         }
 
         var c = ChatMessage.CreateSystemMessage(prompt);
