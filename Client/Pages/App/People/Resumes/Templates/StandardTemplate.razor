@@ -75,7 +75,7 @@
                             }
                             @if (ShowEducationSection())
                             {
-                                <RadzenTabsItem Text="Work">
+                                <RadzenTabsItem Text="Education">
                                     <RadzenColumn Size="12" SizeXS="12" SizeSM="12" SizeMD="5" SizeLG="3" SizeXL="3" SizeXX="3" style="overflow:auto;">
                                         <RadzenTimeline @ref=Timeline Orientation="Orientation.Horizontal" LinePosition="LinePosition.Center" Reverse="false">
                                             <Items>
@@ -87,9 +87,8 @@
                                                         </LabelContent>
                                                         <ChildContent>
                                                             <RadzenText TextStyle="TextStyle.Subtitle1" class="rz-m-0">@item.Institution</RadzenText>
-                                                            <RadzenText TextStyle="TextStyle.Subtitle1" class="rz-m-0">@item.StudyType, @(item.Area)</RadzenText>
+                                                            <RadzenText TextStyle="TextStyle.Subtitle1" class="rz-m-0" Visible=@(item.StudyType.HasValue() && item.Area.HasValue())>@item.StudyType, @(item.Area)</RadzenText>
                                                             <RadzenText TextStyle="TextStyle.Overline" class="rz-m-0">@YearsMonths(item.StartDate, item.EndDate)</RadzenText>
-
                                                         </ChildContent>
                                                     </RadzenTimelineItem>
                                                 }
@@ -151,14 +150,15 @@
                                     <RadzenColumn Size="12" SizeXS="12" SizeSM="12" SizeMD="5" SizeLG="3" SizeXL="3" SizeXX="3" style="overflow:auto;">
                                         <RadzenTimeline @ref=Timeline Orientation="Orientation.Horizontal" LinePosition="LinePosition.Center" Reverse="false">
                                             <Items>
-                                                @foreach (var item in Resume.MetaResume.Projects.OrderByDescending(x => x.StartDate).ToList())
+                                                @foreach (var item in Resume.MetaResume.Awards.OrderByDescending(x => x.Date).ToList())
                                                 {
                                                     <RadzenTimelineItem PointStyle="PointStyle.Dark">
                                                         <LabelContent>
-                                                            <RadzenText TextStyle="TextStyle.Subtitle2" class="rz-m-0 rz-color-primary">@ToFrom(item.StartDate, null)</RadzenText>
+                                                            <RadzenText TextStyle="TextStyle.Subtitle2" class="rz-m-0 rz-color-primary">@ToFrom(item.Date, null)</RadzenText>
                                                         </LabelContent>
                                                         <ChildContent>
-                                                            <RadzenText TextStyle="TextStyle.Subtitle1" class="rz-m-0">@item.Name</RadzenText>
+                                                            <RadzenText TextStyle="TextStyle.Subtitle1" class="rz-m-0">@item.Title</RadzenText>
+                                                            <RadzenText TextStyle="TextStyle.Subtitle1" class="rz-m-0">@item.Awarder</RadzenText>
                                                         </ChildContent>
                                                     </RadzenTimelineItem>
                                                 }
