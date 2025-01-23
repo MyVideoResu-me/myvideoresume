@@ -6,6 +6,7 @@ using Hangfire.States;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
+using MyVideoResume.Web.Common;
 
 namespace MyVideoResume.Workers;
 
@@ -41,7 +42,7 @@ public static class ServiceCollectionExtensions
 
     public static IApplicationBuilder UseWorkers(this IApplicationBuilder app)
     {
-        app.UseHangfireDashboard("/Workers", new DashboardOptions
+        app.UseHangfireDashboard(Paths.Admin_BackgroundJobsPortal, new DashboardOptions
         {
             Authorization = new[] { new MyAuthorizationFilter() }
         });

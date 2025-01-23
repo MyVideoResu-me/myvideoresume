@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using DocumentFormat.OpenXml.Office2010.Excel;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MyVideoResume.Abstractions.Core;
 using MyVideoResume.Abstractions.Job;
@@ -159,6 +160,33 @@ public partial class JobController : ControllerBase
         }
         return result;
     }
+
+    [HttpPost("CreateFromHtml")]
+    public async Task<ActionResult<ResponseResult<JobItemEntity>>> CreateFromHtml([FromBody] string html)
+    {
+        var result = new ResponseResult<JobItemEntity>();
+        try
+        {
+            var temppdfresult = await _engine.ExtractJob(html);
+            if (!temppdfresult.ErrorMessage.HasValue())
+            {
+                //Remove the Markdown from the Response
+                var job = temppdfresult.Result;
+                result = await _service.CreateJob("automation", job);
+            }
+            else
+            {
+                result.ErrorMessage = temppdfresult.ErrorMessage;
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.Message, ex);
+            result.ErrorMessage = ex.Message;
+        }
+        return result;
+    }
+
 
     [Authorize]
     [HttpPost("CreateFromFile")]

@@ -246,7 +246,11 @@
             {
                 endDateText = endDate.ToString("yyyy-MM");
             }
-            result = $"{DateTime.Parse(to).ToString("yyyy-MM")} - {endDateText}";
+            DateTime todateTimeNow;
+            if (DateTime.TryParse(to, out todateTimeNow))
+            {
+                result = $"{todateTimeNow.ToString("yyyy-MM")} - {endDateText}";
+            }
         }
         else if (to.HasValue() || from.HasValue())
         {
@@ -310,15 +314,20 @@
             {
                 endDate = DateTime.UtcNow;
             }
-
-            var age = DateTime.Parse(to).CalculateAge(endDate);
-            if (age.Years > 0 && age.Months > 0)
-                result = $"{@age.Years} years, {@age.Months} months";
-            else if (age.Years == 0 && age.Months > 0)
-                result = $"{@age.Months} months";
-            else
-                result = $"{@age.Years} years";
+            var toDate = DateTime.UtcNow;
+            if (DateTime.TryParse(to, out toDate))
+            {
+                var age = toDate.CalculateAge(endDate);
+                if (age.Years > 0 && age.Months > 0)
+                    result = $"{@age.Years} years, {@age.Months} months";
+                else if (age.Years == 0 && age.Months > 0)
+                    result = $"{@age.Months} months";
+                else
+                    result = $"{@age.Years} years";
+            }
         }
+
+        //TODO (check if its only 4 characters (YEAR)); Set the Date to Year-01-01
         return result;
     }
 }

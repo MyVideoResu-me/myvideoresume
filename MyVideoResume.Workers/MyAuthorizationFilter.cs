@@ -15,7 +15,7 @@ public class MyAuthorizationFilter : IDashboardAuthorizationFilter
         var httpContext = context.GetHttpContext();
 
         // Allow all authenticated users to see the Dashboard (potentially dangerous).
-        allowedAccess = httpContext.User.Identity?.IsAuthenticated ?? false && httpContext.User.IsInRole("admin");
+        allowedAccess = httpContext.User.Identity?.IsAuthenticated ?? false && httpContext.User.IsInRole("Admin");
 
         return allowedAccess;
     }
