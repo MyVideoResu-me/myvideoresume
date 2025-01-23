@@ -335,6 +335,70 @@ public class ResumeService
                             item.Id = Guid.NewGuid().ToString();
                     }
                 }
+                if (tempMetaresume.Projects != null && tempMetaresume.Projects.Count > 0)
+                {
+
+                    foreach (var item in tempMetaresume.Projects)
+                    {
+                        if (item.Id == null)
+                            item.Id = Guid.NewGuid().ToString();
+                    }
+                }
+                if (tempMetaresume.Certificates != null && tempMetaresume.Certificates.Count > 0)
+                {
+
+                    foreach (var item in tempMetaresume.Certificates)
+                    {
+                        if (item.Id == null)
+                            item.Id = Guid.NewGuid().ToString();
+                    }
+                }
+                if (tempMetaresume.Interests != null && tempMetaresume.Interests.Count > 0)
+                {
+
+                    foreach (var item in tempMetaresume.Interests)
+                    {
+                        if (item.Id == null)
+                            item.Id = Guid.NewGuid().ToString();
+                    }
+                }
+                if (tempMetaresume.Languages != null && tempMetaresume.Languages.Count > 0)
+                {
+
+                    foreach (var item in tempMetaresume.Languages)
+                    {
+                        if (item.Id == null)
+                            item.Id = Guid.NewGuid().ToString();
+                    }
+                }
+                if (tempMetaresume.References != null && tempMetaresume.References.Count > 0)
+                {
+
+                    foreach (var item in tempMetaresume.References)
+                    {
+                        if (item.Id == null)
+                            item.Id = Guid.NewGuid().ToString();
+                    }
+                }
+
+                if (tempMetaresume.Publications != null && tempMetaresume.Publications.Count > 0)
+                {
+
+                    foreach (var item in tempMetaresume.Publications)
+                    {
+                        if (item.Id == null)
+                            item.Id = Guid.NewGuid().ToString();
+                    }
+                }
+                if (tempMetaresume.Awards != null && tempMetaresume.Awards.Count > 0)
+                {
+
+                    foreach (var item in tempMetaresume.Awards)
+                    {
+                        if (item.Id == null)
+                            item.Id = Guid.NewGuid().ToString();
+                    }
+                }
 
 
                 //Does the Meta Resume Exist?

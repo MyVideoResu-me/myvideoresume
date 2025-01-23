@@ -90,6 +90,21 @@ public class Volunteer
     public string StartDate { get; set; } = string.Empty;
     public string EndDate { get; set; } = string.Empty;
     public List<string>? Highlights { get; set; }
+    [JsonIgnore, NotMapped]
+    public string HighlightsFlattened
+    {
+        get => String.Join(Environment.NewLine, Highlights);
+        set
+        {
+            Highlights.Clear();
+            string[] val;
+            if (value.Contains("\n"))
+                val = value.Split("\n");
+            else
+                val = value.Split(Environment.NewLine);
+            Highlights.AddRange(val);
+        }
+    }
     public string? Url { get; set; } = string.Empty;
 }
 
@@ -102,7 +117,22 @@ public class Education
     public string StartDate { get; set; } = string.Empty;
     public string EndDate { get; set; } = string.Empty;
     public string? Score { get; set; } = string.Empty;
-    public List<string>? Courses { get; set; } 
+    public List<string>? Courses { get; set; }
+    [JsonIgnore, NotMapped]
+    public string CoursesFlattened
+    {
+        get => String.Join(Environment.NewLine, Courses);
+        set
+        {
+            Courses.Clear();
+            string[] val;
+            if (value.Contains("\n"))
+                val = value.Split("\n");
+            else
+                val = value.Split(Environment.NewLine);
+            Courses.AddRange(val);
+        }
+    }
     public string? Url { get; set; } = string.Empty;
 }
 
@@ -140,6 +170,21 @@ public class Skill
     public string Name { get; set; } = string.Empty;
     public string Level { get; set; } = string.Empty;
     public List<string>? Keywords { get; set; }
+    [JsonIgnore, NotMapped]
+    public string KeywordsFlattened
+    {
+        get => String.Join(Environment.NewLine, Keywords);
+        set
+        {
+            Keywords.Clear();
+            string[] val;
+            if (value.Contains("\n"))
+                val = value.Split("\n");
+            else
+                val = value.Split(Environment.NewLine);
+            Keywords.AddRange(val);
+        }
+    }
 }
 
 public class LanguageItem
@@ -154,6 +199,21 @@ public class Interest
     public string? Id { get; set; } 
     public string Name { get; set; } = string.Empty;
     public List<string>? Keywords { get; set; }
+    [JsonIgnore, NotMapped]
+    public string KeywordsFlattened
+    {
+        get => String.Join(Environment.NewLine, Keywords);
+        set
+        {
+            Keywords.Clear();
+            string[] val;
+            if (value.Contains("\n"))
+                val = value.Split("\n");
+            else
+                val = value.Split(Environment.NewLine);
+            Keywords.AddRange(val);
+        }
+    }
 }
 
 public class ReferenceItem
@@ -171,5 +231,20 @@ public class Project
     public string EndDate { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;
     public List<string>? Highlights { get; set; }
+    [JsonIgnore, NotMapped]
+    public string HighlightsFlattened
+    {
+        get => String.Join(Environment.NewLine, Highlights);
+        set
+        {
+            Highlights.Clear();
+            string[] val;
+            if (value.Contains("\n"))
+                val = value.Split("\n");
+            else
+                val = value.Split(Environment.NewLine);
+            Highlights.AddRange(val);
+        }
+    }
     public string? Url { get; set; } = string.Empty;
 }
