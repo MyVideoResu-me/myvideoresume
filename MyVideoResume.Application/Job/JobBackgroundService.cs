@@ -60,34 +60,68 @@ public class JobBackgroundService
             //var rootDocument = web.Load(urlToCrawl);
             //var allLinks = rootDocument.DocumentNode.QuerySelectorAll("a").ToList();
 
+            var urlsFound = new List<string>();
             var result = new ResponseResult<JobItemEntity>();
             // Download the Chromium revision if it does not already exist
             await new BrowserFetcher().DownloadAsync();
             using (var browser = await Puppeteer.LaunchAsync(new LaunchOptions { Headless = true, AcceptInsecureCerts = true, Args = new string[] { "--no-sandbox", "--disable-web-security" } }))
-            using (var page = await browser.NewPageAsync())
             {
-                var res = await page.GoToAsync(urlToCrawl);
-                var jsSelectAllAnchors = @"Array.from(document.querySelectorAll('a')).map(a => a.href);";
-                var urlsFound = await page.EvaluateExpressionAsync<List<string>>(jsSelectAllAnchors);
-                if (res.Status == System.Net.HttpStatusCode.Forbidden)
+                using (var page = await browser.NewPageAsync())
                 {
-                    result.ErrorMessage = "Failed to Load Job.";
+                    var res = await page.GoToAsync(urlToCrawl);
+                    var jsSelectAllAnchors = @"Array.from(document.querySelectorAll('a')).map(a => a.href);";
+                    urlsFound = await page.EvaluateExpressionAsync<List<string>>(jsSelectAllAnchors);
+                    urlsFound = urlsFound.Where(x => x.Contains("/job")).ToList();
+                    if (res.Status == System.Net.HttpStatusCode.Forbidden)
+                    {
+                        result.ErrorMessage = "Failed to Load Job.";
+                    }
+                    else
+                    {
+                        urlsFound.RemoveAll(x => getExistingITJobs.Contains(x));
+                    }
                 }
-                else
-                {
-                    urlsFound.RemoveAll(x => getExistingITJobs.Contains(x));
 
+                if (urlsFound.Count > 0)
+                {
+                    urlsFound = urlsFound.Distinct().ToList();
                     foreach (var url in urlsFound)
                     {
-                        res = await page.GoToAsync(url);
-                        var content = await res.TextAsync();
-                        //var uri = new Uri($"{_baseUri}{Paths.Jobs_API_CreateFromHtml}");
-                        //var httpresponse = await _httpClient.PostAsJsonAsync<string>(uri, content);
-                        //var value = await httpresponse.ReadAsync<JobItemEntity>();
-                        result = await _engine.ExtractJob(content);
-                    }
-                    _dataContext.SaveChanges();
+                        using (var page = await browser.NewPageAsync())
+                        {
+                            var res = await page.GoToAsync(url);
+                            var content = await res.TextAsync();
+                            //var uri = new Uri($"{_baseUri}{Paths.Jobs_API_CreateFromHtml}");
+                            //var httpresponse = await _httpClient.PostAsJsonAsync<string>(uri, content);
+                            //var value = await httpresponse.ReadAsync<JobItemEntity>();
+                            result = await _engine.ExtractJob(content);
 
+                            if (!result.ErrorMessage.HasValue())
+                            {
+                                //Examine the Job
+                                var tempJob = result.Result;
+
+                                if (tempJob.Description.HasValue() && tempJob.Responsibilities?.Count > 0 && tempJob.Requirements?.Count > 0)
+                                {
+                                    //Validate the apply URL is a URL... if it's not; then its probably a relative path. Extract the Domain and build the url.
+                                    Uri uri;
+                                    if (!Uri.TryCreate(tempJob.ATSApplyUrl, UriKind.Absolute, out uri))
+                                    {
+                                        var uriBuilder = new UriBuilder(url);
+                                        uriBuilder.Path = tempJob.ATSApplyUrl;
+                                        uriBuilder.Query = string.Empty;
+                                        var applyUrl = uriBuilder.Uri.AbsoluteUri;
+                                        tempJob.ATSApplyUrl = applyUrl;
+                                    }
+                                    tempJob.Origin = JobOrigin.Crawler;
+                                    tempJob.OriginalWebsiteUrl = url;
+                                    tempJob.Industry = new() { Industry.IT };
+                                    _dataContext.Jobs.Add(tempJob);
+                                    _dataContext.SaveChanges();
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
