@@ -17,6 +17,7 @@ public partial class ApplicationUser : IdentityUser
     public string? Password { get; set; }
 
     [NotMapped]
+    [Compare("Password", ErrorMessage = "The passwords do not match.")]
     public string? ConfirmPassword { get; set; }
 
     [JsonIgnore, IgnoreDataMember, NotMapped]
