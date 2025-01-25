@@ -14,6 +14,7 @@ using AgeCalculator.Extensions;
 using MyVideoResume.Client.Pages.App.People.Resumes.Templates;
 using BlazorTemplater;
 using static System.Net.WebRequestMethods;
+using MyVideoResume.Client.Shared.Security;
 
 namespace MyVideoResume.Client.Shared;
 
@@ -71,19 +72,29 @@ public class BaseComponent : LayoutComponentBase
 
     [Inject] protected SecurityWebService Security { get; set; }
 
+    public async Task<dynamic> ShowUnAuthorized(string returnPath)
+    {
+        var param = new Dictionary<string, object>();
+        param.Add("Path", returnPath);
+        var result = await DialogService.OpenAsync<UnAuthorizedComponent>("Sign In / Create Account", param);
+        return result;
+    }
     public void ShowSuccessNotification(string title, string message)
     {
         ShowNotification(title, message, NotificationSeverity.Success);
     }
+
     public void ShowErrorNotification(string title, string message)
     {
 
         ShowNotification(title, message, NotificationSeverity.Error);
     }
+
     private void ShowNotification(string title, string message, NotificationSeverity severity)
     {
         NotificationService.Notify(new NotificationMessage { Severity = severity, Summary = title, Detail = message, Duration = 4000 });
     }
+
     public void ShowTooltip(ElementReference elementReference, string content) => TooltipService.Open(elementReference, content, new TooltipOptions() { Position = TooltipPosition.Top });
 
     public void NavigateToLogin(string redirectPath)
@@ -113,6 +124,7 @@ public class BaseComponent : LayoutComponentBase
     {
         await DownloadFile(content, fileName, "html");
     }
+
     protected async Task DownloadJsonFile(string content, string filename)
     {
         await DownloadFile(content, filename, "json");

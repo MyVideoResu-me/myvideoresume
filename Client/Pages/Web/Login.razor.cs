@@ -36,6 +36,7 @@ public partial class Login
         errorVisible = !string.IsNullOrEmpty(error);
 
         infoVisible = !string.IsNullOrEmpty(info);
+
     }
 
     protected async Task Register()

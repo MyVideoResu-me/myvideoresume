@@ -7,10 +7,10 @@ My Video Resume is an Open Source Platform that enhances your resume with Conten
 - [Sentiment Analysis](https://myvideoresu.me/Tools/SentimentAnalysis). Allows you to verify that the content of your resume is positive.
 - [Resume Summarization](https://myvideoresu.me/Tools/SummarizeResume). Allows you to summarize your resume.
 - [Job + Resume Match](https://myvideoresu.me/Tools/JobResumeMatch). Allows you to analyze your resume with a job description. Determine if you are a good match. 
-- [PDF Resume to JSON Resume Converter](https://myvideoresu.me/Tools/pdftojson). Allows you convert your resume into a standard JSON format.
 
 ## ⚒️ Resume Builder (Coming Soon)
-## 🔍 Resume Parser (Coming Soon)
+## 🔍 Resume Parser 
+- [PDF Resume to JSON Resume Parser](https://myvideoresu.me/Tools/pdftojson). Allows you convert your resume into a standard JSON format.
 
 ## 📚 Tech Stack
 

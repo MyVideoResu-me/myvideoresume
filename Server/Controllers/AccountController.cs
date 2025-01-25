@@ -10,6 +10,13 @@ using DocumentFormat.OpenXml.Spreadsheet;
 
 namespace MyVideoResume.Server.Controllers;
 
+public enum ErrorCodes
+{
+    InValidUser = 0,
+    AccountUnconfirmed = 1,
+    InValidSecurityCode = 3
+}
+
 [Route("Account/[action]")]
 public partial class AccountController : Controller
 {
@@ -36,15 +43,15 @@ public partial class AccountController : Controller
     }
 
     #region Security
-    private IActionResult RedirectWithError(string error, string redirectUrl = null)
+    private IActionResult RedirectWithError(string error, ErrorCodes errorCode, string redirectUrl = null)
     {
         if (!string.IsNullOrEmpty(redirectUrl))
         {
-            return Redirect($"~/Login?error={error}&redirectUrl={Uri.EscapeDataString(redirectUrl.Replace("~", ""))}");
+            return Redirect($"~/Login?error={error}&ec={errorCode}&redirectUrl={Uri.EscapeDataString(redirectUrl.Replace("~", ""))}");
         }
         else
         {
-            return Redirect($"~/Login?error={error}");
+            return Redirect($"~/Login?error={error}&ec={errorCode}");
         }
     }
 
@@ -87,13 +94,13 @@ public partial class AccountController : Controller
 
             if (user == null)
             {
-                return RedirectWithError("Invalid user or password", redirectUrl);
+                return RedirectWithError("Invalid user or password", ErrorCodes.InValidUser, redirectUrl);
             }
 
             if (!user.EmailConfirmed)
             {
                 await SendConfirmationEmail(user);
-                return RedirectWithError("User email not confirmed", redirectUrl);
+                return RedirectWithError("User email not confirmed", ErrorCodes.AccountUnconfirmed, redirectUrl);
             }
 
             var isTenantsAdmin = userName == "tenantsadmin";
@@ -133,7 +140,7 @@ If you didn't request this code, you can safely ignore this email. Someone else 
             }
         }
 
-        return RedirectWithError("Invalid user or password", redirectUrl);
+        return RedirectWithError("Invalid user or password", ErrorCodes.InValidUser, redirectUrl);
     }
 
     [HttpPost]
@@ -143,7 +150,7 @@ If you didn't request this code, you can safely ignore this email. Someone else 
 
         if (!result.Succeeded)
         {
-            return RedirectWithError("Invalid security code");
+            return RedirectWithError("Invalid security code", ErrorCodes.InValidSecurityCode);
         }
         else
         {
@@ -189,14 +196,22 @@ If you didn't request this code, you can safely ignore this email. Someone else 
     }
 
     [HttpPost]
-    public ApplicationAuthenticationState CurrentUser()
+    public async Task<ApplicationAuthenticationState> CurrentUser()
     {
-        return new ApplicationAuthenticationState
+        var id = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var user = await userManager.FindByIdAsync(id);
+        if (user == null)
+            return new ApplicationAuthenticationState(); 
+        else
         {
-            IsAuthenticated = User.Identity.IsAuthenticated,
-            Name = User.Identity.Name,
-            Claims = User.Claims.Select(c => new ApplicationClaim { Type = c.Type, Value = c.Value })
-        };
+            return new ApplicationAuthenticationState
+            {
+                IsAuthenticated = User.Identity.IsAuthenticated,
+                Name = User.Identity.Name,
+                Claims = User.Claims.Select(c => new ApplicationClaim { Type = c.Type, Value = c.Value }),
+                Roles = string.Join(",", user.Roles)
+            };
+        }
     }
 
     public async Task<IActionResult> Logout()
@@ -269,7 +284,7 @@ If you didn't request this registration, you can safely ignore this email. Someo
             return Redirect("~/Login?info=Your registration has been confirmed");
         }
 
-        return RedirectWithError("Invalid user or confirmation code");
+        return RedirectWithError("Invalid user or confirmation code", ErrorCodes.InValidUser);
     }
 
     public async Task<IActionResult> ResetPassword(string userName)
