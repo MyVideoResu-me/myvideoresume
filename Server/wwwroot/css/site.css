@@ -158,6 +158,11 @@ a {
     .searchFilterOptions {
         display: none;
     }
+
+    .termsOfUse {
+        font-size: 12px;
+        width: 175px;
+    }
 }
 
 .filterComponent .rz-dropdown {

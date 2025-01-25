@@ -24,11 +24,15 @@
             }
             <RadzenText Text=@Title() TextStyle="Radzen.Blazor.TextStyle.DisplayH2" TagName="Radzen.Blazor.TagName.Auto"></RadzenText>
             <RadzenStack AlignItems="AlignItems.Normal" Orientation="Orientation.Horizontal">
-                @if (ShowContactOptions()) //TO DO: check the user's role
+                @if (ShowContactDetails()) //TO DO: check the user's role
                 {
                     <RadzenText Text=@Resume.MetaResume.Basics.Email TextStyle="Radzen.Blazor.TextStyle.Body1" TagName="Radzen.Blazor.TagName.Auto"></RadzenText>
                     <RadzenText Text=@Resume.MetaResume.Basics.Phone TextStyle="Radzen.Blazor.TextStyle.Body1" TagName="Radzen.Blazor.TagName.Auto"></RadzenText>
                     <RadzenLink Path=@Resume.MetaResume.Basics.Url Text="My Website" Icon="globe" target="_blank" Visible=Resume.MetaResume.Basics.Url.HasValue() />
+                }
+                else
+                {
+
                 }
             </RadzenStack>
         </RadzenColumn>
@@ -514,18 +518,29 @@
         var showSection = IsOwner && Mode == DisplayMode.View;
         return showSection;
     }
-    protected bool ShowContactOptions()
+    protected bool ShowContactOption()
+    {
+        var showOptions = false;
+        if (!IsOwner)
+            showOptions = true;
+        return showOptions;
+    }
+    protected bool ShowContactDetails()
     {
         //Check if the section isn't null
         var showSection = false;
         if (Resume.MetaResume.Basics != null)
         {
-            if (IsOwner)
-                showSection = true;
-            else
+            //only show contact information if authenticated.
+            if (Security.IsAuthenticated())
             {
-                if (Resume.Privacy_ShowContactDetails != DisplayPrivacy.ToSelf)
-                    showSection = true; //ToDO: validate based upon the User's Roles
+                if (IsOwner)
+                    showSection = true;
+                else
+                {
+                    if (Resume.Privacy_ShowContactDetails != DisplayPrivacy.ToSelf)
+                        showSection = true; //ToDO: validate based upon the User's Roles
+                }
             }
         }
         return showSection;

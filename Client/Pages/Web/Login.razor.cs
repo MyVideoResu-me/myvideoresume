@@ -47,6 +47,9 @@ public partial class Login
             infoVisible = true;
 
             info = "Registration accepted. Please check your email for further instructions.";
+
+            ShowSuccessNotification(info, string.Empty);
+
         }
     }
 
@@ -59,6 +62,8 @@ public partial class Login
             infoVisible = true;
 
             info = "Password reset successfully. Please check your email for further instructions.";
+
+            ShowSuccessNotification(info, string.Empty);
         }
     }
 }
