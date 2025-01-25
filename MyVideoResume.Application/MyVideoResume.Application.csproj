@@ -9,6 +9,8 @@
 
 	<ItemGroup>
 		<PackageReference Include="Docnet.Core" Version="2.6.0" />
+		<PackageReference Include="HtmlAgilityPack" Version="1.11.72" />
+		<PackageReference Include="HtmlAgilityPack.CssSelectors.NetCore" Version="1.2.1" />
 		<PackageReference Include="Microsoft.AspNetCore.HeaderPropagation" Version="9.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Http" Version="9.0.0" />
 		<PackageReference Include="PuppeteerSharp" Version="20.0.5" />

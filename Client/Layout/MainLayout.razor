@@ -25,8 +25,9 @@
                                 <ChildContent>
                                     <RadzenProfileMenuItem Path="account/settings" Icon="manage_accounts" Text="My Account" title="My Account" />
                                     <RadzenProfileMenuItem Path="dashboard" Icon="manage_accounts" Text="Dashboard" />
-                                    <RadzenProfileMenuItem Path="admin/application-users" Icon="person" Text="Users" Visible="@Security.IsInRole("Admin")" />
-                                    <RadzenProfileMenuItem Path="admin/application-roles" Icon="security" Text="Roles" Visible="@Security.IsInRole("Admin")" />
+                                    <RadzenProfileMenuItem Path=@Paths.Admin_BackgroundJobsPortal Icon="smart_toy" Text="Portal" Visible="@Security.IsInRole("Admin")" />
+                                    <RadzenProfileMenuItem Path=@Paths.Admin_ApplicationUsers Icon="person" Text="Users" Visible="@Security.IsInRole("Admin")" />
+                                    <RadzenProfileMenuItem Path=@Paths.Admin_ApplicationRoles Icon="security" Text="Roles" Visible="@Security.IsInRole("Admin")" />
                                     <RadzenProfileMenuItem Text="Logout" Value="Logout" Icon="power_settings_new" />
                                 </ChildContent>
                                 <Template>

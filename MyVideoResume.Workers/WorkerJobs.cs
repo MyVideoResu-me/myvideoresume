@@ -67,18 +67,20 @@ public class RecurringJobsService : BackgroundService
     private readonly IRecurringJobManager _recurringJobs;
     private readonly ILogger<RecurringJobScheduler> _logger;
     private readonly ResumeBackgroundJobService _resumeService;
+    private readonly JobBackgroundService _jobService;
 
     public RecurringJobsService(
         [NotNull] IBackgroundJobClient backgroundJobs,
         [NotNull] IRecurringJobManager recurringJobs,
         [NotNull] ILogger<RecurringJobScheduler> logger,
-        [NotNull] ResumeBackgroundJobService resumeService)
+        [NotNull] ResumeBackgroundJobService resumeService,
+        [NotNull] JobBackgroundService jobService)
     {
         _backgroundJobs = backgroundJobs ?? throw new ArgumentNullException(nameof(backgroundJobs));
         _recurringJobs = recurringJobs ?? throw new ArgumentNullException(nameof(recurringJobs));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _resumeService = resumeService;
-
+        _jobService = jobService;
     }
 
     protected override Task ExecuteAsync(CancellationToken stoppingToken)
@@ -94,7 +96,12 @@ public class RecurringJobsService : BackgroundService
             }
 
             //_recurringJobs.AddOrUpdate("Send", () => Console.WriteLine("Hello, seconds!"), "*/15 * * * * *");
-            _recurringJobs.AddOrUpdate("SemanticScoring", () => _resumeService.ProcessSemanticScore(), "0 8 * * *"); //Daily 8AM
+            //_recurringJobs.AddOrUpdate("SemanticScoring", () => _resumeService.ProcessSemanticScore(), "0 */8 * * *"); //Every 8 Hours
+            _recurringJobs.AddOrUpdate("SemanticScoring", () => _resumeService.ProcessSemanticScore(), "0 */8 * * *"); //Daily 8AM
+            //_recurringJobs.AddOrUpdate("CrawlWebsiteCreateJobs-SimplyHired-Developer", () => _jobService.CrawlWebsiteCreateJobs("https://www.simplyhired.com/search?q=Developer&l="), "0 8 * * *"); //Daily 8AM
+            _recurringJobs.AddOrUpdate("CrawlWebsiteCreateJobs-Jora-Careers", () => _jobService.CrawlWebsiteCreateJobs("https://us.jora.com/j?sp=search&trigger_source=serp&q=Software+Engineer&l="), "0 */4 * * *"); //Minutely
+        
+
             //_recurringJobs.AddOrUpdate("SemanticScoring", () => _resumeService.ProcessSemanticScore(), Cron.Minutely); //Minutely
             //_recurringJobs.AddOrUpdate("SemanticScoring", () => _resumeService.ProcessSemanticScore(), "25 15 * * *"); //Hourly
             //_recurringJobs.AddOrUpdate("neverfires", () => Console.WriteLine("Can only be triggered"), "0 0 31 2 *");

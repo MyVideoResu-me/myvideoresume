@@ -12,6 +12,9 @@ public static class Paths
     public const string Site_Help = "articles/how-to";
     public const string Site_ContactUs = "/work-with-us";
     public const string Site_ReleaseNotes = "/release-notes";
+    public const string Admin_BackgroundJobsPortal = "/Workers";
+    public const string Admin_ApplicationUsers = "admin/application-users";
+    public const string Admin_ApplicationRoles = "admin/application-roles";
     public const string FeatureFlags_API = "api/featureflag";
     public const string Dashboard_View = "/dashboard";
     public const string Resume_View = "/resumes";
@@ -28,6 +31,7 @@ public static class Paths
     public const string Jobs_API_CreateFromFile = "api/job/createFromFile";
     public const string Jobs_API_SummaryItems = "api/job/GetSummaryItems";
     public const string Jobs_API_ViewById = "api/job/{id}";
+    public const string Jobs_API_CreateFromHtml = "api/job/CreateFromHtml";
     public const string Jobs_API_Save = "api/job/save";
     public const string Jobs_API_Extract = "api/job/extract";
     public const string AI_API_Sentiment = "sentiment/sentimentprediction";

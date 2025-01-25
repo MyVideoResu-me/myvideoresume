@@ -98,6 +98,7 @@ builder.Services.AddScoped<ResumeWebService>();
 builder.Services.AddSingleton<IResumePromptEngine, ResumePromptEngine>();
 builder.Services.AddScoped<ResumeService>();
 builder.Services.AddSingleton<ResumeBackgroundJobService>();
+builder.Services.AddSingleton<JobBackgroundService>();
 builder.Services.AddSingleton<IFeatureFlagService, SplitFeatureFlagService>();
 builder.Services.AddScoped<FeatureFlagClientService>();
 builder.Services.AddScoped<FeatureFlagWebService>();

@@ -40,7 +40,6 @@ public partial class SentimentAnalysisTool
         if (string.IsNullOrEmpty(targetText) && !string.IsNullOrWhiteSpace(textResume))
         {
             resume = textResume;
-            StateHasChanged();
         }
         else
         {
@@ -57,12 +56,19 @@ public partial class SentimentAnalysisTool
         {
             Logger.LogError(ex.Message, ex);
         }
+        
+        StateHasChanged();
+
         return percentage;
     }
 
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
         try
         {
             resume = await localStorage.GetItemAsync<string>("textresume");
