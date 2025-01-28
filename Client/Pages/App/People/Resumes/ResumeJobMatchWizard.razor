@@ -45,6 +45,11 @@
             </RadzenRow>
         </RadzenStepsItem>
         <RadzenStepsItem Text="See Results">
+            <RadzenRow style="padding: 5px">
+                <RadzenColumn>
+                    <RadzenText TextStyle="TextStyle.H2">Score: @MatchScore</RadzenText>
+                </RadzenColumn>
+            </RadzenRow>
             <RadzenRow>
                 <RadzenHtmlEditor @bind-Value=@MatchContent style="height: 375px; width:450px;" @ref=@Editor>
                     <RadzenHtmlEditorUndo />
@@ -62,6 +67,7 @@
 </RadzenSteps>
 
 @code {
+    [Inject] public MatchWebService MatchService { get; set; }
     [Inject] public JobWebService JobService { get; set; }
     [Inject] public ResumeWebService ResumeService { get; set; }
     [Inject] protected JobWebService JobWebService { get; set; }
@@ -69,7 +75,9 @@
     public string JobUrl { get; set; }
     public string JobContent { get; set; }
     public string MatchContent { get; set; }
+    public float MatchScore { get; set; }
     public bool FailToLoadJob { get; set; } = false;
+    public JobItemEntity ExtractedJob { get; set; }
     public RadzenHtmlEditor Editor { get; set; }
     public RadzenSteps Steps { get; set; }
     public bool Busy { get; set; }
@@ -90,6 +98,8 @@
                 }
                 else
                 {
+                    ExtractedJob = JsonSerializer.Deserialize<JobItemEntity>(result.Result.JobSerialized, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
                     var htmlText = new ComponentRenderer<MyVideoResume.Client.Pages.App.Jobs.Template.BasicTemplate>()
                     .AddService<JobWebService>(JobWebService)
                     .AddService<FeatureFlagClientService>(FeatureFlagService)
@@ -103,7 +113,7 @@
                     .AddService<ContextMenuService>(ContextMenuService)
                     .AddService<NotificationService>(NotificationService)
                     .AddService<SecurityWebService>(Security)
-                    .Set(c => c.Item, JsonSerializer.Deserialize<JobItemEntity>(result.Result.JobSerialized, new JsonSerializerOptions { PropertyNameCaseInsensitive = true }))
+                    .Set(c => c.Item, ExtractedJob)
                     .Render();
 
                     JobContent = htmlText;
@@ -135,7 +145,11 @@
         Busy = true;
         if (JobContent.HasValue())
         {
-            var result = await ResumeService.Match(JobContent, ResumeSummaryItem.ResumeSerialized);
+            var content = JobContent;
+            if (ExtractedJob != null)
+                content = ExtractedJob.JobSerialized;
+
+            var result = await MatchService.MatchByJobContentResumeId(content, ResumeSummaryItem.Id);
             if (result.ErrorMessage.HasValue())
             {
                 ShowMatchProcessingError = true;
@@ -144,8 +158,12 @@
             {
                 ShowMatchProcessingError = false;
                 Steps.SelectedIndex = 3;
-                var markdownResult = result.Result;
-                MatchContent = Markdown.ToHtml(markdownResult);
+                var matchResponse = result.Result;
+                if (matchResponse != null)
+                {
+                    MatchContent = Markdown.ToHtml(matchResponse.SummaryRecommendations);
+                    MatchScore = matchResponse.Score;
+                }
             }
         }
         Busy = false;

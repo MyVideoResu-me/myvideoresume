@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using MyVideoResume.Abstractions.Core;
-using MyVideoResume.Abstractions.Job;
+using MyVideoResume.Abstractions.Match;
 using MyVideoResume.AI;
 using MyVideoResume.Documents;
 
@@ -13,7 +13,6 @@ public interface IResumePromptEngine : IPromptEngine
 {
     Task<ResponseResult> SummarizeResume(string resumeText);
     Task<ResponseResult> ResumeParseJSON(string resumeText);
-    Task<ResponseResult> JobResumeMatch(JobMatchRequest request);
 }
 
 public class ResumePromptEngine : OpenAIPromptEngine, IResumePromptEngine
@@ -161,14 +160,5 @@ public class ResumePromptEngine : OpenAIPromptEngine, IResumePromptEngine
         }
         return result;
 
-    }
-
-    public async Task<ResponseResult> JobResumeMatch(JobMatchRequest request)
-    {
-        var prompt = "You are an AI Assistant that helps people match their Resume to a Job Description.";
-        var userInput = $"Resume: {request.Resume}";
-        var userJobInput = $"Job Description: {request.Job}";
-        var result = await this.Process(prompt, new[] { userInput, userJobInput });
-        return result;
     }
 }

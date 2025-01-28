@@ -7,6 +7,6 @@ using System.Text;
 
 namespace MyVideoResume.Abstractions.Business;
 
-public class Project: ToDo, IActionItem
+public class Project: Todo, IActionItem
 {
 }

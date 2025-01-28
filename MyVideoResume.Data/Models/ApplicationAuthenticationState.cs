@@ -15,5 +15,6 @@ namespace MyVideoResume.Data.Models
         public bool IsAuthenticated { get; set; }
         public string Name { get; set; }
         public IEnumerable<ApplicationClaim> Claims { get; set; }
+        public string Roles { get; set; }
     }
 }

@@ -7,7 +7,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Primitives;
 using MyVideoResume.Abstractions.Core;
 using MyVideoResume.Abstractions.Resume;
-using MyVideoResume.Abstractions.Resume.Formats.JSONResumeFormat;
 using MyVideoResume.Data;
 using MyVideoResume.Data.Models.Resume;
 using MyVideoResume.Web.Common;
@@ -71,7 +70,7 @@ public class ResumeService
     }
 
     //Get All Public Resume Summaries
-    public async Task<List<ResumeSummaryItem>> GetResumeSummaryItems(string? userId = null, bool? onlyPublic = null)
+    public async Task<List<ResumeSummaryItem>> GetResumeSummaryItems(string? userId = null, bool? onlyPublic = null, int? take = null)
     {
         var result = new List<ResumeSummaryItem>();
         try
@@ -82,7 +81,9 @@ public class ResumeService
                 .Include(x => x.UserProfile)
                 .Include(x => x.ResumeTemplate)
                 .AsNoTracking()
-                .Where(x => x.DeletedDateTime == null);
+                .Where(x => x.DeletedDateTime == null)
+                .OrderBy(x => x.CreationDateTime)
+                .AsSingleQuery();
 
             if (onlyPublic.HasValue)
             {
@@ -93,8 +94,11 @@ public class ResumeService
             {
                 query = query.Where(x => x.UserId == userId);
             }
+            if (take.HasValue)
+                query = query.Take(5);
 
-            result = query.Select(x => new ResumeSummaryItem() { ResumeSerialized = x.ResumeSerialized, SentimentScore = x.SentimentScore, UserId = x.UserId, CreationDateTimeFormatted = x.CreationDateTime.Value.ToString("yyyy-MM-dd"), IsPublic = true, Id = x.Id.ToString(), ResumeTemplateName = x.ResumeTemplate.Name, ResumeSummary = x.MetaResume.Basics.Summary, ResumeSlug = x.Slug, ResumeName = x.MetaResume.Basics.Name }).ToList();
+
+            result = query.Select(x => new ResumeSummaryItem() { SentimentScore = x.SentimentScore, UserId = x.UserId, CreationDateTimeFormatted = x.CreationDateTime.Value.ToString("yyyy-MM-dd"), IsPublic = true, Id = x.Id.ToString(), ResumeTemplateName = x.ResumeTemplate.Name, ResumeSummary = x.MetaResume.Basics.Summary, ResumeSlug = x.Slug, ResumeName = x.MetaResume.Basics.Name }).ToList();
         }
         catch (Exception ex)
         {

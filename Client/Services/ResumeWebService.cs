@@ -18,11 +18,11 @@ using Microsoft.EntityFrameworkCore;
 using MyVideoResume.Data.Models.Resume;
 using MyVideoResume.Abstractions.Core;
 using static System.Net.WebRequestMethods;
-using MyVideoResume.Abstractions.Job;
 using MyVideoResume.Abstractions.Resume;
 using MyVideoResume.Client.Shared;
 using MyVideoResume.Web.Common;
 using System.Net.Http.Json;
+using MyVideoResume.Abstractions.Match;
 //using Refit;
 
 namespace MyVideoResume.Client.Services;
@@ -31,15 +31,17 @@ public partial class ResumeWebService
 {
     private readonly HttpClient _httpClient;
     private readonly NavigationManager _navigationManager;
+    private readonly MatchWebService matchWebService;
     private readonly SecurityWebService _securityService;
-    private readonly ILogger<DashboardWebService> _logger;
+    private readonly ILogger<ResumeWebService> _logger;
 
-    public ResumeWebService(NavigationManager navigationManager, IHttpClientFactory factory, ILogger<DashboardWebService> logger, SecurityWebService securityService)
+    public ResumeWebService(NavigationManager navigationManager, IHttpClientFactory factory, ILogger<ResumeWebService> logger, SecurityWebService securityService, MatchWebService matchWebService)
     {
         this._httpClient = factory.CreateClient(Constants.HttpClientFactory);
         this._navigationManager = navigationManager;
         this._logger = logger;
         this._securityService = securityService;
+        this.matchWebService = matchWebService;
     }
 
     public async Task<ResponseResult<float>> GetSentimentAnalysisById(string id)
@@ -183,23 +185,6 @@ public partial class ResumeWebService
     //    return r;
     //}
 
-
-    public async Task<ResponseResult> Match(string jobDescription, string resume)
-    {
-        var r = new ResponseResult();
-        try
-        {
-            var uri = new Uri($"{_navigationManager.BaseUri}api/resume/match");
-            var request = new JobMatchRequest() { Job = jobDescription, Resume = resume };
-            var response = await _httpClient.PostAsJsonAsync<JobMatchRequest>(uri, request);
-            r = await response.ReadAsync<ResponseResult>();
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex.Message, ex);
-        }
-        return r;
-    }
     public async Task<ResponseResult> Summarize(string resume)
     {
         var uri = new Uri($"{_navigationManager.BaseUri}api/resume/summarize");

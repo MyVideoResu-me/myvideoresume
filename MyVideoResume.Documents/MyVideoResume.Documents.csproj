@@ -11,7 +11,7 @@
 	  <PackageReference Include="Docnet.Core" Version="2.6.0" />
 	  <PackageReference Include="FreeSpire.Doc" Version="12.2.0" />
 	  <PackageReference Include="Microsoft.AspNetCore.Http.Features" Version="5.0.17" />
-	  <PackageReference Include="System.Security.Cryptography.Pkcs" Version="9.0.0" />
-	  <PackageReference Include="System.Security.Cryptography.Xml" Version="9.0.0" />
+	  <PackageReference Include="System.Security.Cryptography.Pkcs" Version="9.0.1" />
+	  <PackageReference Include="System.Security.Cryptography.Xml" Version="9.0.1" />
 	</ItemGroup>
 </Project>

@@ -17,7 +17,7 @@ namespace MyVideoResume.Data.Migrations.MyVideoResume
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.0")
+                .HasAnnotation("ProductVersion", "9.0.1")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -591,6 +591,9 @@ namespace MyVideoResume.Data.Migrations.MyVideoResume
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("IsPaidAccount")
+                        .HasColumnType("bit");
+
                     b.Property<Guid?>("MailingAddressId")
                         .HasColumnType("uniqueidentifier");
 
@@ -816,6 +819,15 @@ namespace MyVideoResume.Data.Migrations.MyVideoResume
                     b.Property<Guid?>("CompanyId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("ContactUserId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid?>("ContactUserId1")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("CreatedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<DateTime?>("CreationDateTime")
                         .HasColumnType("datetime2");
 
@@ -906,6 +918,10 @@ namespace MyVideoResume.Data.Migrations.MyVideoResume
 
                     b.HasIndex("CompanyId");
 
+                    b.HasIndex("ContactUserId1");
+
+                    b.HasIndex("CreatedByUserId");
+
                     b.HasIndex("EquityId");
 
                     b.HasIndex("SalaryId");
@@ -951,7 +967,7 @@ namespace MyVideoResume.Data.Migrations.MyVideoResume
                     b.HasAnnotation("SqlServer:UseSqlOutputClause", false);
                 });
 
-            modelBuilder.Entity("MyVideoResume.Data.Models.Resume.MetaDataEntity", b =>
+            modelBuilder.Entity("MyVideoResume.Data.Models.MetaContent.MetaDataEntity", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -973,6 +989,9 @@ namespace MyVideoResume.Data.Migrations.MyVideoResume
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("Privacy")
+                        .HasColumnType("int");
 
                     b.Property<string>("ReferenceId")
                         .IsRequired()
@@ -1235,9 +1254,15 @@ namespace MyVideoResume.Data.Migrations.MyVideoResume
                     b.Property<DateTime?>("DeletedDateTime")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("FirstName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsPaidAccount")
+                        .HasColumnType("bit");
 
                     b.Property<Guid>("JobPreferencesId")
                         .HasColumnType("uniqueidentifier");
@@ -1248,6 +1273,19 @@ namespace MyVideoResume.Data.Migrations.MyVideoResume
 
                     b.Property<Guid?>("MailingAddressId")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Phone")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("TermsOfUseAgreementAcceptedDateTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("TermsOfUserAgreementVersion")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("UpdateDateTime")
                         .HasColumnType("datetime2");
@@ -1417,19 +1455,33 @@ namespace MyVideoResume.Data.Migrations.MyVideoResume
 
                     b.HasOne("MyVideoResume.Data.Models.Jobs.BonusEntity", "Bonus")
                         .WithMany()
-                        .HasForeignKey("BonusId");
+                        .HasForeignKey("BonusId")
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.HasOne("MyVideoResume.Data.Models.Business.CompanyProfileEntity", "Company")
                         .WithMany()
-                        .HasForeignKey("CompanyId");
+                        .HasForeignKey("CompanyId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("MyVideoResume.Data.Models.UserProfileEntity", "ContactUser")
+                        .WithMany()
+                        .HasForeignKey("ContactUserId1")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("MyVideoResume.Data.Models.UserProfileEntity", "CreatedByUser")
+                        .WithMany()
+                        .HasForeignKey("CreatedByUserId")
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.HasOne("MyVideoResume.Data.Models.Jobs.EquityEntity", "Equity")
                         .WithMany()
-                        .HasForeignKey("EquityId");
+                        .HasForeignKey("EquityId")
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.HasOne("MyVideoResume.Data.Models.Jobs.SalaryEntity", "Salary")
                         .WithMany()
-                        .HasForeignKey("SalaryId");
+                        .HasForeignKey("SalaryId")
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.Navigation("Address");
 
@@ -1437,12 +1489,16 @@ namespace MyVideoResume.Data.Migrations.MyVideoResume
 
                     b.Navigation("Company");
 
+                    b.Navigation("ContactUser");
+
+                    b.Navigation("CreatedByUser");
+
                     b.Navigation("Equity");
 
                     b.Navigation("Salary");
                 });
 
-            modelBuilder.Entity("MyVideoResume.Data.Models.Resume.MetaDataEntity", b =>
+            modelBuilder.Entity("MyVideoResume.Data.Models.MetaContent.MetaDataEntity", b =>
                 {
                     b.HasOne("MyVideoResume.Data.Models.Resume.ResumeInformationEntity", null)
                         .WithMany("MetaData")

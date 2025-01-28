@@ -7,8 +7,8 @@ namespace MyVideoResume.AI;
 
 public class OpenAIPromptEngine : IPromptEngine
 {
-    private readonly ILogger<OpenAIPromptEngine> _logger;
-    private readonly IConfiguration _configuration;
+    protected readonly ILogger<OpenAIPromptEngine> _logger;
+    protected readonly IConfiguration _configuration;
     private ChatClient? client = null;
 
     public OpenAIPromptEngine(ILogger<OpenAIPromptEngine> logger, IConfiguration configuration)

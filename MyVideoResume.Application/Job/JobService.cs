@@ -38,9 +38,9 @@ public partial class JobService
         _serviceScopeFactory = serviceScopeFactory;
     }
 
-    public async Task<JobItemEntity> GetJob(string id, string userId)
+    public async Task<JobItemEntity> GetJob(string id)
     {
-        var item = _dataContext.Jobs.FirstOrDefault(x => x.Id == Guid.Parse(id) && x.UserId == userId);
+        var item = _dataContext.Jobs.FirstOrDefault(x => x.Id == Guid.Parse(id));
 
         return item;
     }
@@ -80,13 +80,20 @@ public partial class JobService
         throw new NotImplementedException();
     }
 
-    public async Task<ResponseResult<JobItemEntity>> CreateJob(string id, JobItemEntity item)
+    public async Task<ResponseResult<JobItemEntity>> CreateJob(string userId, JobItemEntity item)
     {
         var result = new ResponseResult<JobItemEntity>();
-        _dataContext.Jobs.Add(item);
-        item.UserId = id;
+
+        var user = await _dataContext.UserProfiles.FirstOrDefaultAsync(x=> x.UserId == userId);
+
+        if (user != null) {
+            _dataContext.Jobs.Add(item);
+            item.UserId = userId;
+            item.CreatedByUser = user;
+            item.CreationDateTime = DateTime.UtcNow;
         _dataContext.SaveChanges();
-        result.Result = item;
+            result.Result = item;
+        }
         return result;
     }
 
@@ -135,9 +142,9 @@ public partial class JobService
     }
 
     //Get All Public Resume Summaries
-    public async Task<List<JobSummaryItem>> GetJobSummaryItems(string? userId = null, bool? onlyPublic = null)
+    public async Task<List<JobItemDTO>> GetPublicJobs(string? userId = null, bool? onlyPublic = null)
     {
-        var result = new List<JobSummaryItem>();
+        var result = new List<JobItemDTO>();
         try
         {
             var query = _dataContext.Jobs
@@ -154,7 +161,7 @@ public partial class JobService
                 query = query.Where(x => x.UserId == userId);
             }
 
-            result = query.Select(x => new JobSummaryItem() { JobSerialized = x.JobSerialized, UserId = x.UserId, CreationDateTimeFormatted = x.CreationDateTime.Value.ToString("yyyy-MM-dd"), Id = x.Id.ToString(), Responsibilities = x.Responsibilities, Requirements = x.Requirements, Slug = x.Slug, Title = x.Title, Description = x.Description, ATSApplyUrl = x.ATSApplyUrl, OriginalWebsiteUrl = x.OriginalWebsiteUrl }).ToList();
+            result = query.Select(x => new JobItemDTO() { UserId = x.UserId, CreationDateTimeFormatted = x.CreationDateTime.Value.ToString("yyyy-MM-dd"), Id = x.Id.ToString(), Responsibilities = x.Responsibilities, Requirements = x.Requirements, Slug = x.Slug, Title = x.Title, Description = x.Description, ATSApplyUrl = x.ATSApplyUrl }).ToList();
         }
         catch (Exception ex)
         {

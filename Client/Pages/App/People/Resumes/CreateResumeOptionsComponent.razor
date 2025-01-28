@@ -24,9 +24,7 @@
     {
         if (Security.IsNotAuthenticated())
         {
-            var param = new Dictionary<string, object>();
-            param.Add("Path", Paths.Resume_View);
-            var result = await DialogService.OpenAsync<UnAuthorizedComponent>("Create Account", param);
+            await ShowUnAuthorized(Paths.Resume_View);
         }
         else
         {
