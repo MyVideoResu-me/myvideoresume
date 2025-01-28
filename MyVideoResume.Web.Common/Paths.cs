@@ -35,8 +35,12 @@ public static class Paths
     public const string Jobs_API_Save = "api/job/save";
     public const string Jobs_API_Extract = "api/job/extract";
     public const string AI_API_Sentiment = "sentiment/sentimentprediction";
+    public const string Inbox_View = "/tasks";
+    public const string Inbox_API_View = "api/inbox";
     public const string Tasks_View = "/tasks";
     public const string Tasks_Schedule = "/schedule";
+    public const string Tasks_API_View = "api/tasks";
+    public const string Tasks_API_Save = "api/tasks/save";
     public const string Tools_Sentiment = "Tools/SentimentAnalysis";
     public const string Tools_SummarizeResume = "Tools/SummarizeResume";
     public const string Tools_JobMatch = "Tools/JobResumeMatch";

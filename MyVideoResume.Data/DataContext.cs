@@ -6,6 +6,7 @@ using MyVideoResume.Data.Models;
 using MyVideoResume.Data.Models.Resume;
 using MyVideoResume.Data.Models.Jobs;
 using MyVideoResume.Data.Models.Business;
+using MyVideoResume.Data.Models.MetaContent;
 
 namespace MyVideoResume.Data;
 

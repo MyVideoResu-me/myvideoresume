@@ -200,18 +200,18 @@ If you didn't request this code, you can safely ignore this email. Someone else 
     {
         var id = User.FindFirstValue(ClaimTypes.NameIdentifier);
         var user = await userManager.FindByIdAsync(id);
-        if (user == null)
-            return new ApplicationAuthenticationState(); 
-        else
+        var roles = string.Empty;
+        if (user != null)
+            if (user.Roles != null)
+                roles = string.Join(",", user.Roles);
+
+        return new ApplicationAuthenticationState
         {
-            return new ApplicationAuthenticationState
-            {
-                IsAuthenticated = User.Identity.IsAuthenticated,
-                Name = User.Identity.Name,
-                Claims = User.Claims.Select(c => new ApplicationClaim { Type = c.Type, Value = c.Value }),
-                Roles = string.Join(",", user.Roles)
-            };
-        }
+            IsAuthenticated = User.Identity.IsAuthenticated,
+            Name = User.Identity.Name,
+            Claims = User.Claims.Select(c => new ApplicationClaim { Type = c.Type, Value = c.Value }),
+            Roles = roles
+        };
     }
 
     public async Task<IActionResult> Logout()

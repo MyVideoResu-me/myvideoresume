@@ -7,6 +7,7 @@ using MyVideoResume.Abstractions.Job;
 using MyVideoResume.Abstractions.Core;
 using MyVideoResume.Client.Services;
 using Markdig;
+using MyVideoResume.Web.Common;
 
 namespace MyVideoResume.Client.Shared.ML;
 
@@ -19,9 +20,13 @@ public partial class JobResumeMatchTool
     protected ResumeWebService Service { get; set; }
 
     [Inject]
+    protected MatchWebService MatchService { get; set; }
+
+    [Inject]
     protected ILocalStorageService localStorage { get; set; }
 
     public string Result { get; set; } = "Results";
+    public float Score { get; set; }
     public bool Busy { get; set; } = false;
     public string Resume { get; set; } = "Copy & Paste Resume";
     public string JobDescription { get; set; } = "Copy & Paste Job Description";
@@ -31,8 +36,20 @@ public partial class JobResumeMatchTool
         Busy = true;
         try
         {
-            var r = await Service.Match(JobDescription, Resume);
-            Result = Markdown.ToHtml(r.Result);
+            if (Security.IsNotAuthenticated())
+            {
+                await ShowUnAuthorized(Paths.Tools_JobMatch);
+            }
+            else
+            {
+                var r = await MatchService.MatchByJobResumeContent(JobDescription, Resume);
+                var matchResult = r.Result;
+                if (matchResult != null)
+                {
+                    Result = Markdown.ToHtml(matchResult.SummaryRecommendations);
+                    Score = matchResult.Score;
+                }
+            }
         }
         catch (Exception ex)
         {

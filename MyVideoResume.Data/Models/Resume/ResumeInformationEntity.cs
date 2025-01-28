@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations;
 using MyVideoResume.Abstractions.Resume;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
+using MyVideoResume.Data.Models.MetaContent;
 
 namespace MyVideoResume.Data.Models.Resume;
 

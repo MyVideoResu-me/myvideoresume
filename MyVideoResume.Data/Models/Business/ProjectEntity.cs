@@ -24,5 +24,5 @@ public class ProjectEntity: Project
     [DeleteBehavior(DeleteBehavior.NoAction)]
     public CompanyProfileEntity? CompanyProfile { get; set; }
 
-    public List<ToDoEntity>? ToDos { get; set; }
+    public List<TodoEntity>? ToDos { get; set; }
 }

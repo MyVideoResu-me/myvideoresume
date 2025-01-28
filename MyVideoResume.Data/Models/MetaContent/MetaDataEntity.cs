@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
-using MyVideoResume.Abstractions.Resume.Formats.MyVideoResumeFormat;
+using MyVideoResume.Abstractions.MetaContent;
 
-namespace MyVideoResume.Data.Models.Resume;
+namespace MyVideoResume.Data.Models.MetaContent;
 
 [Table("MetaData")]
 public class MetaDataEntity : MetaData

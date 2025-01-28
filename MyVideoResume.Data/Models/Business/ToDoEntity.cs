@@ -11,15 +11,18 @@ using MyVideoResume.Abstractions.Core;
 
 namespace MyVideoResume.Data.Models.Business;
 
-[Table("ToDos")]
-public class ToDoEntity: ToDo
+[Table("Todos")]
+public class TodoEntity: Todo
 {
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public Guid Id { get; set; }
 
     [DeleteBehavior(DeleteBehavior.NoAction)]
-    public UserProfileEntity UserProfile { get; set; }
+    public UserProfileEntity CreatedByUser{ get; set; }
+
+    [DeleteBehavior(DeleteBehavior.NoAction)]
+    public UserProfileEntity AssignedToUser { get; set; }
 
     [DeleteBehavior(DeleteBehavior.NoAction)]
     public CompanyProfileEntity? CompanyProfile { get; set; }

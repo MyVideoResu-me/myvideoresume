@@ -1,30 +1,11 @@
-using System;
-using System.Web;
-using System.Linq;
-using System.Collections.Generic;
-using System.Net.Http;
-using System.Threading.Tasks;
-using System.Text;
 using System.Text.Json;
-using System.Security.Claims;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Authorization;
 using Radzen;
-using MyVideoResume.Data.Models;
-using MyVideoResume.Client.Shared.Security.Recaptcha;
-using MyVideoResume.Data;
-using Microsoft.EntityFrameworkCore;
-using MyVideoResume.Data.Models.Resume;
 using MyVideoResume.Abstractions.Core;
-using static System.Net.WebRequestMethods;
 using MyVideoResume.Abstractions.Job;
-using MyVideoResume.Abstractions.Resume;
-using MyVideoResume.Client.Shared;
 using MyVideoResume.Web.Common;
 using System.Net.Http.Json;
 using MyVideoResume.Data.Models.Jobs;
-//using Refit;
 
 namespace MyVideoResume.Client.Services;
 
@@ -32,23 +13,23 @@ public partial class JobWebService
 {
     private readonly HttpClient _httpClient;
     private readonly NavigationManager _navigationManager;
-    private readonly ILogger<DashboardWebService> _logger;
+    private readonly ILogger<JobWebService> _logger;
 
-    public JobWebService(NavigationManager navigationManager, IHttpClientFactory factory, ILogger<DashboardWebService> logger)
+    public JobWebService(NavigationManager navigationManager, IHttpClientFactory factory, ILogger<JobWebService> logger)
     {
         this._httpClient = factory.CreateClient(Constants.HttpClientFactory);
         this._navigationManager = navigationManager;
         this._logger = logger;
     }
 
-    public async Task<List<JobSummaryItem>> GetPublicJobs() //Eventually Pass in a Search Object
+    public async Task<List<JobItemDTO>> GetPublicJobs() //Eventually Pass in a Search Object
     {
-        var result = new List<JobSummaryItem> { };
+        var result = new List<JobItemDTO> { };
         try
         {
             var uri = new Uri($"{_navigationManager.BaseUri}{Paths.Jobs_API_View}");
             var response = await _httpClient.GetAsync(uri);
-            result = await response.ReadAsync<List<JobSummaryItem>>();
+            result = await response.ReadAsync<List<JobItemDTO>>();
         }
         catch (Exception ex)
         {
@@ -58,14 +39,14 @@ public partial class JobWebService
         return result;
     }
 
-    public async Task<List<JobSummaryItem>> GetJobSummaryItems() //Eventually Pass in a Search Object
+    public async Task<List<JobItemDTO>> GetJobSummaryItems() //Eventually Pass in a Search Object
     {
-        var result = new List<JobSummaryItem> { };
+        var result = new List<JobItemDTO> { };
         try
         {
             var uri = new Uri($"{_navigationManager.BaseUri}{Paths.Jobs_API_SummaryItems}");
             var response = await _httpClient.GetAsync(uri);
-            result = await response.ReadAsync<List<JobSummaryItem>>();
+            result = await response.ReadAsync<List<JobItemDTO>>();
             result = result.OrderByDescending(x => x.CreationDateTimeFormatted).ToList();
         }
         catch (Exception ex)

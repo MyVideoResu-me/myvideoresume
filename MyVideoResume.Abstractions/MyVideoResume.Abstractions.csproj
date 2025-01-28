@@ -10,5 +10,8 @@
 		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.1" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" Version="9.0.1" />
 	</ItemGroup>
+	<ItemGroup>
+	  <Folder Include="MetaData\" />
+	</ItemGroup>
 
 </Project>

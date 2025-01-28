@@ -1,6 +1,8 @@
 ﻿@using Markdig
 @using MyVideoResume.Abstractions.Resume
+@using MyVideoResume.Abstractions.Resume.Formats.JSONResumeFormat
 @using MyVideoResume.Client.Services.FeatureFlag
+@using System.Text.Json
 @inherits BaseComponent
 
 <RadzenSteps Change="@OnChange" @ref=@Steps>
@@ -35,7 +37,7 @@
                 else
                 {
                     <iframe src=@JobUrl
-                            style="height:375px; width: 450px"></iframe>
+                    style="height:375px; width: 450px"></iframe>
                 }
 
             </RadzenRow>
@@ -50,12 +52,14 @@
 </RadzenSteps>
 
 @code {
+    [Inject] public MatchWebService MatchService { get; set; }
     [Inject] public JobWebService JobService { get; set; }
     [Inject] public ResumeWebService ResumeService { get; set; }
     [Parameter] public ResumeSummaryItem ResumeSummaryItem { get; set; }
     public string JobUrl { get; set; }
     public string JobContent { get; set; }
     public string MatchContent { get; set; }
+    public float MatchScore { get; set; }
     public bool FailToLoadJob { get; set; } = false;
     public RadzenHtmlEditor Editor { get; set; }
     public RadzenSteps Steps { get; set; }
@@ -106,7 +110,7 @@
         Busy = true;
         if (JobContent.HasValue())
         {
-            var result = await ResumeService.Match(JobContent, ResumeSummaryItem.ResumeSerialized);
+            var result = await MatchService.MatchByJobContentResumeId(JobContent, ResumeSummaryItem.Id);
             if (result.ErrorMessage.HasValue())
             {
                 ShowMatchProcessingError = true;
@@ -115,8 +119,12 @@
             {
                 ShowMatchProcessingError = false;
                 Steps.SelectedIndex = 3;
-                var markdownResult = result.Result;
-                MatchContent = Markdown.ToHtml(markdownResult);
+                var matchResponse = result.Result;
+                if (matchResponse != null)
+                {
+                    MatchContent = Markdown.ToHtml(matchResponse.SummaryRecommendations);
+                    MatchScore = matchResponse.Score;
+                }
             }
         }
         Busy = false;

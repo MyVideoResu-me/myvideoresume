@@ -8,23 +8,8 @@ using System.Threading.Tasks;
 
 namespace MyVideoResume.Abstractions.Business;
 
-public enum ActionItemStatus
-{
-    Planning,
-    ToDo,
-    Open,
-    InProgress,
-    Closed,
-    Descoped,
-}
 
-public interface IActionItem {
-    DateTime Start { get; set; }
-    DateTime End { get; set; }
-    string Text { get; set; }
-    ActionItemStatus Status { get; set; }
-}
 
-public class Appointment: ToDo, IActionItem
+public class Appointment: Todo, IActionItem
 {
 }

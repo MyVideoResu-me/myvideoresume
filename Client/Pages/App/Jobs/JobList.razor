@@ -29,7 +29,7 @@
                                     <div style=" max-width: 250px; "><RadzenText style="text-overflow:ellipsis; white-space: nowrap; overflow: hidden;" TextStyle="TextStyle.Body1" title="@(data.Title)">@(data.Title)</RadzenText></div>
                                 </Template>
                             </RadzenDataGridColumn>
-                            <RadzenDataGridColumn Width="75px" Property="@nameof(JobSummaryItem.CreationDateTimeFormatted)" Title="Date Created" Frozen="false" />
+                            <RadzenDataGridColumn Width="75px" Property="@nameof(JobItemDTO.CreationDateTimeFormatted)" Title="Date Created" Frozen="false" />
                             <RadzenDataGridColumn Title="Actions" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Frozen="false">
                                 <Template Context="data">
                                     <RadzenCard Style="background-color: white; padding: 0px !important; margin:0px !important; ">
@@ -63,7 +63,7 @@
 </RadzenRow>
 
 @code{
-    protected async Task OpenJobMatchAnalysis(JobSummaryItem item)
+    protected async Task OpenJobMatchAnalysis(JobItemDTO item)
     {
         var result = await DialogService.OpenAsync("Job Match", ds =>
             @<JobResumeMatchWizard Item=@item></JobResumeMatchWizard>

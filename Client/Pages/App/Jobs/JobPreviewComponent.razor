@@ -24,7 +24,7 @@
                 <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-4 rz-mb-0" style="color:white; ">Template</RadzenText>
                 <RadzenText TextStyle="TextStyle.Body1" style="color:white; "><b> @(ResumeItem.Title)</b></RadzenText>
                 <RadzenText TextStyle="TextStyle.Overline" class=" rz-display-flex rz-mt-4 rz-mb-0" style="color:white; ">Public</RadzenText>
-                <RadzenText TextStyle="TextStyle.Body1" style="color:white; "><b>@(ResumeItem.OriginalWebsiteUrl)</b></RadzenText>
+                <RadzenText TextStyle="TextStyle.Body1" style="color:white; "><b>@(ResumeItem.ATSApplyUrl)</b></RadzenText>
             </RadzenColumn>
             <RadzenColumn>
                 <RadzenText TextStyle="TextStyle.Overline" style="color:white; " class="rz-display-flex rz-mt-4 rz-mb-0">Summary</RadzenText>
@@ -46,7 +46,7 @@
     [Parameter] public EventCallback<ResponseResult> DeleteCompleted { get; set; }
 
     [Parameter]
-    public JobSummaryItem ResumeItem { get; set; } = null;
+    public JobItemDTO ResumeItem { get; set; } = null;
 
     [Parameter]
     public PreviewMode Mode { get; set; } = PreviewMode.View;
@@ -75,7 +75,7 @@
         await base.OnInitializedAsync();
 
         if (ResumeItem == null)
-            ResumeItem = new JobSummaryItem()
+            ResumeItem = new JobItemDTO()
                 {
                     Title = "Place Holder",
                     Description = "Upload PDF Resume",

@@ -1,8 +1,64 @@
-@page "/tasks"@using MyVideoResume.Data.Models.Business
-@inherits BaseComponent<PageTitle>MyVideoResu.ME - Tasks</PageTitle><RadzenRow>    <RadzenColumn Size="12">        <RadzenText Text="Tasks" TextStyle="Radzen.Blazor.TextStyle.DisplayH2" TagName="Radzen.Blazor.TagName.Auto"></RadzenText>        <RadzenCard>            <RadzenRow>                <RadzenColumn>                    <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="0.5rem" class="rz-p-4 rz-mb-6 rz-border-radius-1" Style="border: var(--rz-grid-cell-border);">                        <RadzenLabel Text="Schedule Start Month:" />                        <RadzenSelectBar @bind-Value="@startMonth" TextProperty="Text" ValueProperty="Value" Data="@(Enum.GetValues(typeof(Month)).Cast<Month>().Select(t => new { Text = $"{t}", Value = t }))" Size="ButtonSize.Small" class="rz-display-xl-flex" />                    </RadzenStack>                    <RadzenScheduler @ref=@scheduler SlotRender=@OnSlotRender style="height: 768px;" TItem="AppointmentEntity" Data=@appointments StartProperty="Start" EndProperty="End"                                     TextProperty="Text" SelectedIndex="1"                                     SlotSelect=@OnSlotSelect AppointmentSelect=@OnAppointmentSelect AppointmentRender=@OnAppointmentRender MonthSelect=@OnMonthSelect>                        <RadzenMonthView />                        <RadzenYearPlannerView StartMonth="@startMonth" />                        <RadzenYearTimelineView StartMonth="@startMonth" />                        <RadzenYearView StartMonth="@startMonth" />                    </RadzenScheduler>                </RadzenColumn>            </RadzenRow>
-        </RadzenCard>
-    </RadzenColumn>
-</RadzenRow>@code {    RadzenScheduler<AppointmentEntity> scheduler;
+@page "/tasks"@using MyVideoResume.Abstractions.Business
+@using MyVideoResume.Data.Models.Business
+@inherits BaseComponent<PageTitle>MyVideoResu.ME - Tasks</PageTitle><RadzenRow>    <RadzenColumn Size="11">        <CreateTaskOptionsComponent Created=@Created></CreateTaskOptionsComponent>
+        <RadzenText Text="Tasks" TextStyle="Radzen.Blazor.TextStyle.DisplayH2" TagName="Radzen.Blazor.TagName.Auto"></RadzenText>        <RadzenCard>            <AuthorizeView>                <Authorized>                    <RadzenDataGrid Visible=@ShowGrid Responsive=true AllowFiltering="false" AllowColumnResize="true" AllowAlternatingRows="false" FilterMode="FilterMode.Simple" AllowSorting="true" PageSize="5" AllowPaging="true" PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true" Data="@Items" ColumnWidth="300px" LogicalFilterOperator="LogicalFilterOperator.Or" SelectionMode="DataGridSelectionMode.Single" @bind-Value=@SelectedItems>                        <Columns>                            <RadzenDataGridColumn Width="50px" Title="#" Filterable="false" Sortable="false" TextAlign="TextAlign.Center">                                <Template Context="data">                                    @(Items.IndexOf(data) + 1)                                </Template>                            </RadzenDataGridColumn>                            <RadzenDataGridColumn Property="@nameof(TodoEntity.Text)" Title="Item" Frozen="true">                                <Template Context="data">                                    <div style=" max-width: 250px; "><RadzenText style="text-overflow:ellipsis; white-space: nowrap; overflow: hidden;" TextStyle="TextStyle.Body1" title="@(data.Text)">@(data.Text)</RadzenText></div>                                </Template>                            </RadzenDataGridColumn>                            <RadzenDataGridColumn Width="75px" Property="@nameof(TodoEntity.CreationDateTime)" Title="Date Created" Frozen="false" />                            <RadzenDataGridColumn Title="Actions" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Frozen="false">                                <Template Context="data">                                    <RadzenCard Style="background-color: white; padding: 0px !important; margin:0px !important; ">                                        <RadzenButton ButtonStyle="ButtonStyle.Danger" Variant="Variant.Text" Icon="delete" Text="Delete" Click=@(()=> Delete(data)) Visible=@DisplayItem(data) />                                        <RadzenButton ButtonStyle="ButtonStyle.Dark" Variant="Variant.Text" Icon="edit" Text="Edit" Visible=@DisplayItem(data) Click=@(()=> NavigateTo("jobs/builder", data.Id)) />                                        <RadzenButton ButtonStyle="ButtonStyle.Dark" Variant="Variant.Text" Icon="preview" Text="View" Click=@(()=> NavigateTo(Paths.Jobs_View, data.Id)) />                                    </RadzenCard>                                </Template>                            </RadzenDataGridColumn>@*                             <RadzenDataGridColumn Width="125px" Title="Tools" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Frozen="false">                                <Template Context="data">                                    <RadzenSplitButton Variant="Variant.Flat" ButtonStyle="ButtonStyle.Light" Click=@(args => OpenAITools(args, data)) Text="Tools" Icon="tools_ladder">                                        <ChildContent>                                            <RadzenSplitButtonItem Text="Job Match" Value="jobmatch" Icon="join_inner" />                                        </ChildContent>                                    </RadzenSplitButton>                                </Template>                            </RadzenDataGridColumn> *@                        </Columns>                    </RadzenDataGrid>                    @*                     <RadzenRow Visible=@ShowPreview>
+                        <JobDisplayPreviewComponent Items=@Items DeleteCompleted=@DeleteCompletedHandler></JobDisplayPreviewComponent>
+                    </RadzenRow>
+ *@                </Authorized>                <NotAuthorized>                    <UnAuthorizedComponent Path=@Paths.Jobs_View></UnAuthorizedComponent>                </NotAuthorized>            </AuthorizeView>        </RadzenCard>    </RadzenColumn>
+</RadzenRow>@code {    [Inject] TaskWebService Service { get; set; }
+    public bool ShowGrid { get; set; } = true;
+    public bool ShowPreview { get { return !ShowGrid; } }
+    List<TodoDTO> Items { get; set; } = new List<TodoDTO>();
+    IList<TodoDTO> SelectedItems { get; set; } = new List<TodoDTO>();
+
+    public bool DisplayItem(TodoDTO item)
+    {
+        var result = false;
+        result = item.CreatedByUserId == Security.User.Id;
+        return result;
+    }
+
+    protected async Task Delete(TodoDTO item)
+    {
+        var result = new ResponseResult();
+        result = await Service.Delete(item.Id);
+        await ShowNotification(result);
+    }
+
+    private async Task ShowNotification(ResponseResult result)
+    {
+        if (result.ErrorMessage.HasValue())
+        {
+            ShowErrorNotification("Failed to Delete", string.Empty);
+        }
+        else
+        {
+            ShowSuccessNotification("Job Deleted", string.Empty);
+            Items = await Service.GetTasks();
+        }
+    }
+
+    async Task DeleteCompletedHandler(ResponseResult result)
+    {
+        await ShowNotification(result);
+    }
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+
+        if (Security.IsAuthenticated())
+            Items = await Service.GetTasks();
+    }
+
+    protected async Task Created(string result)
+    {
+        if (result.HasValue())
+            Items = await Service.GetTasks();
+    }
+
+    RadzenScheduler<AppointmentEntity> scheduler;
     Dictionary<DateTime, string> events = new Dictionary<DateTime, string>();
     Month startMonth = Month.January;
 

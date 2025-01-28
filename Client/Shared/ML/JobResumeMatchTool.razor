@@ -31,7 +31,12 @@
                 </RadzenColumn>
             </RadzenRow>
             <RadzenRow style="padding: 5px">
-                <RadzenButton Click=JobResumeMatchAsync IsBusy=@Busy>Match</RadzenButton>
+                <RadzenColumn>
+                    <RadzenButton Click=JobResumeMatchAsync BusyText="Processing..." Disabled=@(!JobDescription.HasValue() && !Resume.HasValue()) IsBusy=@Busy>Match</RadzenButton>
+                </RadzenColumn>
+                <RadzenColumn>
+                    <RadzenText TextStyle="TextStyle.H2">Score: @Score</RadzenText>
+                </RadzenColumn>
             </RadzenRow>
             <RadzenRow>
                 <RadzenHtmlEditor @bind-Value=@Result style="height: 275px; width:100%;" Placeholder="Results">

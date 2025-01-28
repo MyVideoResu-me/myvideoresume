@@ -3,6 +3,8 @@
 @using MyVideoResume.Abstractions.Resume
 @using MyVideoResume.Abstractions.Resume.Formats.JSONResumeFormat
 @using MyVideoResume.Client.Services.FeatureFlag
+@using MyVideoResume.Client.Shared.MetaContent
+@using MyVideoResume.Data.Models.MetaContent
 @using MyVideoResume.Data.Models.Resume
 @inherits ResumeComponent
 
@@ -430,8 +432,6 @@
 }
 
 <script src="resumeActions.js"></script>
-<link href="//vjs.zencdn.net/8.21.1/video-js.min.css" rel="stylesheet">
-<script src="//vjs.zencdn.net/8.21.1/video.min.js"></script>
 
 @code {
     public enum DisplayMode { Edit, View }
@@ -467,42 +467,15 @@
 
     protected async Task OpenMetaData(MouseEventArgs args, string id)
     {
-        //To Do (Handle the Different Formats)
-
         MetaDataEntity metaItem = null;
         if (Resume.MetaDataLookup.TryGetValue(id, out metaItem))
         {
-            var result = await DialogService.OpenAsync("Meta Data", ds =>
-    @<RadzenStack Orientation="Orientation.Vertical">
-        <RadzenCard Variant="Variant.Outlined">
-            @if(metaItem.Url.Contains("youtube.com")){
-            <div><iframe width="100%" height="315" src=@metaItem.Url title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe></div>
-
-        }
-        else
-        {
-            <video id="my-player"
-                   class="video-js"
-                   controls
-                   preload="auto"
-                   poster="//vjs.zencdn.net/v/oceans.png"
-                   data-setup='{}'>
-                <source src=@metaItem.Url />
-                <p class="vjs-no-js">
-                    To view this video please enable JavaScript, and consider upgrading to a
-                    web browser that
-                    <a href="https://videojs.com/html5-video-support/" target="_blank">
-                        supports HTML5 video
-                    </a>
-                </p>
-            </video>
-        }
-        </RadzenCard>
-    </RadzenStack>
-    );
+            //To Do (Handle the Different Formats)
+            var param = new Dictionary<string, object>();
+            param.Add("MetaData", metaItem);
+            var result = await DialogService.OpenAsync<MetaContentPlayer>(string.Empty, param);
         }
     }
-
 
     protected void Edit()
     {

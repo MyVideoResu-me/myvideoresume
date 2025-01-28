@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using MyVideoResume.Abstractions.Business;
 using MyVideoResume.Abstractions.Core;
+using MyVideoResume.Abstractions.Profiles;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 namespace MyVideoResume.Data.Models.Business;
 
 [Table("Companies")]
-public class CompanyProfileEntity : CompanyProfile
+public class CompanyProfileEntity : BusinessProfile
 {
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
