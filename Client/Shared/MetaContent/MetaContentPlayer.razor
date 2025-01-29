@@ -3,7 +3,7 @@
 @inject IJSRuntime jsRuntime
 <RadzenStack Orientation="Orientation.Vertical">
     <RadzenCard Variant="Variant.Outlined">
-        <video id=@MetaData.Id controls class="video-js">
+        <video id=@Identifier controls class="video-js">
             <p class="vjs-no-js">
                 To view this video please enable JavaScript, and consider upgrading to a
                 web browser that
@@ -18,29 +18,35 @@
 
 @code {
     [Parameter] public MetaDataEntity MetaData { get; set; }
+    public string Identifier { get; set; }
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        Identifier = $"M{MetaData.Id.ToString().Replace("-", "")}";
+        StateHasChanged();
+
         if (firstRender)
         {
             if (MetaData.MetaType == MetaType.YouTube || MetaData.MetaType == MetaType.VideoMP4 || MetaData.MetaType == MetaType.VideoWebM)
             {
                 if (MetaData.MetaType == MetaType.YouTube)
-                    await jsRuntime.InvokeVoidAsync("loadPlayer", MetaData.Id, new
+                {
+                    await jsRuntime.InvokeVoidAsync("loadPlayer", Identifier, new
                     {
                         controls = true,
                         autoplay = false,
                         preload = "auto",
-                        width = 560,
+                        width = 515,
                         height = 264,
                         techOrder = new[] { "youtube" },
                         sources = new[] {
-                        new { type =  "video/youtube", src = @MetaData.Url }
+                        new { type =  "video/youtube", src = MetaData.Url }
                 }
                     });
+                }
 
                 if (MetaData.MetaType == MetaType.VideoMP4)
                 {
-                    await jsRuntime.InvokeVoidAsync("loadPlayer", MetaData.Id, new
+                    await jsRuntime.InvokeVoidAsync("loadPlayer", Identifier, new
                     {
                         controls = true,
                         autoplay = false,
@@ -48,7 +54,7 @@
                         width = 560,
                         height = 264,
                         sources = new[] {
-                        new { type =  "video/mp4", src = @MetaData.Url }
+                        new { type =  "video/mp4", src = MetaData.Url }
                 }
                     });
 
