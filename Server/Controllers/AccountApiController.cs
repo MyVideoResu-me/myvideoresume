@@ -48,8 +48,25 @@ public partial class AccountApiController : ControllerBase
     }
 
     [Authorize]
+    [HttpGet("userprofile/{userId}")]
+    public async Task<ActionResult<ResponseResult<UserProfileDTO>>> Userprofile(string userId)
+    {
+        var result = new ResponseResult<UserProfileDTO>();
+        try
+        {
+            result = await _accountService.GetUserProfile(userId);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.Message, ex);
+            result.ErrorMessage = ex.Message;
+        }
+        return result;
+    }
+
+    [Authorize]
     [HttpPost("userprofile/updaterole")]
-    public async Task<ActionResult<ResponseResult<UserProfileDTO>>> UpdateUserProfileRole([FromBody] UserProfileRoleUpdateRequest request)
+    public async Task<ActionResult<ResponseResult<UserProfileDTO>>> UpdateUserProfileRole([FromBody] UserProfileDTO request)
     {
         var result = new ResponseResult<UserProfileDTO>();
         try

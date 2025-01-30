@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Radzen;
 using Radzen.Blazor;
+using MyVideoResume.Data.Models;
 
 namespace MyVideoResume.Client.Pages.App.Admin;
 
@@ -29,6 +30,12 @@ public partial class ApplicationUsers
 
         users = await Security.GetUsers();
     }
+
+    protected async Task ViewProfileDetails(ApplicationUser user)
+    {
+        await DialogService.OpenAsync<ViewProfileDetails>("View User", new Dictionary<string, object> { { "Id", user.Id } });
+    }
+
 
     protected async Task RowSelect(MyVideoResume.Data.Models.ApplicationUser user)
     {

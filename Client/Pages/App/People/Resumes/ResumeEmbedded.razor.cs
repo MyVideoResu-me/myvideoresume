@@ -19,6 +19,7 @@ public partial class ResumeEmbedded
 
     [Parameter]
     public String Slug { get; set; }
+    [Inject] protected ResumeWebService ResumeWebService { get; set; }
 
     [Inject] ILogger<ResumeViewer> Logger { get; set; }
 

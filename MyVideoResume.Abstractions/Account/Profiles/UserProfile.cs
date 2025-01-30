@@ -27,4 +27,6 @@ public class UserProfile : ProfileBase
 
     public DateTime? IsRoleSelectedDateTime { get; set; }
 
+    public MyVideoResumeRoles? RoleSelected { get; set; }
+
 }

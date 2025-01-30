@@ -34,33 +34,33 @@ public class AccountService
     {
         var result = new ResponseResult<UserProfileDTO>();
 
-        var userProfile = _dataContext.UserProfiles.Where(z => z.UserId == userId).Select(x => new UserProfileDTO() { Id = x.Id.ToString(), UserId = x.UserId, IsPaidAccount = x.IsPaidAccount, IsRoleSelected = x.IsRoleSelected, IsRoleSelectedDateTime = x.IsRoleSelectedDateTime, CreationDateTime = x.CreationDateTime, FirstName = x.FirstName, LastName = x.LastName, TermsOfUseAgreementAcceptedDateTime = x.TermsOfUseAgreementAcceptedDateTime, TermsOfUserAgreementVersion = x.TermsOfUserAgreementVersion }).FirstOrDefault();
+        var userProfile = _dataContext.UserProfiles.Where(z => z.UserId == userId).Select(x => new UserProfileDTO() { Id = x.Id.ToString(), UserId = x.UserId, IsPaidAccount = x.IsPaidAccount, IsRoleSelected = x.IsRoleSelected, IsRoleSelectedDateTime = x.IsRoleSelectedDateTime, CreationDateTime = x.CreationDateTime, FirstName = x.FirstName, LastName = x.LastName, TermsOfUseAgreementAcceptedDateTime = x.TermsOfUseAgreementAcceptedDateTime, TermsOfUserAgreementVersion = x.TermsOfUserAgreementVersion, RoleSelected = x.RoleSelected }).FirstOrDefault();
         result.Result = userProfile;
 
         return result;
     }
 
-    public async Task<ResponseResult<UserProfileDTO>> UpdateUserProfileRole(UserProfileRoleUpdateRequest profileRequest, string userId)
+    public async Task<ResponseResult<UserProfileDTO>> UpdateUserProfileRole(UserProfileDTO profileRequest, string userId)
     {
         var result = new ResponseResult<UserProfileDTO>();
         //Verify its the same USER...
-        if (profileRequest.UserProfile.UserId == userId)
+        if (profileRequest.UserId == userId)
         {
             var userProfile = _dataContext.UserProfiles.Where(z => z.UserId == userId).FirstOrDefault();
             if (userProfile != null)
             {
-                profileRequest.UserProfile.IsRoleSelected = true;
-                profileRequest.UserProfile.IsRoleSelectedDateTime = DateTime.UtcNow;
-                _mapper.Map(profileRequest.UserProfile, userProfile);
+                profileRequest.IsRoleSelected = true;
+                profileRequest.IsRoleSelectedDateTime = DateTime.UtcNow;
+                _mapper.Map(profileRequest, userProfile);
                 _dataContext.UserProfiles.Update(userProfile);
                 await _dataContext.SaveChangesAsync();
 
                 //We need to assign the User the selected role.
                 var user = await _userManager.FindByIdAsync(userId);
                 await _userManager.RemoveFromRolesAsync(user, new List<string> { Enum.GetName(MyVideoResumeRoles.Recruiter), Enum.GetName(MyVideoResumeRoles.JobSeeker) });
-                await _userManager.AddToRoleAsync(user, Enum.GetName(profileRequest.Role));
+                await _userManager.AddToRoleAsync(user, Enum.GetName(profileRequest.RoleSelected.Value));
             }
-            result.Result = profileRequest.UserProfile;
+            result.Result = profileRequest;
         }
 
         return result;

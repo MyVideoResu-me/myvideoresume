@@ -2,7 +2,7 @@
 @using MyVideoResume.Abstractions.Resume
 @using MyVideoResume.Abstractions.Resume.Formats.JSONResumeFormat
 @using MyVideoResume.Data.Models.Resume
-@inherits ResumeComponent
+@inherits BaseComponent
 
 <RadzenCard style="background-color:white;">
     <RadzenCard class="rz-shadow-0 rz-border-radius-0" style="margin: 5px calc(-1 * var(--rz-card-padding));background-color:white; cursor: pointer" @onclick=@(()=> NavigateTo("resumes", ResumeItem.Id.ToString()))>
@@ -41,7 +41,7 @@
 
 @code {
     [Parameter] public EventCallback<ResponseResult> DeleteCompleted { get; set; }
-
+    [Inject] protected ResumeWebService ResumeWebService { get; set; }
     [Parameter]
     public ResumeSummaryItem ResumeItem { get; set; } = null;
 

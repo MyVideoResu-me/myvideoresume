@@ -1,3 +1,4 @@
+@using MyVideoResume.Abstractions.Account.Profiles
 @attribute [Route(Paths.Profile_Settings)]
 @attribute [Authorize]
 @inherits BaseComponent
@@ -12,11 +13,10 @@
         <RadzenColumn SizeSM=12 SizeXL="12" Size="11">
             <RadzenTabs>
                 <Tabs>
- @*                    <RadzenTabsItem Text="Profile">
-                        <RadzenTemplateForm Method="post" Submit="@FormSubmit" TItem="MyVideoResume.Data.Models.JobPreferencesEntity" Data="@jobPreferences">
+                    <RadzenTabsItem Text="Profile">
+                        <RadzenTemplateForm Method="post" Submit="@SaveUserProfile" TItem="UserProfileDTO" Data="@userProfile">
                             <RadzenStack style="margin-bottom: 1rem;">
                                 <RadzenFormField Text="Salary" Variant="Variant.Outlined">
-                                    <RadzenNumeric ShowUpDown="false" @bind-Value="@jobPreferences.MinimumSalary" Placeholder="Enter or clear value" />
                                 </RadzenFormField>
                             </RadzenStack>
                             <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End">
@@ -24,9 +24,9 @@
                             </RadzenStack>
                         </RadzenTemplateForm>
 
-                    </RadzenTabsItem> *@
-                    <RadzenTabsItem Text="Account Settings">
-                        <RadzenTemplateForm Method="post" Submit="@FormSubmit" TItem="MyVideoResume.Data.Models.ApplicationUser" Data="@user"
+                    </RadzenTabsItem>
+                    <RadzenTabsItem Text="Security Settings">
+                        <RadzenTemplateForm Method="post" Submit="@SaveSecurity" TItem="MyVideoResume.Data.Models.ApplicationUser" Data="@user"
                                             Visible="@(user != null)">
                             <RadzenAlert Size="AlertSize.Large" Shade="Shade.Light" AlertStyle="AlertStyle.Danger" Variant="Variant.Flat" Title="Cannot change password" Visible="@errorVisible">@error</RadzenAlert>
                             <RadzenAlert Size="AlertSize.Large" Shade="Shade.Light" AlertStyle="AlertStyle.Success" Variant="Variant.Flat" Visible="@successVisible">
