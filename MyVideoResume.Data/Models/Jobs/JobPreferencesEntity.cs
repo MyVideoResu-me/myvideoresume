@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 using MyVideoResume.Abstractions;
 using MyVideoResume.Abstractions.Job;
 
-namespace MyVideoResume.Data.Models;
+namespace MyVideoResume.Data.Models.Jobs;
 
 [Table("JobPreferences")]
 public class JobPreferencesEntity : JobPreferences

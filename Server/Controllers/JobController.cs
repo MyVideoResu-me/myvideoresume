@@ -5,7 +5,6 @@ using MyVideoResume.Abstractions.Core;
 using MyVideoResume.Abstractions.Job;
 using MyVideoResume.Application.Job;
 using MyVideoResume.Application.Resume;
-using MyVideoResume.Data.Models;
 using MyVideoResume.Data.Models.Jobs;
 using MyVideoResume.Data.Models.Resume;
 using MyVideoResume.Documents;

@@ -6,7 +6,7 @@ using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Identity;
 
-namespace MyVideoResume.Data.Models;
+namespace MyVideoResume.Data.Models.Account;
 
 public partial class ApplicationRole : IdentityRole
 {

@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using MyVideoResume.Abstractions.Profiles;
+using MyVideoResume.Abstractions.Account.Profiles;
 using MyVideoResume.Data.Models.Jobs;
 using MyVideoResume.Data.Models.Resume;
 using System;
@@ -10,7 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MyVideoResume.Data.Models.Profiles;
+namespace MyVideoResume.Data.Models.Account.Profiles;
 
 [Table("UserProfiles")]
 public class UserProfileEntity : UserProfile

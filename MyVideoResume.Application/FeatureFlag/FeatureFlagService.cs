@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using MyVideoResume.Application.Account;
 using Splitio.Services.Client.Classes;
 using System;
 using System.Collections.Generic;

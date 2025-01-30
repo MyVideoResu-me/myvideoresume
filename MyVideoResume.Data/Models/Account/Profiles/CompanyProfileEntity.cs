@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using MyVideoResume.Abstractions.Account.Profiles;
 using MyVideoResume.Abstractions.Core;
-using MyVideoResume.Abstractions.Profiles;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -9,7 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MyVideoResume.Data.Models.Profiles;
+namespace MyVideoResume.Data.Models.Account.Profiles;
 
 [Table("Companies")]
 public class CompanyProfileEntity : BusinessProfile

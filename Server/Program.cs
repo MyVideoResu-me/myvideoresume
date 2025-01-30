@@ -27,6 +27,8 @@ using MyVideoResume.Application.Job;
 using AutoMapper;
 using MyVideoResume.Mapper;
 using Microsoft.Extensions.Caching.Hybrid;
+using MyVideoResume.Data.Models.Account;
+using MyVideoResume.Application.Account;
 
 var builder = WebApplication.CreateBuilder(args);
 //Logging

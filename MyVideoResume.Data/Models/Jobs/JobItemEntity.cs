@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MyVideoResume.Abstractions.Job;
-using MyVideoResume.Data.Models.Profiles;
+using MyVideoResume.Data.Models.Account.Profiles;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 

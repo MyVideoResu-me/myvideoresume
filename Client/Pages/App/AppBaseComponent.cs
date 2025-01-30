@@ -17,8 +17,8 @@ using static System.Net.WebRequestMethods;
 using MyVideoResume.Client.Shared.Security;
 using MyVideoResume.Client.Shared;
 using MyVideoResume.Client.Pages.App.People.Resumes;
-using MyVideoResume.Abstractions.Profiles;
 using System.IO;
+using MyVideoResume.Abstractions.Account.Profiles;
 
 namespace MyVideoResume.Client.Pages.App;
 
@@ -51,7 +51,7 @@ public class AppBaseComponent : BaseComponent
             if (Profile != null && (Profile.IsRoleSelected == null || Profile.IsRoleSelected == false))
             {
                 //TODO: Show the Welcome Message and Select a Role. Clean UP the Resume.
-                //await ShowUnAuthorized("Tes");
+                await ShowRoleSelector(Profile);
             }
         }
     }

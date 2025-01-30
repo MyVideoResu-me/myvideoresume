@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 
 using MyVideoResume.Data.Models;
+using MyVideoResume.Data.Models.Account;
 
 namespace MyVideoResume.Server.Data
 {

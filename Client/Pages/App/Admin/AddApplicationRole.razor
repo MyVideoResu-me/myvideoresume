@@ -1,9 +1,10 @@
 @page "/admin/add-application-role"
+@using MyVideoResume.Data.Models.Account
 @attribute [Authorize(Roles = "Admin")]
 @inherits BaseComponent
 <RadzenRow>
     <RadzenColumn SizeMD="12">
-        <RadzenTemplateForm TItem="MyVideoResume.Data.Models.ApplicationRole" Data="@role" Visible="@(role != null)" Submit="@FormSubmit">
+        <RadzenTemplateForm TItem="ApplicationRole" Data="@role" Visible="@(role != null)" Submit="@FormSubmit">
             <RadzenAlert Title="Cannot create role" Shade="Shade.Lighter" Variant="Variant.Flat" Size="AlertSize.Small" AlertStyle="AlertStyle.Danger" Visible="@errorVisible">@error</RadzenAlert>
 
             <RadzenStack style="margin-bottom: 1rem;">

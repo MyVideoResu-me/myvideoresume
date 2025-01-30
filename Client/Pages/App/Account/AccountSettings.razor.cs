@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Radzen;
 using Radzen.Blazor;
+using MyVideoResume.Data.Models.Jobs;
 
 namespace MyVideoResume.Client.Pages.App.Account;
 
@@ -17,7 +18,7 @@ public partial class AccountSettings
     protected string newPassword = "";
     protected string confirmPassword = "";
     protected Data.Models.ApplicationUser user;
-    protected Data.Models.JobPreferencesEntity jobPreferences;
+    protected JobPreferencesEntity jobPreferences;
     protected string error;
     protected bool errorVisible;
     protected bool successVisible;
@@ -27,7 +28,7 @@ public partial class AccountSettings
     {
         await base.OnInitializedAsync();
         user = await Security.GetUserById($"{Security.User.Id}");
-        jobPreferences = new Data.Models.JobPreferencesEntity();
+        jobPreferences = new JobPreferencesEntity();
     }
 
     protected async Task FormSubmit()

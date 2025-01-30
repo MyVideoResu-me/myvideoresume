@@ -1,25 +1,33 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using MyVideoResume.Abstractions.Account.Profiles;
 using MyVideoResume.Abstractions.Core;
-using MyVideoResume.Abstractions.Profiles;
 using MyVideoResume.Data;
 using MyVideoResume.Data.Models;
-using MyVideoResume.Data.Models.Profiles;
+using MyVideoResume.Data.Models.Account;
+using MyVideoResume.Data.Models.Account.Profiles;
+using MyVideoResume.Data.Models.Jobs;
 
-namespace MyVideoResume.Application;
+namespace MyVideoResume.Application.Account;
 
 public class AccountService
 {
 
     private readonly DataContext _dataContext;
+    private readonly IMapper _mapper;
+    private readonly ILogger<AccountService> _logger;
+    private readonly UserManager<ApplicationUser> _userManager;
+    private readonly RoleManager<ApplicationRole> _roleManager;
 
-    private readonly ILogger<AccountService> logger;
-
-
-    public AccountService(DataContext dataContextService, ILogger<AccountService> logger)
+    public AccountService(DataContext dataContextService, ILogger<AccountService> logger, IMapper mapper, UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager)
     {
         this._dataContext = dataContextService;
-        this.logger = logger;
+        this._logger = logger;
+        this._mapper = mapper;
+        this._userManager = userManager;
+        this._roleManager = roleManager;
     }
 
     public async Task<ResponseResult<UserProfileDTO>> GetUserProfile(string userId)
@@ -30,8 +38,34 @@ public class AccountService
         result.Result = userProfile;
 
         return result;
-
     }
+
+    public async Task<ResponseResult<UserProfileDTO>> UpdateUserProfileRole(UserProfileRoleUpdateRequest profileRequest, string userId)
+    {
+        var result = new ResponseResult<UserProfileDTO>();
+        //Verify its the same USER...
+        if (profileRequest.UserProfile.UserId == userId)
+        {
+            var userProfile = _dataContext.UserProfiles.Where(z => z.UserId == userId).FirstOrDefault();
+            if (userProfile != null)
+            {
+                profileRequest.UserProfile.IsRoleSelected = true;
+                profileRequest.UserProfile.IsRoleSelectedDateTime = DateTime.UtcNow;
+                _mapper.Map(profileRequest.UserProfile, userProfile);
+                _dataContext.UserProfiles.Update(userProfile);
+                await _dataContext.SaveChangesAsync();
+
+                //We need to assign the User the selected role.
+                var user = await _userManager.FindByIdAsync(userId);
+                await _userManager.RemoveFromRolesAsync(user, new List<string> { Enum.GetName(MyVideoResumeRoles.Recruiter), Enum.GetName(MyVideoResumeRoles.JobSeeker) });
+                await _userManager.AddToRoleAsync(user, Enum.GetName(profileRequest.Role));
+            }
+            result.Result = profileRequest.UserProfile;
+        }
+
+        return result;
+    }
+
 
     public async Task<UserProfileEntity> CreateUserProfile(string userId)
     {
@@ -43,14 +77,14 @@ public class AccountService
             {
                 var jobPreferences = new JobPreferencesEntity() { UserId = userId, CreationDateTime = DateTime.UtcNow, UpdateDateTime = DateTime.UtcNow };
                 _dataContext.JobPreferences.Add(jobPreferences);
-                profile = new UserProfileEntity() { FirstName = string.Empty, LastName = String.Empty, Name = string.Empty,  UserId = userId, CreationDateTime = DateTime.UtcNow, UpdateDateTime = DateTime.UtcNow, JobPreferences = jobPreferences };
+                profile = new UserProfileEntity() { FirstName = string.Empty, LastName = string.Empty, UserId = userId, CreationDateTime = DateTime.UtcNow, UpdateDateTime = DateTime.UtcNow, JobPreferences = jobPreferences };
                 _dataContext.UserProfiles.Add(profile);
                 await _dataContext.SaveChangesAsync();
             }
         }
         catch (Exception ex)
         {
-            logger.LogError(ex.Message, ex);
+            _logger.LogError(ex.Message, ex);
             throw;
         }
 
@@ -85,7 +119,7 @@ public class AccountService
         }
         catch (Exception ex)
         {
-            logger.LogError(ex.Message, ex);
+            _logger.LogError(ex.Message, ex);
             throw;
         }
 

@@ -1,10 +1,10 @@
 ﻿using DocumentFormat.OpenXml.Office2010.Excel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using MyVideoResume.Abstractions.Account.Profiles;
 using MyVideoResume.Abstractions.Core;
 using MyVideoResume.Abstractions.Job;
-using MyVideoResume.Abstractions.Profiles;
-using MyVideoResume.Application;
+using MyVideoResume.Application.Account;
 using MyVideoResume.Application.Job;
 using MyVideoResume.Application.Resume;
 using MyVideoResume.Data.Models;
@@ -38,6 +38,24 @@ public partial class AccountApiController : ControllerBase
         {
             var id = User.FindFirstValue(ClaimTypes.NameIdentifier);
             result = await _accountService.GetUserProfile(id);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.Message, ex);
+            result.ErrorMessage = ex.Message;
+        }
+        return result;
+    }
+
+    [Authorize]
+    [HttpPost("userprofile/updaterole")]
+    public async Task<ActionResult<ResponseResult<UserProfileDTO>>> UpdateUserProfileRole([FromBody] UserProfileRoleUpdateRequest request)
+    {
+        var result = new ResponseResult<UserProfileDTO>();
+        try
+        {
+            var id = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            result = await _accountService.UpdateUserProfileRole(request, id);
         }
         catch (Exception ex)
         {

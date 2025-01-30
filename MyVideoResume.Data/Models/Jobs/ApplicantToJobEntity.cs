@@ -1,5 +1,5 @@
 ﻿using MyVideoResume.Abstractions.Core;
-using MyVideoResume.Data.Models.Profiles;
+using MyVideoResume.Data.Models.Account.Profiles;
 using MyVideoResume.Data.Models.Resume;
 using System;
 using System.Collections.Generic;

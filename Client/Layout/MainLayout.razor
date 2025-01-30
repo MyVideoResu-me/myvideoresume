@@ -23,8 +23,8 @@
                         <Authorized>
                             <RadzenProfileMenu Click="@ProfileMenuClick">
                                 <ChildContent>
-                                    <RadzenProfileMenuItem Path="account/settings" Icon="manage_accounts" Text="My Account" title="My Account" />
-                                    <RadzenProfileMenuItem Path="dashboard" Icon="manage_accounts" Text="Dashboard" />
+                                    <RadzenProfileMenuItem Path=@Paths.Profile_Settings Icon="manage_accounts" Text="My Account" title="My Account" />
+                                    <RadzenProfileMenuItem Path=@Paths.Dashboard_View Icon="manage_accounts" Text="Dashboard" />
                                     <RadzenProfileMenuItem Path=@Paths.Admin_BackgroundJobsPortal Icon="smart_toy" Text="Portal" Visible="@Security.IsInRole("Admin")" />
                                     <RadzenProfileMenuItem Path=@Paths.Admin_ApplicationUsers Icon="person" Text="Users" Visible="@Security.IsInRole("Admin")" />
                                     <RadzenProfileMenuItem Path=@Paths.Admin_ApplicationRoles Icon="security" Text="Roles" Visible="@Security.IsInRole("Admin")" />

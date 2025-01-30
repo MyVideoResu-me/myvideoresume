@@ -7,6 +7,9 @@ using MyVideoResume.Application;
 using MyVideoResume.Services;
 using DocumentFormat.OpenXml.EMMA;
 using DocumentFormat.OpenXml.Spreadsheet;
+using MyVideoResume.Data.Models.Account;
+using MyVideoResume.Application.Account;
+using MyVideoResume.Abstractions.Core;
 
 namespace MyVideoResume.Server.Controllers;
 

@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using MyVideoResume.Data.Models.Profiles;
+using MyVideoResume.Data.Models.Account.Profiles;
 
 namespace MyVideoResume.Data.Models.Business;
 

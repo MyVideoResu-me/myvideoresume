@@ -15,6 +15,7 @@ using MyVideoResume.Client.Pages.App.People.Resumes.Templates;
 using BlazorTemplater;
 using static System.Net.WebRequestMethods;
 using MyVideoResume.Client.Shared.Security;
+using MyVideoResume.Abstractions.Account.Profiles;
 
 namespace MyVideoResume.Client.Shared;
 
@@ -79,6 +80,15 @@ public class BaseComponent : LayoutComponentBase
         var result = await DialogService.OpenAsync<UnAuthorizedComponent>("Sign In / Create Account", param);
         return result;
     }
+
+    public async Task<dynamic> ShowRoleSelector(UserProfileDTO profile)
+    {
+        var param = new Dictionary<string, object>();
+        param.Add("Profile", profile);
+        var result = await DialogService.OpenAsync<WelcomeRoleSelectorComponent>("Welcome to MyVideoResu.ME", param, new DialogOptions() { CloseDialogOnEsc = false, CloseDialogOnOverlayClick = false, ShowClose = false });
+        return result;
+    }
+
     public void ShowSuccessNotification(string title, string message)
     {
         ShowNotification(title, message, NotificationSeverity.Success);

@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Identity;
+using MyVideoResume.Data.Models.Account;
 
 namespace MyVideoResume.Data.Models;
 

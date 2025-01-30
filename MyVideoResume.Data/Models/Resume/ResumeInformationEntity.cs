@@ -4,7 +4,7 @@ using MyVideoResume.Abstractions.Resume;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
 using MyVideoResume.Data.Models.MetaContent;
-using MyVideoResume.Data.Models.Profiles;
+using MyVideoResume.Data.Models.Account.Profiles;
 
 namespace MyVideoResume.Data.Models.Resume;
 

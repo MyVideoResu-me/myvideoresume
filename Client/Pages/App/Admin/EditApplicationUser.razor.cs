@@ -7,12 +7,13 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Radzen;
 using Radzen.Blazor;
+using MyVideoResume.Data.Models.Account;
 
 namespace MyVideoResume.Client.Pages.App.Admin;
 
 public partial class EditApplicationUser
 {
-    protected IEnumerable<MyVideoResume.Data.Models.ApplicationRole> roles;
+    protected IEnumerable<ApplicationRole> roles;
     protected MyVideoResume.Data.Models.ApplicationUser user;
     protected IEnumerable<string> userRoles;
     protected string error;

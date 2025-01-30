@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Primitives;
 using MyVideoResume.Abstractions.Core;
 using MyVideoResume.Abstractions.Resume;
+using MyVideoResume.Application.Account;
 using MyVideoResume.Data;
 using MyVideoResume.Data.Models.Resume;
 using MyVideoResume.Web.Common;

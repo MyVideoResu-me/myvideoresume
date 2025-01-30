@@ -14,11 +14,13 @@ using Radzen;
 using MyVideoResume.Data.Models;
 using MyVideoResume.Client.Shared.Security.Recaptcha;
 using MyVideoResume.Web.Common;
-using MyVideoResume.Abstractions.Profiles;
 using MyVideoResume.Data.Models.Jobs;
 using MyVideoResume.Abstractions.Core;
 using HarfBuzzSharp;
 using Microsoft.Extensions.Caching.Hybrid;
+using MyVideoResume.Abstractions.Match;
+using MyVideoResume.Data.Models.Account;
+using MyVideoResume.Abstractions.Account.Profiles;
 
 namespace MyVideoResume.Client.Services;
 
@@ -132,6 +134,38 @@ public partial class SecurityWebService : BaseWebService
 
         return result;
     }
+
+    public async Task<ResponseResult<UserProfileDTO>> UpdateUserProfile(UserProfileDTO profile, MyVideoResumeRoles role)
+    {
+        var result = new ResponseResult<UserProfileDTO>();
+        try
+        {
+            await _cache.RemoveAsync(CacheKeys.UserProfile);
+            var userProfileResult = await _cache.GetOrCreateAsync(CacheKeys.UserProfile, async (x) =>
+            {
+                //Call API 
+                var uri = new Uri($"{_navigationManager.BaseUri}api/account/userprofile/updaterole");
+                var request = new UserProfileRoleUpdateRequest() { UserProfile = profile, Role = role };
+                var response = await _httpClient.PostAsJsonAsync<UserProfileRoleUpdateRequest>(uri, request);
+                result = await response.ReadAsync<ResponseResult<UserProfileDTO>>();
+
+                if (result.ErrorMessage.HasValue() || result.Result == null)
+                    throw new NullReferenceException();
+
+                return result;
+            });
+
+            result = userProfileResult;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.Message, ex);
+            result.ErrorMessage = ex.Message;
+        }
+
+        return result;
+    }
+
 
     //TODO: GET COMPANY PROFILE
 

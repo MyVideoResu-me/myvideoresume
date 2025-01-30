@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MyVideoResume.Abstractions.Profiles;
+namespace MyVideoResume.Abstractions.Account.Profiles;
 
 public class UserProfileDTO : UserProfile
 {

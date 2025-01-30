@@ -7,13 +7,14 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Radzen;
 using Radzen.Blazor;
+using MyVideoResume.Data.Models.Account;
 
 namespace MyVideoResume.Client.Pages.App.Admin;
 
 public partial class ApplicationRoles
 {
-    protected IEnumerable<MyVideoResume.Data.Models.ApplicationRole> roles;
-    protected RadzenDataGrid<MyVideoResume.Data.Models.ApplicationRole> grid0;
+    protected IEnumerable<ApplicationRole> roles;
+    protected RadzenDataGrid<ApplicationRole> grid0;
     protected string error;
     protected bool errorVisible;
 
@@ -30,7 +31,7 @@ public partial class ApplicationRoles
         roles = await Security.GetRoles();
     }
 
-    protected async Task DeleteClick(MyVideoResume.Data.Models.ApplicationRole role)
+    protected async Task DeleteClick(ApplicationRole role)
     {
         try
         {

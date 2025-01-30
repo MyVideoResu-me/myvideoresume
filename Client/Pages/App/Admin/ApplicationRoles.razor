@@ -1,4 +1,5 @@
 @page "/admin/application-roles"
+@using MyVideoResume.Data.Models.Account
 @attribute [Authorize(Roles = "Admin")]
 @inherits BaseComponent
 <PageTitle>Roles</PageTitle>
@@ -16,10 +17,10 @@
     <RadzenRow>
         <RadzenColumn SizeMD="12">
             <RadzenAlert Size="AlertSize.Large" Shade="Shade.Light" AlertStyle="AlertStyle.Danger" Variant="Variant.Flat" Title="Cannot delete role" Visible="@errorVisible">@error</RadzenAlert>
-            <RadzenDataGrid @ref="grid0" AllowFiltering="true" AllowPaging="true" ShowPagingSummary="true" PageSizeOptions=@(new int[]{5, 10, 20, 30}) AllowSorting="true" Data="@roles" TItem="MyVideoResume.Data.Models.ApplicationRole">
+            <RadzenDataGrid @ref="grid0" AllowFiltering="true" AllowPaging="true" ShowPagingSummary="true" PageSizeOptions=@(new int[]{5, 10, 20, 30}) AllowSorting="true" Data="@roles" TItem="ApplicationRole">
                 <Columns>
-                    <RadzenDataGridColumn TItem="MyVideoResume.Data.Models.ApplicationRole" Property="Name" Title="Name" />
-                    <RadzenDataGridColumn TItem="MyVideoResume.Data.Models.ApplicationRole" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Width="70px">
+                    <RadzenDataGridColumn TItem="ApplicationRole" Property="Name" Title="Name" />
+                    <RadzenDataGridColumn TItem="ApplicationRole" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Width="70px">
                         <Template Context="role">
                             <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="close" Size="ButtonSize.Small"
                                 Variant="Variant.Flat" Shade="Shade.Lighter" Click="@(() => DeleteClick(role))" @onclick:stopPropagation="true" />
