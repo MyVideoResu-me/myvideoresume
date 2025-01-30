@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MyVideoResume.Abstractions.Communications;
+using MyVideoResume.Data.Models.Profiles;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;

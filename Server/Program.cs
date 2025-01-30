@@ -26,6 +26,7 @@ using MyVideoResume.Client.Services.FeatureFlag;
 using MyVideoResume.Application.Job;
 using AutoMapper;
 using MyVideoResume.Mapper;
+using Microsoft.Extensions.Caching.Hybrid;
 
 var builder = WebApplication.CreateBuilder(args);
 //Logging
@@ -144,6 +145,9 @@ var mapperConfiguration = new MapperConfiguration(configuration =>
 });
 var mapper = mapperConfiguration.CreateMapper();
 builder.Services.AddSingleton(mapper);
+#pragma warning disable EXTEXP0018 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
+builder.Services.AddHybridCache();
+#pragma warning restore EXTEXP0018 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
 
 builder.Host.UseSerilog();
 

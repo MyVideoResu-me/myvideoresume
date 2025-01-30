@@ -9,7 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MyVideoResume.Data.Models.Business;
+namespace MyVideoResume.Data.Models.Profiles;
 
 [Table("Companies")]
 public class CompanyProfileEntity : BusinessProfile

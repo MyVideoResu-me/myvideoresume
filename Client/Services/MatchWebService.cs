@@ -7,19 +7,16 @@ using MyVideoResume.Web.Common;
 using System.Net.Http.Json;
 using MyVideoResume.Data.Models.Jobs;
 using MyVideoResume.Abstractions.Match;
+using Microsoft.Extensions.Caching.Hybrid;
 
 namespace MyVideoResume.Client.Services;
 
-public partial class MatchWebService
+public partial class MatchWebService: BaseWebService
 {
-    private readonly HttpClient _httpClient;
-    private readonly NavigationManager _navigationManager;
     private readonly ILogger<MatchWebService> _logger;
 
-    public MatchWebService(NavigationManager navigationManager, IHttpClientFactory factory, ILogger<MatchWebService> logger)
+    public MatchWebService(HybridCache cache, NavigationManager navigationManager, IHttpClientFactory factory, ILogger<MatchWebService> logger) : base(cache, factory, navigationManager)
     {
-        this._httpClient = factory.CreateClient(Constants.HttpClientFactory);
-        this._navigationManager = navigationManager;
         this._logger = logger;
     }
 

@@ -54,6 +54,11 @@ public static class Constants
     public const string BaseUriConfigurationProperty = "BaseUri";
 }
 
+public static class CacheKeys
+{
+    public const string UserProfile = "UserProfile";
+}
+
 
 public static class Extensions
 {

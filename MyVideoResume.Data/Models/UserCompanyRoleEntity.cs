@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MyVideoResume.Abstractions.Core;
-using MyVideoResume.Data.Models.Business;
 using MyVideoResume.Data.Models.Jobs;
+using MyVideoResume.Data.Models.Profiles;
 using MyVideoResume.Data.Models.Resume;
 using System;
 using System.Collections.Generic;

@@ -10,6 +10,11 @@ using System.Threading.Tasks;
 
 namespace MyVideoResume.Abstractions.Profiles;
 
+public class UserProfileDTO : UserProfile
+{
+    public string Id { get; set; }
+}
+
 public class UserProfile : ProfileBase
 {
     public string FirstName { get; set; }
@@ -17,4 +22,9 @@ public class UserProfile : ProfileBase
     public string LastName { get; set; }
 
     public DateTime? DateOfBirth { get; set; }
+
+    public bool? IsRoleSelected { get; set; }
+
+    public DateTime? IsRoleSelectedDateTime { get; set; }
+
 }

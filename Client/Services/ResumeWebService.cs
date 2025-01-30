@@ -23,22 +23,19 @@ using MyVideoResume.Client.Shared;
 using MyVideoResume.Web.Common;
 using System.Net.Http.Json;
 using MyVideoResume.Abstractions.Match;
+using Microsoft.Extensions.Caching.Hybrid;
 //using Refit;
 
 namespace MyVideoResume.Client.Services;
 
-public partial class ResumeWebService
+public partial class ResumeWebService : BaseWebService
 {
-    private readonly HttpClient _httpClient;
-    private readonly NavigationManager _navigationManager;
     private readonly MatchWebService matchWebService;
     private readonly SecurityWebService _securityService;
     private readonly ILogger<ResumeWebService> _logger;
 
-    public ResumeWebService(NavigationManager navigationManager, IHttpClientFactory factory, ILogger<ResumeWebService> logger, SecurityWebService securityService, MatchWebService matchWebService)
+    public ResumeWebService(HybridCache cache, NavigationManager navigationManager, IHttpClientFactory factory, ILogger<ResumeWebService> logger, SecurityWebService securityService, MatchWebService matchWebService) : base(cache, factory, navigationManager)
     {
-        this._httpClient = factory.CreateClient(Constants.HttpClientFactory);
-        this._navigationManager = navigationManager;
         this._logger = logger;
         this._securityService = securityService;
         this.matchWebService = matchWebService;

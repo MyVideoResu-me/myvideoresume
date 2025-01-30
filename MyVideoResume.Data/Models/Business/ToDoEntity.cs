@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using MyVideoResume.Abstractions.Core;
+using MyVideoResume.Data.Models.Profiles;
 
 namespace MyVideoResume.Data.Models.Business;
 

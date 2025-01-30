@@ -6,19 +6,16 @@ using MyVideoResume.Web.Common;
 using System.Net.Http.Json;
 using MyVideoResume.Data.Models.Business;
 using MyVideoResume.Abstractions.Business;
+using Microsoft.Extensions.Caching.Hybrid;
 
 namespace MyVideoResume.Client.Services;
 
-public partial class TaskWebService
+public partial class TaskWebService : BaseWebService
 {
-    private readonly HttpClient _httpClient;
-    private readonly NavigationManager _navigationManager;
     private readonly ILogger<TaskWebService> _logger;
 
-    public TaskWebService(NavigationManager navigationManager, IHttpClientFactory factory, ILogger<TaskWebService> logger)
+    public TaskWebService(HybridCache cache, NavigationManager navigationManager, IHttpClientFactory factory, ILogger<TaskWebService> logger) : base(cache, factory, navigationManager)
     {
-        this._httpClient = factory.CreateClient(Constants.HttpClientFactory);
-        this._navigationManager = navigationManager;
         this._logger = logger;
     }
 

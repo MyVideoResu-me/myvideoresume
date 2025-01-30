@@ -10,10 +10,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MyVideoResume.Data.Models;
+namespace MyVideoResume.Data.Models.Profiles;
 
 [Table("UserProfiles")]
-public class UserProfileEntity: UserProfile
+public class UserProfileEntity : UserProfile
 {
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]

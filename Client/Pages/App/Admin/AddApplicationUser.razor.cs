@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Components.Web;
 using Radzen;
 using Radzen.Blazor;
 
-namespace MyVideoResume.Client.Pages.Admin;
+namespace MyVideoResume.Client.Pages.App.Admin;
 
 public partial class AddApplicationUser
 {

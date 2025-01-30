@@ -116,7 +116,6 @@ public partial class ResumeController : ControllerBase
             _logger.LogError(ex.Message, ex);
         }
         return result;
-
     }
 
     [Authorize]
@@ -206,7 +205,7 @@ public partial class ResumeController : ControllerBase
                 {
                     result = await _resumeService.CreateResume(id, resumeJson);
                 }
-                else 
+                else
                 {
                     var temppdfresult = await _engine.ResumeParseJSON(resumeJson);
                     if (!temppdfresult.ErrorMessage.HasValue())

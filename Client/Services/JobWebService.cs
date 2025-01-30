@@ -6,19 +6,16 @@ using MyVideoResume.Abstractions.Job;
 using MyVideoResume.Web.Common;
 using System.Net.Http.Json;
 using MyVideoResume.Data.Models.Jobs;
+using Microsoft.Extensions.Caching.Hybrid;
 
 namespace MyVideoResume.Client.Services;
 
-public partial class JobWebService
+public partial class JobWebService : BaseWebService
 {
-    private readonly HttpClient _httpClient;
-    private readonly NavigationManager _navigationManager;
     private readonly ILogger<JobWebService> _logger;
 
-    public JobWebService(NavigationManager navigationManager, IHttpClientFactory factory, ILogger<JobWebService> logger)
+    public JobWebService(HybridCache cache, NavigationManager navigationManager, IHttpClientFactory factory, ILogger<JobWebService> logger) : base(cache, factory, navigationManager)
     {
-        this._httpClient = factory.CreateClient(Constants.HttpClientFactory);
-        this._navigationManager = navigationManager;
         this._logger = logger;
     }
 

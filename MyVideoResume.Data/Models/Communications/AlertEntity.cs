@@ -2,7 +2,7 @@
 using MyVideoResume.Abstractions.Business;
 using MyVideoResume.Abstractions.Communications;
 using MyVideoResume.Abstractions.Core;
-using MyVideoResume.Data.Models.Business;
+using MyVideoResume.Data.Models.Profiles;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 

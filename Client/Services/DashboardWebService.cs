@@ -19,16 +19,17 @@ using MyVideoResume.Data.Models.Resume;
 using MyVideoResume.Abstractions.Core;
 using static System.Net.WebRequestMethods;
 using MyVideoResume.Abstractions.Resume;
+using Microsoft.Extensions.Caching.Hybrid;
 
 namespace MyVideoResume.Client.Services;
 
-public partial class DashboardWebService
+public partial class DashboardWebService : BaseWebService
 {
     private readonly ResumeWebService _resumeService;
 
     private readonly ILogger<DashboardWebService> _logger;
 
-    public DashboardWebService(NavigationManager navigationManager, IHttpClientFactory factory, ILogger<DashboardWebService> logger, DataContext dataContext, SecurityWebService securityService, ResumeWebService resumeService)
+    public DashboardWebService(HybridCache cache, NavigationManager navigationManager, IHttpClientFactory factory, ILogger<DashboardWebService> logger, ResumeWebService resumeService) : base(cache, factory, navigationManager)
     {
         _logger = logger;
         _resumeService = resumeService;

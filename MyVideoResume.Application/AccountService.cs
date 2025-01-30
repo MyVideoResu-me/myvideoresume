@@ -1,7 +1,10 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using MyVideoResume.Abstractions.Core;
+using MyVideoResume.Abstractions.Profiles;
 using MyVideoResume.Data;
 using MyVideoResume.Data.Models;
-using MyVideoResume.Data.Models.Business;
+using MyVideoResume.Data.Models.Profiles;
 
 namespace MyVideoResume.Application;
 
@@ -17,6 +20,17 @@ public class AccountService
     {
         this._dataContext = dataContextService;
         this.logger = logger;
+    }
+
+    public async Task<ResponseResult<UserProfileDTO>> GetUserProfile(string userId)
+    {
+        var result = new ResponseResult<UserProfileDTO>();
+
+        var userProfile = _dataContext.UserProfiles.Where(z => z.UserId == userId).Select(x => new UserProfileDTO() { Id = x.Id.ToString(), UserId = x.UserId, IsPaidAccount = x.IsPaidAccount, IsRoleSelected = x.IsRoleSelected, IsRoleSelectedDateTime = x.IsRoleSelectedDateTime, CreationDateTime = x.CreationDateTime, FirstName = x.FirstName, LastName = x.LastName, TermsOfUseAgreementAcceptedDateTime = x.TermsOfUseAgreementAcceptedDateTime, TermsOfUserAgreementVersion = x.TermsOfUserAgreementVersion }).FirstOrDefault();
+        result.Result = userProfile;
+
+        return result;
+
     }
 
     public async Task<UserProfileEntity> CreateUserProfile(string userId)

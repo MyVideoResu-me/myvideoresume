@@ -36,5 +36,5 @@
 
     protected async Task OpenJobMatchAnalysis(ResumeSummaryItem item)
     {
-        var result = await DialogService.OpenAsync("Job Match", ds =>            @<ResumeJobMatchWizard ResumeSummaryItem=@item></ResumeJobMatchWizard>        );
+        var result = await DialogService.OpenAsync("Job Match", ds =>            @<ResumeJobMatchWizardComponent ResumeSummaryItem=@item></ResumeJobMatchWizardComponent>        );
     }}

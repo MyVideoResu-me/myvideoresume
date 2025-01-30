@@ -7,37 +7,28 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Radzen;
 using Radzen.Blazor;
+using MyVideoResume.Client.Services;
 
-namespace MyVideoResume.Client.Pages.Admin;
+namespace MyVideoResume.Client.Pages.App.Admin;
 
-public partial class EditApplicationUser
+public partial class AddApplicationRole
 {
-    protected IEnumerable<MyVideoResume.Data.Models.ApplicationRole> roles;
-    protected MyVideoResume.Data.Models.ApplicationUser user;
-    protected IEnumerable<string> userRoles;
+    protected MyVideoResume.Data.Models.ApplicationRole role;
     protected string error;
     protected bool errorVisible;
-
-    [Parameter]
-    public string Id { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
-
-        user = await Security.GetUserById($"{Id}");
-
-        userRoles = user.Roles.Select(role => role.Id);
-
-        roles = await Security.GetRoles();
+        role = new MyVideoResume.Data.Models.ApplicationRole();
     }
 
-    protected async Task FormSubmit(MyVideoResume.Data.Models.ApplicationUser user)
+    protected async Task FormSubmit(MyVideoResume.Data.Models.ApplicationRole role)
     {
         try
         {
-            user.Roles = roles.Where(role => userRoles.Contains(role.Id)).ToList();
-            await Security.UpdateUser($"{Id}", user);
+            await Security.CreateRole(role);
+
             DialogService.Close(null);
         }
         catch (Exception ex)

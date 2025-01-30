@@ -5,8 +5,8 @@ using Microsoft.EntityFrameworkCore;
 using MyVideoResume.Data.Models;
 using MyVideoResume.Data.Models.Resume;
 using MyVideoResume.Data.Models.Jobs;
-using MyVideoResume.Data.Models.Business;
 using MyVideoResume.Data.Models.MetaContent;
+using MyVideoResume.Data.Models.Profiles;
 
 namespace MyVideoResume.Data;
 
