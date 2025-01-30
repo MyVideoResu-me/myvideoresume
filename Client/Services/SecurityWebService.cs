@@ -121,6 +121,8 @@ public partial class SecurityWebService : BaseWebService
 
                 return result;
             });
+
+            result = profile;
         }
         catch (Exception ex)
         {
