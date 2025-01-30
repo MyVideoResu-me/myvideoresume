@@ -39,6 +39,7 @@ public class AppBaseComponent : BaseComponent
             else
             {
                 Profile = response.Result;
+                StateHasChanged();
             }
         }
     }
@@ -47,7 +48,7 @@ public class AppBaseComponent : BaseComponent
     {
         if (firstRender)
         {
-            if (Profile.IsRoleSelected == null || Profile.IsRoleSelected == false)
+            if (Profile != null && (Profile.IsRoleSelected == null || Profile.IsRoleSelected == false))
             {
                 //TODO: Show the Welcome Message and Select a Role. Clean UP the Resume.
                 //await ShowUnAuthorized("Tes");

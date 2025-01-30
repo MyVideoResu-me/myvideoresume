@@ -43,7 +43,7 @@ public class AccountService
             {
                 var jobPreferences = new JobPreferencesEntity() { UserId = userId, CreationDateTime = DateTime.UtcNow, UpdateDateTime = DateTime.UtcNow };
                 _dataContext.JobPreferences.Add(jobPreferences);
-                profile = new UserProfileEntity() { FirstName = string.Empty, LastName = String.Empty, UserId = userId, CreationDateTime = DateTime.UtcNow, UpdateDateTime = DateTime.UtcNow, JobPreferences = jobPreferences };
+                profile = new UserProfileEntity() { FirstName = string.Empty, LastName = String.Empty, Name = string.Empty,  UserId = userId, CreationDateTime = DateTime.UtcNow, UpdateDateTime = DateTime.UtcNow, JobPreferences = jobPreferences };
                 _dataContext.UserProfiles.Add(profile);
                 await _dataContext.SaveChangesAsync();
             }
