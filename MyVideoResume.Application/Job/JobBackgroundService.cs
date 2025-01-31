@@ -116,6 +116,7 @@ public class JobBackgroundService
                                     tempJob.Origin = JobOrigin.Crawler;
                                     tempJob.OriginalWebsiteUrl = url;
                                     tempJob.Industry = new() { Industry.IT };
+                                    tempJob.UserId = string.Empty;
                                     _dataContext.Jobs.Add(tempJob);
                                     _dataContext.SaveChanges();
                                 }

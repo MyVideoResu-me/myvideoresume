@@ -29,7 +29,7 @@ public enum JobStatus
 public class JobBase : GISData
 {
     //CreatedByUser
-    public string UserId { get; set; }
+    public string? UserId { get; set; }
     public string? ContactUserId { get; set; }
 
     public string Title { get; set; }
