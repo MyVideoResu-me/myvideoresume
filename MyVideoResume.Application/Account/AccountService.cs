@@ -30,6 +30,12 @@ public class AccountService
         this._roleManager = roleManager;
     }
 
+    public async Task<List<string>> GetUserRoles(string userId)
+    {
+        var result  = await _userManager.GetRolesAsync(await _userManager.FindByIdAsync(userId));
+        return result.ToList();
+    }
+
     public async Task<ResponseResult<UserProfileDTO>> GetUserProfile(string userId)
     {
         var result = new ResponseResult<UserProfileDTO>();
@@ -57,8 +63,10 @@ public class AccountService
 
                 //We need to assign the User the selected role.
                 var user = await _userManager.FindByIdAsync(userId);
-                await _userManager.RemoveFromRolesAsync(user, new List<string> { Enum.GetName(MyVideoResumeRoles.Recruiter), Enum.GetName(MyVideoResumeRoles.JobSeeker) });
+                await _userManager.RemoveFromRoleAsync(user, Enum.GetName(MyVideoResumeRoles.Recruiter));
+                await _userManager.RemoveFromRoleAsync(user, Enum.GetName(MyVideoResumeRoles.JobSeeker));
                 await _userManager.AddToRoleAsync(user, Enum.GetName(profileRequest.RoleSelected.Value));
+                var userRoles = _userManager.GetRolesAsync(user);
             }
             result.Result = profileRequest;
         }

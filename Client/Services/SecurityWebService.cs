@@ -81,6 +81,11 @@ public partial class SecurityWebService : BaseWebService
 
     public bool IsInRole(params string[] roles)
     {
+        return Task.Run(async () => await IsInRoleAsync(roles)).Result;
+    }
+
+    public async Task<bool> IsInRoleAsync(params string[] roles)
+    {
 #if DEBUG
         if (User?.Name == "admin")
         {
@@ -93,7 +98,18 @@ public partial class SecurityWebService : BaseWebService
             return false;
         }
 
-        return roles.Any(role => Principal.IsInRole(role));
+        var rolesFound = await _cache.GetOrCreateAsync(CacheKeys.UserRoles, async (x) =>
+        {
+            var uri = new Uri($"{_navigationManager.BaseUri}api/account/userroles");
+            var response = await _httpClient.GetAsync(uri);
+            var roles = await response.ReadAsync<List<string>>();
+
+            return roles.ToHashSet();
+        });
+
+        var result = roles.Any(role => rolesFound.Contains(role));
+
+        return result;
     }
 
     public bool IsAuthenticated()
@@ -156,12 +172,13 @@ public partial class SecurityWebService : BaseWebService
         return result;
     }
 
-    public async Task<ResponseResult<UserProfileDTO>> UpdateUserProfile(UserProfileDTO profile, MyVideoResumeRoles role)
+    public async Task<ResponseResult<UserProfileDTO>> UpdateUserProfileRole(UserProfileDTO profile, MyVideoResumeRoles role)
     {
         var result = new ResponseResult<UserProfileDTO>();
         try
         {
             await _cache.RemoveAsync(CacheKeys.UserProfile);
+            await _cache.RemoveAsync(CacheKeys.UserRoles);
             var userProfileResult = await _cache.GetOrCreateAsync(CacheKeys.UserProfile, async (x) =>
             {
                 //Call API 

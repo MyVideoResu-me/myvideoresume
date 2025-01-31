@@ -60,6 +60,7 @@ public static class Constants
 public static class CacheKeys
 {
     public const string UserProfile = "UserProfile";
+    public const string UserRoles = "UserRoles";
 }
 
 

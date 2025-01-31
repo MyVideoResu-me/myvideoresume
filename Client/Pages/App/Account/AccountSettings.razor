@@ -5,7 +5,7 @@
 <PageTitle>Profile</PageTitle>
 <RadzenStack>
     <RadzenRow AlignItems="AlignItems.Center">
-        <RadzenColumn SizeSM="12" SizeXL="12" Size="11" >
+        <RadzenColumn SizeSM="12" SizeXL="12" Size="11">
             <RadzenText Text="Profile" TextStyle="TextStyle.H3" TagName="TagName.H1" style="margin: 0" />
         </RadzenColumn>
     </RadzenRow>
@@ -13,14 +13,20 @@
         <RadzenColumn SizeSM=12 SizeXL="12" Size="11">
             <RadzenTabs>
                 <Tabs>
-                    <RadzenTabsItem Text="Profile">
+                    <RadzenTabsItem Text="Profile Settings">
                         <RadzenTemplateForm Method="post" Submit="@SaveUserProfile" TItem="UserProfileDTO" Data="@userProfile">
                             <RadzenStack style="margin-bottom: 1rem;">
-                                <RadzenFormField Text="Salary" Variant="Variant.Outlined">
+                                <RadzenFormField Text="Role" Variant="Variant.Outlined">
+                                    <RadzenSelectBar @bind-Value=@value TValue="bool" Size="ButtonSize.Large" Style="padding:5px;">
+                                        <Items>
+                                            <RadzenSelectBarItem Icon="search" Text="Job Seeker" Value="true" />
+                                            <RadzenSelectBarItem Icon="apartment" Text="Recruiter / Company" Value="false" />
+                                        </Items>
+                                    </RadzenSelectBar>
                                 </RadzenFormField>
                             </RadzenStack>
                             <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End">
-                                <RadzenButton ButtonType="ButtonType.Submit" Text="Save Preferences" Variant="Variant.Flat" />
+                                <RadzenButton ButtonType="ButtonType.Submit" IsBusy=@isBusy  BusyText="Processing..." Text="Save" Variant="Variant.Flat" />
                             </RadzenStack>
                         </RadzenTemplateForm>
 
@@ -29,10 +35,7 @@
                         <RadzenTemplateForm Method="post" Submit="@SaveSecurity" TItem="MyVideoResume.Data.Models.ApplicationUser" Data="@user"
                                             Visible="@(user != null)">
                             <RadzenAlert Size="AlertSize.Large" Shade="Shade.Light" AlertStyle="AlertStyle.Danger" Variant="Variant.Flat" Title="Cannot change password" Visible="@errorVisible">@error</RadzenAlert>
-                            <RadzenAlert Size="AlertSize.Large" Shade="Shade.Light" AlertStyle="AlertStyle.Success" Variant="Variant.Flat" Visible="@successVisible">
-                                Your password has been changed.
-                            </RadzenAlert>
-
+                            <RadzenAlert Size="AlertSize.Large" Shade="Shade.Light" AlertStyle="AlertStyle.Success" Variant="Variant.Flat" Visible="@successVisible">Your password has been changed.</RadzenAlert>
                             <RadzenStack style="margin-bottom: 1rem;">
                                 <RadzenFormField Text="Old Password" Variant="Variant.Outlined">
                                     <ChildContent>

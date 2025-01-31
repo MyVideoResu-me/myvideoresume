@@ -23,6 +23,7 @@ public partial class AccountApiController : ControllerBase
     private readonly ILogger<AccountApiController> _logger;
     private readonly JobService _service;
     private readonly AccountService _accountService;
+
     public AccountApiController(IJobPromptEngine engine, ILogger<AccountApiController> logger, AccountService accountService)
     {
         _logger = logger;
@@ -46,6 +47,24 @@ public partial class AccountApiController : ControllerBase
         }
         return result;
     }
+
+    [Authorize]
+    [HttpGet("userroles")]
+    public async Task<ActionResult<List<string>>> UserRoles()
+    {
+        var result = new List<string>();
+        try
+        {
+            var id = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            result = await _accountService.GetUserRoles(id);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.Message, ex);
+        }
+        return result;
+    }
+
 
     [Authorize]
     [HttpGet("userprofile/{userId}")]

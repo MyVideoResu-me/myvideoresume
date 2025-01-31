@@ -6,12 +6,32 @@
             <RadzenRow>
                 <h2>Summarize Resume</h2>
             </RadzenRow>
-            <RadzenRow class="sentiment" style="padding-top: 25px; margin-top: 25px;">
-                <InputTextArea cols="25" class="sentiment" rows="10" placeholder="Copy & Paste Your Resume" @bind-Value="Resume" />
-                <RadzenButton Click=SummarizeAsync IsBusy=@Busy>Summarize</RadzenButton>
+            <RadzenRow class="sentiment">
+                Resume:
+                <RadzenHtmlEditor @bind-Value=@Resume style="height: 275px; width:100%;" class="sentiment">
+                    <RadzenHtmlEditorUndo />
+                    <RadzenHtmlEditorRedo />
+                    <RadzenHtmlEditorSeparator />
+                    <RadzenHtmlEditorBold />
+                    <RadzenHtmlEditorItalic />
+                    <RadzenHtmlEditorUnderline />
+                    <RadzenHtmlEditorStrikeThrough />
+                    <RadzenHtmlEditorSeparator />
+                </RadzenHtmlEditor>
+
+                <RadzenButton Click=SummarizeAsync BusyText="Processing..." IsBusy=@Busy>Summarize</RadzenButton>
             </RadzenRow>
             <RadzenRow>
-                <InputTextArea cols="25" class="sentiment" rows="10" @bind-Value="Result" placeholder="Results" />
+                <RadzenHtmlEditor @bind-Value=@Result style="height: 275px; width:100%;" Placeholder="Results">
+                    <RadzenHtmlEditorUndo />
+                    <RadzenHtmlEditorRedo />
+                    <RadzenHtmlEditorSeparator />
+                    <RadzenHtmlEditorBold />
+                    <RadzenHtmlEditorItalic />
+                    <RadzenHtmlEditorUnderline />
+                    <RadzenHtmlEditorStrikeThrough />
+                    <RadzenHtmlEditorSeparator />
+                </RadzenHtmlEditor>
             </RadzenRow>
         </RadzenCard>
     </RadzenColumn>
