@@ -71,7 +71,7 @@ public class JobBackgroundService
                     var res = await page.GoToAsync(urlToCrawl);
                     var jsSelectAllAnchors = @"Array.from(document.querySelectorAll('a')).map(a => a.href);";
                     urlsFound = await page.EvaluateExpressionAsync<List<string>>(jsSelectAllAnchors);
-                    urlsFound = urlsFound.Where(x => x.Contains("/job")).ToList();
+                    urlsFound = urlsFound.Where(x => x.Contains("/job/")).ToList();
                     if (res.Status == System.Net.HttpStatusCode.Forbidden)
                     {
                         result.ErrorMessage = "Failed to Load Job.";
@@ -117,6 +117,7 @@ public class JobBackgroundService
                                     tempJob.OriginalWebsiteUrl = url;
                                     tempJob.Industry = new() { Industry.IT };
                                     tempJob.UserId = string.Empty;
+                                    tempJob.CreationDateTime = DateTime.UtcNow;
                                     _dataContext.Jobs.Add(tempJob);
                                     _dataContext.SaveChanges();
                                 }
