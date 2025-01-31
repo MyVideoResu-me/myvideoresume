@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MyVideoResume.Data;
 
@@ -11,9 +12,11 @@ using MyVideoResume.Data;
 namespace MyVideoResume.Data.Migrations.MyVideoResume
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20250131063516_QueuesForJobsResumesForeignKeyUpdates")]
+    partial class QueuesForJobsResumesForeignKeyUpdates
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -760,7 +763,7 @@ namespace MyVideoResume.Data.Migrations.MyVideoResume
                     b.Property<int>("JobApplicationStatus")
                         .HasColumnType("int");
 
-                    b.Property<Guid?>("JobItemEntityId")
+                    b.Property<Guid?>("JobId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("MatchResults")
@@ -779,25 +782,26 @@ namespace MyVideoResume.Data.Migrations.MyVideoResume
                     b.Property<Guid?>("QueueResumeToJobEntityId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("ResumeInformationEntityId")
+                    b.Property<Guid?>("ResumeItemId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime?>("UpdateDateTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid?>("UserProfileEntityApplyingId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("UserProfileEntityId")
+                    b.Property<Guid?>("UserApplyingId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("JobId");
 
                     b.HasIndex("QueueJobToResumeEntityId");
 
                     b.HasIndex("QueueResumeToJobEntityId");
 
-                    b.HasIndex("UserProfileEntityId");
+                    b.HasIndex("ResumeItemId");
+
+                    b.HasIndex("UserApplyingId");
 
                     b.ToTable("ApplicantToJob", t =>
                         {
@@ -1564,6 +1568,11 @@ namespace MyVideoResume.Data.Migrations.MyVideoResume
 
             modelBuilder.Entity("MyVideoResume.Data.Models.Jobs.ApplicantToJobEntity", b =>
                 {
+                    b.HasOne("MyVideoResume.Data.Models.Jobs.JobItemEntity", "Job")
+                        .WithMany()
+                        .HasForeignKey("JobId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
                     b.HasOne("MyVideoResume.Data.Models.Queues.QueueJobToResumeEntity", null)
                         .WithMany("Applications")
                         .HasForeignKey("QueueJobToResumeEntityId");
@@ -1572,10 +1581,21 @@ namespace MyVideoResume.Data.Migrations.MyVideoResume
                         .WithMany("Applications")
                         .HasForeignKey("QueueResumeToJobEntityId");
 
-                    b.HasOne("MyVideoResume.Data.Models.Account.Profiles.UserProfileEntity", null)
-                        .WithMany("JobApplications")
-                        .HasForeignKey("UserProfileEntityId")
+                    b.HasOne("MyVideoResume.Data.Models.Resume.ResumeInformationEntity", "ResumeItem")
+                        .WithMany()
+                        .HasForeignKey("ResumeItemId")
                         .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("MyVideoResume.Data.Models.Account.Profiles.UserProfileEntity", "UserApplying")
+                        .WithMany("JobApplications")
+                        .HasForeignKey("UserApplyingId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.Navigation("Job");
+
+                    b.Navigation("ResumeItem");
+
+                    b.Navigation("UserApplying");
                 });
 
             modelBuilder.Entity("MyVideoResume.Data.Models.Jobs.JobItemEntity", b =>

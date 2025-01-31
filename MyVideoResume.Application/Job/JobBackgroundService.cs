@@ -37,6 +37,34 @@ public class JobBackgroundService
         _engine = engine;
     }
 
+    public async Task ProcessJobQueue() {
+        try
+        {
+            //Get the Resources (Data)
+
+            using IServiceScope scope = _serviceScopeFactory.CreateScope();
+            var _dataContext = scope.ServiceProvider.GetRequiredService<DataContext>();
+
+            //Query the Job Queue by taking the first queued item in the Queue with a Status of NotStarted
+
+            var work = _dataContext.QueueForJobs.FirstOrDefault(x => x.Status == BatchProcessStatus.NotStarted);
+            if (work != null)
+            {
+                work.Status = BatchProcessStatus.Processing;
+                work.StartBatchProcessDateTime = DateTime.UtcNow;
+                _dataContext.QueueForJobs.Update(work);
+                _dataContext.SaveChanges();
+
+                //Now start processing
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.Message);
+        }
+
+    }
+
     public async Task CrawlWebsiteCreateJobs(string urlToCrawl)
     {
         try
@@ -126,6 +154,7 @@ public class JobBackgroundService
                     }
                 }
             }
+            _dataContext.Dispose();
         }
         catch (Exception ex)
         {

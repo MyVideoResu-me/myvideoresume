@@ -40,3 +40,10 @@ public enum InviteStatus
     Resent = 3,
     Expired = 4
 }
+
+public enum BatchProcessStatus { 
+    NotStarted,
+    Processing,
+    Completed,
+    Failed
+}

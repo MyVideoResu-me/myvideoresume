@@ -98,11 +98,16 @@ public class RecurringJobsService : BackgroundService
             //_recurringJobs.AddOrUpdate("Send", () => Console.WriteLine("Hello, seconds!"), "*/15 * * * * *");
             //_recurringJobs.AddOrUpdate("SemanticScoring", () => _resumeService.ProcessSemanticScore(), "0 */8 * * *"); //Every 8 Hours
             _recurringJobs.AddOrUpdate("SemanticScoring", () => _resumeService.ProcessSemanticScore(), "0 */8 * * *"); //Daily 8AM
-                                                                                                                       //_recurringJobs.AddOrUpdate("CrawlWebsiteCreateJobs-SimplyHired-Developer", () => _jobService.CrawlWebsiteCreateJobs("https://www.simplyhired.com/search?q=Developer&l="), "0 8 * * *"); //Daily 8AM
+
+            _recurringJobs.AddOrUpdate("Process-Queue-ResumeToJob", () => _resumeService.ProcessResumeQueue(), "*/5 * * * *"); //Every 5 Minutes
+
+            _recurringJobs.AddOrUpdate("Process-Queue-JobToResume", () => _jobService.ProcessJobQueue(), "*/10 * * * *"); //Every 10 Minutes
+
+            //_recurringJobs.AddOrUpdate("CrawlWebsiteCreateJobs-SimplyHired-Developer", () => _jobService.CrawlWebsiteCreateJobs("https://www.simplyhired.com/search?q=Developer&l="), "0 8 * * *"); //Daily 8AM
 #if DEBUG
             _recurringJobs.AddOrUpdate("CrawlWebsiteCreateJobs-Jora-Careers", () => _jobService.CrawlWebsiteCreateJobs("https://us.jora.com/j?sp=search&trigger_source=serp&q=Software+Engineer&l="), "*/5 * * * *"); //Every 5 Minutes
 #else
-            //_recurringJobs.AddOrUpdate("CrawlWebsiteCreateJobs-Jora-Careers", () => _jobService.CrawlWebsiteCreateJobs("https://us.jora.com/j?sp=search&trigger_source=serp&q=Software+Engineer&l="), "0 */4 * * *"); //Every 4 hours
+            _recurringJobs.AddOrUpdate("CrawlWebsiteCreateJobs-Jora-Careers", () => _jobService.CrawlWebsiteCreateJobs("https://us.jora.com/j?sp=search&trigger_source=serp&q=Software+Engineer&l="), "0 */4 * * *"); //Every 4 hours
 #endif
 
             //_recurringJobs.AddOrUpdate("SemanticScoring", () => _resumeService.ProcessSemanticScore(), Cron.Minutely); //Minutely

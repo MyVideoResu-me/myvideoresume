@@ -1,4 +1,5 @@
-﻿using MyVideoResume.Abstractions.Core;
+﻿using Microsoft.EntityFrameworkCore;
+using MyVideoResume.Abstractions.Core;
 using MyVideoResume.Data.Models.Account.Profiles;
 using MyVideoResume.Data.Models.Resume;
 using System;
@@ -13,6 +14,7 @@ namespace MyVideoResume.Data.Models.Jobs;
 
 public enum JobApplicationStatus
 {
+    System, //System Recommendation or Match
     Interested,
     Saved,
     Applied,
@@ -27,11 +29,11 @@ public class ApplicantToJobEntity : CommonBase
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public Guid Id { get; set; }
 
-    public JobItemEntity Job { get; set; }
+    public Guid? JobItemEntityId { get; set; }
 
-    public UserProfileEntity UserApplying { get; set; }
+    public Guid? UserProfileEntityApplyingId { get; set; }
 
-    public ResumeInformationEntity ResumeItem { get; set; }
+    public Guid? ResumeInformationEntityId { get; set; }
 
     public JobApplicationStatus JobApplicationStatus { get; set; }
 

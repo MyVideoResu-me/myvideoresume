@@ -7,6 +7,7 @@ using MyVideoResume.Data.Models.Resume;
 using MyVideoResume.Data.Models.Jobs;
 using MyVideoResume.Data.Models.MetaContent;
 using MyVideoResume.Data.Models.Account.Profiles;
+using MyVideoResume.Data.Models.Queues;
 
 namespace MyVideoResume.Data;
 
@@ -51,7 +52,10 @@ public partial class DataContext : DbContext
     public DbSet<MetaResumeEntity> Resumes { get; set; } = default!;
     public DbSet<ResumeInformationEntity> ResumeInformation { get; set; } = default!;
     public DbSet<MetaDataEntity> MetaData { get; set; } = default!;
-    public DbSet<ResumeTemplateEntity> ResumeTemplates { get; set; }
+    public DbSet<ResumeTemplateEntity> ResumeTemplates { get; set; } = default!;
     public DbSet<ApplicantToJobEntity> ApplicantsToJobs { get; set; } = default!;
+
+    public DbSet<QueueJobToResumeEntity> QueueForJobs { get; set; } = default!;
+    public DbSet<QueueResumeToJobEntity> QueueForResumes { get; set; } = default!;
 
 }

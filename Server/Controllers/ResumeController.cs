@@ -8,6 +8,7 @@ using MyVideoResume.Abstractions.Resume;
 using MyVideoResume.AI;
 using MyVideoResume.Application.Resume;
 using MyVideoResume.Client.Services;
+using MyVideoResume.Data;
 using MyVideoResume.Data.Models;
 using MyVideoResume.Data.Models.Resume;
 using MyVideoResume.Documents;
@@ -218,6 +219,13 @@ public partial class ResumeController : ControllerBase
                     {
                         result.ErrorMessage = temppdfresult.ErrorMessage;
                     }
+                }
+
+                //TODO: Check the Account if Paid or if the profile has it turned on
+                //Queue the Resume to be Matched
+                if (!result.ErrorMessage.HasValue())
+                {
+                    result = await _resumeService.QueueResumeToJobRequest(result);
                 }
             }
         }

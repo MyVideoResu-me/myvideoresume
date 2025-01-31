@@ -261,6 +261,28 @@ public class ResumeService
         return result;
     }
 
+    public async Task<ResponseResult<ResumeInformationEntity>> QueueResumeToJobRequest(ResponseResult<ResumeInformationEntity> result)
+    {
+        try
+        {
+            _dataContext.QueueForResumes.Add(new Data.Models.Queues.QueueResumeToJobEntity()
+            {
+                ResumeItem = result.Result,
+                CreationDateTime = DateTime.UtcNow,
+                Status = BatchProcessStatus.NotStarted
+            });
+            _dataContext.SaveChanges();
+        }
+        catch (Exception ex)
+        {
+            result.ErrorMessage = ex.Message;
+            _logger.LogError(ex, ex.Message);
+        }
+
+        return result;
+    }
+
+
     private ResumeInformationEntity GetResumeInformation(string userId, string resumeItemId)
     {
         return _dataContext.ResumeInformation.FirstOrDefault(x => x.Id == Guid.Parse(resumeItemId) && x.UserId == userId);

@@ -42,7 +42,7 @@ public partial class AccountSettings
             //So we need to set a default and allow them to change it.
             if (userProfile.RoleSelected == null)
             {
-                var roleSelected = MyVideoResumeRoles.JobSeeker;
+                var roleSelected = MyVideoResumeRoles.Recruiter;
                 Security.UpdateUserProfileRole(userProfile, roleSelected); //Default to Job Seeker.
                 userProfile.RoleSelected = roleSelected;
             }
