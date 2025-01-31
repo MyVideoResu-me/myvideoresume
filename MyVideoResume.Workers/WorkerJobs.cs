@@ -102,7 +102,7 @@ public class RecurringJobsService : BackgroundService
 #if DEBUG
             _recurringJobs.AddOrUpdate("CrawlWebsiteCreateJobs-Jora-Careers", () => _jobService.CrawlWebsiteCreateJobs("https://us.jora.com/j?sp=search&trigger_source=serp&q=Software+Engineer&l="), "*/5 * * * *"); //Every 5 Minutes
 #else
-            _recurringJobs.AddOrUpdate("CrawlWebsiteCreateJobs-Jora-Careers", () => _jobService.CrawlWebsiteCreateJobs("https://us.jora.com/j?sp=search&trigger_source=serp&q=Software+Engineer&l="), "0 */4 * * *"); //Every 4 hours
+            //_recurringJobs.AddOrUpdate("CrawlWebsiteCreateJobs-Jora-Careers", () => _jobService.CrawlWebsiteCreateJobs("https://us.jora.com/j?sp=search&trigger_source=serp&q=Software+Engineer&l="), "0 */4 * * *"); //Every 4 hours
 #endif
 
             //_recurringJobs.AddOrUpdate("SemanticScoring", () => _resumeService.ProcessSemanticScore(), Cron.Minutely); //Minutely

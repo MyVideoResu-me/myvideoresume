@@ -50,7 +50,7 @@ namespace MyVideoResume.Data.Migrations.MyVideoResume
 
                     b.HasIndex("MetaResumeEntityId");
 
-                    b.ToTable("Award", t =>
+                    b.ToTable("Award", null, t =>
                         {
                             t.HasTrigger("Award_Trigger");
                         });
@@ -97,7 +97,7 @@ namespace MyVideoResume.Data.Migrations.MyVideoResume
 
                     b.HasIndex("LocationId");
 
-                    b.ToTable("Basics", t =>
+                    b.ToTable("Basics", null, t =>
                         {
                             t.HasTrigger("Basics_Trigger");
                         });
@@ -132,7 +132,7 @@ namespace MyVideoResume.Data.Migrations.MyVideoResume
 
                     b.HasIndex("MetaResumeEntityId");
 
-                    b.ToTable("Certificate", t =>
+                    b.ToTable("Certificate", null, t =>
                         {
                             t.HasTrigger("Certificate_Trigger");
                         });
@@ -179,7 +179,7 @@ namespace MyVideoResume.Data.Migrations.MyVideoResume
 
                     b.HasIndex("MetaResumeEntityId");
 
-                    b.ToTable("Education", t =>
+                    b.ToTable("Education", null, t =>
                         {
                             t.HasTrigger("Education_Trigger");
                         });
@@ -206,7 +206,7 @@ namespace MyVideoResume.Data.Migrations.MyVideoResume
 
                     b.HasIndex("MetaResumeEntityId");
 
-                    b.ToTable("Interest", t =>
+                    b.ToTable("Interest", null, t =>
                         {
                             t.HasTrigger("Interest_Trigger");
                         });
@@ -234,7 +234,7 @@ namespace MyVideoResume.Data.Migrations.MyVideoResume
 
                     b.HasIndex("MetaResumeEntityId");
 
-                    b.ToTable("LanguageItem", t =>
+                    b.ToTable("LanguageItem", null, t =>
                         {
                             t.HasTrigger("LanguageItem_Trigger");
                         });
@@ -269,7 +269,7 @@ namespace MyVideoResume.Data.Migrations.MyVideoResume
 
                     b.HasKey("Id");
 
-                    b.ToTable("Location", t =>
+                    b.ToTable("Location", null, t =>
                         {
                             t.HasTrigger("Location_Trigger");
                         });
@@ -311,7 +311,7 @@ namespace MyVideoResume.Data.Migrations.MyVideoResume
 
                     b.HasIndex("MetaResumeEntityId");
 
-                    b.ToTable("Project", t =>
+                    b.ToTable("Project", null, t =>
                         {
                             t.HasTrigger("Project_Trigger");
                         });
@@ -350,7 +350,7 @@ namespace MyVideoResume.Data.Migrations.MyVideoResume
 
                     b.HasIndex("MetaResumeEntityId");
 
-                    b.ToTable("Publication", t =>
+                    b.ToTable("Publication", null, t =>
                         {
                             t.HasTrigger("Publication_Trigger");
                         });
@@ -378,7 +378,7 @@ namespace MyVideoResume.Data.Migrations.MyVideoResume
 
                     b.HasIndex("MetaResumeEntityId");
 
-                    b.ToTable("ReferenceItem", t =>
+                    b.ToTable("ReferenceItem", null, t =>
                         {
                             t.HasTrigger("ReferenceItem_Trigger");
                         });
@@ -409,7 +409,7 @@ namespace MyVideoResume.Data.Migrations.MyVideoResume
 
                     b.HasIndex("MetaResumeEntityId");
 
-                    b.ToTable("Skill", t =>
+                    b.ToTable("Skill", null, t =>
                         {
                             t.HasTrigger("Skill_Trigger");
                         });
@@ -455,7 +455,7 @@ namespace MyVideoResume.Data.Migrations.MyVideoResume
 
                     b.HasIndex("MetaResumeEntityId");
 
-                    b.ToTable("Volunteer", t =>
+                    b.ToTable("Volunteer", null, t =>
                         {
                             t.HasTrigger("Volunteer_Trigger");
                         });
@@ -501,7 +501,7 @@ namespace MyVideoResume.Data.Migrations.MyVideoResume
 
                     b.HasIndex("MetaResumeEntityId");
 
-                    b.ToTable("Work", t =>
+                    b.ToTable("Work", null, t =>
                         {
                             t.HasTrigger("Work_Trigger");
                         });
@@ -585,7 +585,7 @@ namespace MyVideoResume.Data.Migrations.MyVideoResume
 
                     b.HasIndex("UserProfileId");
 
-                    b.ToTable("Companies", t =>
+                    b.ToTable("Companies", null, t =>
                         {
                             t.HasTrigger("Companies_Trigger");
                         });
@@ -676,7 +676,7 @@ namespace MyVideoResume.Data.Migrations.MyVideoResume
 
                     b.HasIndex("MailingAddressId");
 
-                    b.ToTable("UserProfiles", t =>
+                    b.ToTable("UserProfiles", null, t =>
                         {
                             t.HasTrigger("UserProfiles_Trigger");
                         });
@@ -737,7 +737,7 @@ namespace MyVideoResume.Data.Migrations.MyVideoResume
 
                     b.HasKey("Id");
 
-                    b.ToTable("Addresses", t =>
+                    b.ToTable("Addresses", null, t =>
                         {
                             t.HasTrigger("Addresses_Trigger");
                         });
@@ -790,7 +790,7 @@ namespace MyVideoResume.Data.Migrations.MyVideoResume
 
                     b.HasIndex("UserApplyingId");
 
-                    b.ToTable("ApplicantToJob", t =>
+                    b.ToTable("ApplicantToJob", null, t =>
                         {
                             t.HasTrigger("ApplicantToJob_Trigger");
                         });
@@ -820,7 +820,7 @@ namespace MyVideoResume.Data.Migrations.MyVideoResume
 
                     b.HasKey("Id");
 
-                    b.ToTable("Bonus", t =>
+                    b.ToTable("Bonus", null, t =>
                         {
                             t.HasTrigger("Bonus_Trigger");
                         });
@@ -847,7 +847,7 @@ namespace MyVideoResume.Data.Migrations.MyVideoResume
 
                     b.HasKey("Id");
 
-                    b.ToTable("Equity", t =>
+                    b.ToTable("Equity", null, t =>
                         {
                             t.HasTrigger("Equity_Trigger");
                         });
@@ -979,7 +979,7 @@ namespace MyVideoResume.Data.Migrations.MyVideoResume
 
                     b.HasIndex("SalaryId");
 
-                    b.ToTable("Jobs", t =>
+                    b.ToTable("Jobs", null, t =>
                         {
                             t.HasTrigger("Jobs_Trigger");
                         });
@@ -1031,7 +1031,7 @@ namespace MyVideoResume.Data.Migrations.MyVideoResume
 
                     b.HasKey("Id");
 
-                    b.ToTable("JobPreferences", t =>
+                    b.ToTable("JobPreferences", null, t =>
                         {
                             t.HasTrigger("JobPreferences_Trigger");
                         });
@@ -1064,7 +1064,7 @@ namespace MyVideoResume.Data.Migrations.MyVideoResume
 
                     b.HasKey("Id");
 
-                    b.ToTable("Salary", t =>
+                    b.ToTable("Salary", null, t =>
                         {
                             t.HasTrigger("Salary_Trigger");
                         });
@@ -1120,7 +1120,7 @@ namespace MyVideoResume.Data.Migrations.MyVideoResume
 
                     b.HasIndex("ResumeInformationEntityId");
 
-                    b.ToTable("MetaData", t =>
+                    b.ToTable("MetaData", null, t =>
                         {
                             t.HasTrigger("MetaData_Trigger");
                         });
@@ -1161,7 +1161,7 @@ namespace MyVideoResume.Data.Migrations.MyVideoResume
                         .IsUnique()
                         .HasFilter("[Resume] IS NOT NULL");
 
-                    b.ToTable("MetaResumes", t =>
+                    b.ToTable("MetaResumes", null, t =>
                         {
                             t.HasTrigger("MetaResumes_Trigger");
                         });
@@ -1244,7 +1244,7 @@ namespace MyVideoResume.Data.Migrations.MyVideoResume
 
                     b.HasIndex("UserProfileId");
 
-                    b.ToTable("ResumeInformation", t =>
+                    b.ToTable("ResumeInformation", null, t =>
                         {
                             t.HasTrigger("ResumeInformation_Trigger");
                         });
@@ -1285,7 +1285,7 @@ namespace MyVideoResume.Data.Migrations.MyVideoResume
 
                     b.HasKey("Id");
 
-                    b.ToTable("ResumeTemplates", t =>
+                    b.ToTable("ResumeTemplates", null, t =>
                         {
                             t.HasTrigger("ResumeTemplates_Trigger");
                         });
@@ -1333,7 +1333,7 @@ namespace MyVideoResume.Data.Migrations.MyVideoResume
 
                     b.HasIndex("UserProfileId");
 
-                    b.ToTable("UserCompanyRoles", t =>
+                    b.ToTable("UserCompanyRoles", null, t =>
                         {
                             t.HasTrigger("UserCompanyRoles_Trigger");
                         });
