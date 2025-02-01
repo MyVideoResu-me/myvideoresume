@@ -6,12 +6,14 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MyVideoResume.Data.Models;
 
-[Table("UserCompanyRoles")]
-public class UserCompanyRoleEntity: CommonBase
+[Table("UserCompanyRolesAssociation")]
+public class UserCompanyRoleAssociationEntity: CommonBase
 {
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public Guid Id { get; set; }
+
+    public string UserId { get; set; } //User who created the Entry
 
     public InviteStatus InviteStatus { get; set; }
     public DateTime? InviteStatusStartDateTime { get; set; }

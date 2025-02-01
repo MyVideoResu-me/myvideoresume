@@ -161,12 +161,7 @@ If you didn't request this code, you can safely ignore this email. Someone else 
             //Lots of users (bots) can create accounts; When a user get's to this point they have a valid token and thus a real user.
             //Verify they have a User Profile
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            //Create the User's Profile
-            var userProfile = await accountService.CreateUserProfile(userId);
-
-            //Create a Company Profile and Associate it with the userProfile
-            await accountService.CreateCompanyProfile(userId, userProfile);
+            await accountService.CreateAccount(userId);
         }
 
         if (!string.IsNullOrWhiteSpace(redirectUrl))

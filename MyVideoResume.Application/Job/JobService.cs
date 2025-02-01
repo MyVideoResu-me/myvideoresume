@@ -12,6 +12,7 @@ using MyVideoResume.Application.Account;
 using MyVideoResume.Application.Resume;
 using MyVideoResume.Data;
 using MyVideoResume.Data.Models.Jobs;
+using MyVideoResume.Data.Models.Resume;
 using MyVideoResume.Web.Common;
 using PuppeteerSharp;
 
@@ -74,6 +75,26 @@ public partial class JobService
         return result;
     }
 
+    public async Task<ResponseResult<JobItemEntity>> QueueJobToResumeRequest(ResponseResult<JobItemEntity> result)
+    {
+        try
+        {
+            _dataContext.QueueForJobs.Add(new Data.Models.Queues.QueueJobToResumeEntity()
+            {
+                Job = result.Result,
+                CreationDateTime = DateTime.UtcNow,
+                Status = BatchProcessStatus.NotStarted
+            });
+            _dataContext.SaveChanges();
+        }
+        catch (Exception ex)
+        {
+            result.ErrorMessage = ex.Message;
+            _logger.LogError(ex, ex.Message);
+        }
+
+        return result;
+    }
 
     public async Task<JobPreferencesEntity> GetJobPreferences(string userId)
     {
@@ -84,12 +105,12 @@ public partial class JobService
     {
         var result = new ResponseResult<JobItemEntity>();
 
-        var user = await _dataContext.UserProfiles.FirstOrDefaultAsync(x=> x.UserId == userId);
+        var user = await _dataContext.UserCompanyRolesAssociation.Include(x=>x.UserProfile).Include(x=>x.CompanyProfile).FirstOrDefaultAsync(x=> x.UserProfile.UserId == userId);
 
         if (user != null) {
             _dataContext.Jobs.Add(item);
             item.UserId = userId;
-            item.CreatedByUser = user;
+            item.CreatedByUser = user.UserProfile;
             item.CreationDateTime = DateTime.UtcNow;
         _dataContext.SaveChanges();
             result.Result = item;

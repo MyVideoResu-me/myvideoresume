@@ -38,7 +38,8 @@ public enum InviteStatus
     Accepted = 1,
     Rejected = 2,
     Resent = 3,
-    Expired = 4
+    Expired = 4,
+    Owner = 5
 }
 
 public enum BatchProcessStatus { 

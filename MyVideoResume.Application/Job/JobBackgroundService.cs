@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Primitives;
 using MyVideoResume.Abstractions.Core;
 using MyVideoResume.Abstractions.Job;
+using MyVideoResume.Abstractions.Match;
 using MyVideoResume.Application.Job;
 using MyVideoResume.Data;
 using MyVideoResume.Data.Models.Jobs;
@@ -37,17 +38,20 @@ public class JobBackgroundService
         _engine = engine;
     }
 
-    public async Task ProcessJobQueue() {
+    public async Task ProcessJobQueue()
+    {
         try
         {
             //Get the Resources (Data)
+            var processingSuccessful = false;
 
             using IServiceScope scope = _serviceScopeFactory.CreateScope();
             var _dataContext = scope.ServiceProvider.GetRequiredService<DataContext>();
+            var _matchService = scope.ServiceProvider.GetRequiredService<MatchService>();
 
             //Query the Job Queue by taking the first queued item in the Queue with a Status of NotStarted
 
-            var work = _dataContext.QueueForJobs.FirstOrDefault(x => x.Status == BatchProcessStatus.NotStarted);
+            var work = _dataContext.QueueForJobs.Include(x => x.Job).FirstOrDefault(x => x.Status == BatchProcessStatus.NotStarted && x.DeletedDateTime == null);
             if (work != null)
             {
                 work.Status = BatchProcessStatus.Processing;
@@ -56,6 +60,58 @@ public class JobBackgroundService
                 _dataContext.SaveChanges();
 
                 //Now start processing
+                //Get 5 Jobs that are not already scored for this Job
+                try
+                {
+                    var _dataContextJobs = scope.ServiceProvider.GetRequiredService<DataContext>();
+                    var existingRecommendations = _dataContextJobs.ApplicantsToJobs.Where(x => x.JobItemEntityId == work.Job.Id).AsNoTracking().Select(x => x.ResumeInformationEntityId);
+                    //ToDO: Get the full count
+                    //If the # is greater than 25 to queue other work jobs for this resume to complete the ranking for the jobs.
+                    var takeSomeResumes = _dataContextJobs.Resumes.Include(x => x.ResumeInformation).ThenInclude(y => y.UserProfile).Where(j => !existingRecommendations.Contains(j.Id) && j.DeletedDateTime == null).Take(25).AsNoTracking();
+
+                    foreach (var item in takeSomeResumes)
+                    {
+                        var result = await _matchService.MatchByJobResumeContent(new JobResumeByContentMatchRequest() { JobContent = work.Job.JobSerialized, ResumeContent = item.ResumeInformation.ResumeSerialized });
+                        if (!result.ErrorMessage.HasValue())
+                        {
+                            //Create a ApplicationRecommendation and Save it
+                            var recommendation = new ApplicantToJobEntity()
+                            {
+                                JobItemEntityId = work.Job.Id,
+                                ResumeInformationEntityId = item.ResumeInformation.Id,
+                                CreationDateTime = DateTime.UtcNow,
+                                JobApplicationStatus = JobApplicationStatus.System,
+                                MatchResults = result.Result.SummaryRecommendations,
+                                MatchResultsDate = DateTime.UtcNow,
+                                MatchScoreRating = result.Result.Score,
+                                UserProfileEntityApplyingId = item.ResumeInformation.UserProfile.Id
+                            };
+                            _dataContextJobs.ApplicantsToJobs.Add(recommendation);
+                        }
+                    }
+                    processingSuccessful = true;
+                    _dataContextJobs.SaveChanges();
+
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, ex.Message);
+                }
+
+                if (processingSuccessful)
+                {
+                    work.Status = BatchProcessStatus.Completed;
+                }
+                else
+                {
+                    work.Status = BatchProcessStatus.Failed;
+                }
+
+                work.EndBatchProcessDateTime = DateTime.UtcNow;
+                work.UpdateDateTime = DateTime.UtcNow;
+                _dataContext.QueueForJobs.Update(work);
+                _dataContext.SaveChanges();
+                _dataContext.Dispose();
             }
         }
         catch (Exception ex)

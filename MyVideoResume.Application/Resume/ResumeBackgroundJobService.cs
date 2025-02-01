@@ -57,10 +57,11 @@ public class ResumeBackgroundJobService
                 {
                     var _dataContextJobs = scope.ServiceProvider.GetRequiredService<DataContext>();
                     var existingRecommendations = _dataContextJobs.ApplicantsToJobs.Where(x => x.ResumeInformationEntityId == work.ResumeItem.Id).AsNoTracking().Select(x=>x.JobItemEntityId);
-                    
-                    var take5uniqueJobs = _dataContextJobs.Jobs.Where(j => !existingRecommendations.Contains(j.Id) && j.DeletedDateTime == null).Take(5).AsNoTracking();
+                    //ToDO: Get the full count
+                    //If the # is greater than 25 to queue other work jobs for this resume to complete the ranking for the jobs.
+                    var takeSomeJobs = _dataContextJobs.Jobs.Where(j => !existingRecommendations.Contains(j.Id) && j.DeletedDateTime == null).Take(25).AsNoTracking();
 
-                    foreach (var item in take5uniqueJobs)
+                    foreach (var item in takeSomeJobs)
                     {
                         var result = await _matchService.MatchByJobResumeContent(new JobResumeByContentMatchRequest() { JobContent = item.JobSerialized, ResumeContent = work.ResumeItem.ResumeSerialized });
                         if (!result.ErrorMessage.HasValue())

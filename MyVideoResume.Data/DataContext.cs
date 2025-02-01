@@ -44,7 +44,7 @@ public partial class DataContext : DbContext
     }
     public DbSet<UserProfileEntity> UserProfiles { get; set; } = default!;
     public DbSet<CompanyProfileEntity> CompanyProfiles { get; set; } = default!;
-    public DbSet<UserCompanyRoleEntity> UserCompanyRoles { get; set; } = default!;
+    public DbSet<UserCompanyRoleAssociationEntity> UserCompanyRolesAssociation { get; set; } = default!;
 
     public DbSet<AddressEntity> Addresses { get; set; } = default!;
     public DbSet<JobItemEntity> Jobs { get; set; } = default!;

@@ -19,7 +19,10 @@ public class CompanyProfileEntity : BusinessProfile
     public Guid Id { get; set; }
 
     [DeleteBehavior(DeleteBehavior.NoAction)]
-    public UserProfileEntity UserProfile { get; set; }
+    public UserProfileEntity UserProfile { get; set; } //User Who Created the Company
+
+    [DeleteBehavior(DeleteBehavior.NoAction)]
+    public List<UserProfileEntity> CompanyUsers{ get; set; } //All The users associated with the Company
 
     public AddressEntity? MailingAddress { get; set; }
 

@@ -32,7 +32,7 @@ public class AccountService
 
     public async Task<List<string>> GetUserRoles(string userId)
     {
-        var result  = await _userManager.GetRolesAsync(await _userManager.FindByIdAsync(userId));
+        var result = await _userManager.GetRolesAsync(await _userManager.FindByIdAsync(userId));
         return result.ToList();
     }
 
@@ -98,13 +98,31 @@ public class AccountService
 
         return profile;
     }
-    public async Task<CompanyProfileEntity> CreateCompanyProfile(string userId, UserProfileEntity userOwner)
+    public async Task<CompanyProfileEntity> CreateCompanyProfile(string userId, UserProfileEntity userProfile)
     {
-        var profile = new CompanyProfileEntity();
+        var companyProfile = new CompanyProfileEntity();
         try
         {
-            profile = _dataContext.CompanyProfiles.FirstOrDefault(x => x.UserId == userId);
-            if (profile == null)
+            //Check and see if there is an existing Company Association for this user
+            var association = _dataContext.UserCompanyRolesAssociation.Include(x => x.UserProfile).FirstOrDefault(x => x.UserProfile.UserId == userId);
+
+            if (association != null)
+            {
+                if (association.InviteStatus != InviteStatus.Owner)
+                {
+                    if (association.InviteStatus == InviteStatus.Invited)
+                    {
+                        association.InviteStatus = InviteStatus.Accepted;
+                        association.UpdateDateTime = DateTime.UtcNow;
+                        association.InviteStatusEndDateTime = DateTime.UtcNow;
+                        _dataContext.UserCompanyRolesAssociation.Update(association);
+                        await _dataContext.SaveChangesAsync();
+                    }
+                }
+            }
+
+            companyProfile = _dataContext.CompanyProfiles.FirstOrDefault(x => x.UserId == userId);
+            if (companyProfile == null)
             {
                 var dateTime = DateTime.UtcNow;
 
@@ -113,16 +131,70 @@ public class AccountService
                 _dataContext.Addresses.Add(addressEntity);
 
                 //Create the Company Profile
-                profile = new CompanyProfileEntity() { UserProfile = userOwner, Name = string.Empty, UserId = userId, CreationDateTime = dateTime, UpdateDateTime = dateTime, BillingAddress = addressEntity, MailingAddress = addressEntity, TermsOfUseAgreementAcceptedDateTime = DateTime.UtcNow, TermsOfUserAgreementVersion = "2024.11.10" };
-                _dataContext.CompanyProfiles.Add(profile);
+                companyProfile = new CompanyProfileEntity() { UserProfile = userProfile, Name = string.Empty, UserId = userId, CreationDateTime = dateTime, UpdateDateTime = dateTime, BillingAddress = addressEntity, MailingAddress = addressEntity, TermsOfUseAgreementAcceptedDateTime = DateTime.UtcNow, TermsOfUserAgreementVersion = "2024.11.10" };
+                _dataContext.CompanyProfiles.Add(companyProfile);
 
                 await _dataContext.SaveChangesAsync();
+            }
+
+            if (association == null && companyProfile != null)
+            {
+                //Now Create the association with the Company as the OWNER
+                association = await this.CreateUserCompanyRoleAssociation(userId, userProfile, companyProfile, InviteStatus.Owner, new List<MyVideoResumeRoles> { MyVideoResumeRoles.AccountAdmin, MyVideoResumeRoles.AccountOwner }); //Create Owner Record.
+            }
+
+            //Check and see if this user is associated to the Company
+            if (companyProfile.CompanyUsers == null || companyProfile.CompanyUsers.Count == 0) //First User association so lets create the array and add this user
+            {
+                companyProfile.CompanyUsers = new List<UserProfileEntity>() { userProfile };
+                _dataContext.CompanyProfiles.Update(companyProfile);
+                await _dataContext.SaveChangesAsync();
+            }
+            else //There are users associated; validate they don't exist and add them.
+            {
+                var found = companyProfile.CompanyUsers.FirstOrDefault(x => x.UserId == userProfile.UserId);
+                if (found == null)
+                {
+                    companyProfile.CompanyUsers.Add(userProfile);
+                    _dataContext.CompanyProfiles.Update(companyProfile);
+                    await _dataContext.SaveChangesAsync();
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.Message, ex);
+            throw;
+        }
+
+        return companyProfile;
+    }
+
+    public async Task CreateAccount(string userId)
+    {
+        //Create the User's Profile if it doesn't exist
+        var userProfile = await this.CreateUserProfile(userId);
+
+        //Create a Company Profile and Associate it with the userProfile (checks to see if there is already a Company Role assignment invite; if it exists then return that company)
+        await this.CreateCompanyProfile(userId, userProfile);
+
+    }
+
+    public async Task<UserCompanyRoleAssociationEntity> CreateUserCompanyRoleAssociation(string userId, UserProfileEntity userProfile, CompanyProfileEntity companyProfile, InviteStatus status, List<MyVideoResumeRoles> roles)
+    {
+        var profile = new UserCompanyRoleAssociationEntity();
+        try
+        {
+            profile = _dataContext.UserCompanyRolesAssociation.Include(x => x.UserProfile).FirstOrDefault(x => x.UserProfile.UserId == userId && x.InviteStatus == status);
+
+            if (profile == null)
+            {
+                var dateTime = DateTime.UtcNow;
 
                 //Associate the User to the Company and give the user Owner Rights
-                var userCompanyRoleAssociation = new UserCompanyRoleEntity() { UserProfile = userOwner, CompanyProfile = profile, RolesAssigned = new List<MyVideoResumeRoles> { MyVideoResumeRoles.AccountAdmin, MyVideoResumeRoles.AccountOwner } };
-                _dataContext.UserCompanyRoles.Add(userCompanyRoleAssociation);
+                var association = profile = new UserCompanyRoleAssociationEntity() { CreationDateTime = DateTime.UtcNow, InviteStatusStartDateTime = DateTime.UtcNow, InviteStatus = status, UserId = userId, UserProfile = userProfile, CompanyProfile = companyProfile, RolesAssigned = roles };
+                _dataContext.UserCompanyRolesAssociation.Add(association);
                 await _dataContext.SaveChangesAsync();
-
             }
         }
         catch (Exception ex)
@@ -133,6 +205,5 @@ public class AccountService
 
         return profile;
     }
-
 
 }
