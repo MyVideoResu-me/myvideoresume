@@ -15,10 +15,8 @@ using MyVideoResume.Client.Services;
 using MyVideoResume.Services;
 using MyVideoResume.AI;
 using MyVideoResume.Documents;
-using MyVideoResume.Client.Shared.Security.Recaptcha;
 using MyVideoResume.Application.Resume;
 using MyVideoResume.Application;
-using Microsoft.Extensions.DependencyInjection;
 using Scalar.AspNetCore;
 using MyVideoResume.Workers;
 using MyVideoResume.Application.FeatureFlag;
@@ -26,9 +24,9 @@ using MyVideoResume.Client.Services.FeatureFlag;
 using MyVideoResume.Application.Job;
 using AutoMapper;
 using MyVideoResume.Mapper;
-using Microsoft.Extensions.Caching.Hybrid;
 using MyVideoResume.Data.Models.Account;
 using MyVideoResume.Application.Account;
+using MyVideoResume.Client.Pages.Shared.Security.Recaptcha;
 
 var builder = WebApplication.CreateBuilder(args);
 //Logging

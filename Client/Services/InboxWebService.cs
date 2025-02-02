@@ -4,9 +4,9 @@ using Radzen;
 using MyVideoResume.Abstractions.Core;
 using MyVideoResume.Web.Common;
 using System.Net.Http.Json;
-using MyVideoResume.Data.Models.Business;
 using MyVideoResume.Data.Models;
 using MyVideoResume.Abstractions.Business;
+using MyVideoResume.Data.Models.Business.Tasks;
 
 namespace MyVideoResume.Client.Services;
 
@@ -40,14 +40,14 @@ public partial class InboxWebService
         return result;
     }
 
-    public async Task<TodoEntity> GetTask(string id)
+    public async Task<TaskEntity> GetTask(string id)
     {
-        var result = new TodoEntity();
+        var result = new TaskEntity();
         try
         {
             var uri = new Uri($"{_navigationManager.BaseUri}{Paths.Tasks_API_View}/{id}");
             var response = await _httpClient.GetAsync(uri);
-            result = await response.ReadAsync<TodoEntity>();
+            result = await response.ReadAsync<TaskEntity>();
         }
         catch (Exception ex)
         {
@@ -74,9 +74,9 @@ public partial class InboxWebService
         return result;
     }
 
-    public async Task<ResponseResult<TodoEntity>> Save(TodoEntity item)
+    public async Task<ResponseResult<TaskEntity>> Save(TaskEntity item)
     {
-        var r = new ResponseResult<TodoEntity>();
+        var r = new ResponseResult<TaskEntity>();
         try
         {
             var uri = new Uri($"{_navigationManager.BaseUri}{Paths.Tasks_API_Save}");
@@ -84,7 +84,7 @@ public partial class InboxWebService
             var jsonText = JsonSerializer.Serialize(item);
 
             var response = await _httpClient.PostAsJsonAsync<string>(uri, jsonText);
-            r = await response.ReadAsync<ResponseResult<TodoEntity>>();
+            r = await response.ReadAsync<ResponseResult<TaskEntity>>();
         }
         catch (Exception ex)
         {

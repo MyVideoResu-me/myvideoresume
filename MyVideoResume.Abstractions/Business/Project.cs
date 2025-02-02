@@ -1,4 +1,5 @@
-﻿using MyVideoResume.Abstractions.Core;
+﻿using MyVideoResume.Abstractions.Business.Tasks;
+using MyVideoResume.Abstractions.Core;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -7,6 +8,6 @@ using System.Text;
 
 namespace MyVideoResume.Abstractions.Business;
 
-public class Project: Todo, IActionItem
+public class Project: TaskItem, IActionItem
 {
 }

@@ -3,52 +3,40 @@ using Microsoft.JSInterop;
 using Radzen;
 using System.Net.Http.Json;
 using Blazored.LocalStorage;
-using MyVideoResume.Abstractions.Job;
 using MyVideoResume.Abstractions.Core;
 using MyVideoResume.Client.Services;
-using Markdig;
 using MyVideoResume.Web.Common;
+using Markdig;
 
-namespace MyVideoResume.Client.Shared.ML;
+namespace MyVideoResume.Client.Pages.Shared.ML;
 
-public partial class JobResumeMatchTool
+public partial class SummarizeResumeTool
 {
     [Inject]
     protected ILogger<SummarizeResumeTool> Logger { get; set; }
 
-    [Inject]
-    protected ResumeWebService Service { get; set; }
-
-    [Inject]
-    protected MatchWebService MatchService { get; set; }
+    [Inject] ResumeWebService Service { get; set; }
 
     [Inject]
     protected ILocalStorageService localStorage { get; set; }
 
-    public string Result { get; set; } = "Results";
-    public float Score { get; set; }
-    public bool Busy { get; set; } = false;
-    public string Resume { get; set; } = "Copy & Paste Resume";
-    public string JobDescription { get; set; } = "Copy & Paste Job Description";
+    public string Result { get; set; } = "";
+    public bool Busy { get; set; }
+    public string Resume { get; set; }
 
-    private async Task JobResumeMatchAsync()
+    private async Task SummarizeAsync()
     {
         Busy = true;
         try
         {
             if (Security.IsNotAuthenticated())
             {
-                await ShowUnAuthorized(Paths.Tools_JobMatch);
+                await ShowUnAuthorized(Paths.Tools_SummarizeResume);
             }
             else
             {
-                var r = await MatchService.MatchByJobResumeContent(JobDescription, Resume);
-                var matchResult = r.Result;
-                if (matchResult != null)
-                {
-                    Result = Markdown.ToHtml(matchResult.SummaryRecommendations);
-                    Score = matchResult.Score;
-                }
+                var r = await Service.Summarize(Resume);
+                Result = Markdown.ToHtml(r.Result);
             }
         }
         catch (Exception ex)
@@ -62,6 +50,10 @@ public partial class JobResumeMatchTool
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
         try
         {
             Resume = await localStorage.GetItemAsync<string>("textresume");

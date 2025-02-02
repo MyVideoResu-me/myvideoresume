@@ -22,15 +22,6 @@ public interface ICommunicationItem
     string RecipientId { get; set; }
 }
 
-public enum CommunicationTypes
-{
-    SystemMessage = 0,
-    TaskMessage = 1,
-    ProjectMessage = 2,
-    JobMessage = 3,
-    ResumeMessage = 4,
-    ChatMessage = 5
-}
 
 public class CommunicationBase : CommonBase, ICommunicationItem
 {

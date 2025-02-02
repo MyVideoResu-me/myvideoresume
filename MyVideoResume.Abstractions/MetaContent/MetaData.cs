@@ -8,16 +8,6 @@ using System.Threading.Tasks;
 
 namespace MyVideoResume.Abstractions.MetaContent;
 
-public enum MetaType
-{
-    Hyperlink = 0,
-    VideoMP4 = 1,
-    VideoWebM = 2,
-    Image = 5,
-    YouTube = 10,
-    HtmlContent = 15,
-}
-
 public class MetaDataDTO : MetaData
 {
     public string Id { get; set; }

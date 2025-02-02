@@ -1,5 +1,5 @@
 ﻿using System.Text.Json;
-namespace MyVideoResume.Client.Shared.Security.Recaptcha;
+namespace MyVideoResume.Client.Pages.Shared.Security.Recaptcha;
 
 public class RecaptchaService
 {

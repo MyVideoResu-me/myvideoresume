@@ -1,9 +1,8 @@
 using Microsoft.JSInterop;
 using Microsoft.AspNetCore.Components;
 using Radzen;
-using MyVideoResume.Client.Shared.Security.Recaptcha;
-using Radzen.Blazor;
 using MyVideoResume.Web.Common;
+using MyVideoResume.Client.Pages.Shared.Security.Recaptcha;
 
 namespace MyVideoResume.Client.Pages.Web;
 

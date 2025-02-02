@@ -4,26 +4,12 @@ using MyVideoResume.Client.Services;
 using Radzen;
 using Microsoft.AspNetCore.Components.Authorization;
 using System.ComponentModel;
-using System.Linq;
-using MyVideoResume.Web.Common;
 using MyVideoResume.Client.Services.FeatureFlag;
-using MyVideoResume.Data.Models.Resume;
-using System.Text.Json;
-using MyVideoResume.Abstractions.Resume.Formats.JSONResumeFormat;
-using AgeCalculator.Extensions;
-using MyVideoResume.Client.Pages.App.People.Resumes.Templates;
-using BlazorTemplater;
-using static System.Net.WebRequestMethods;
-using MyVideoResume.Client.Shared.Security;
 using MyVideoResume.Abstractions.Account.Profiles;
+using MyVideoResume.Client.Pages.Shared.Security;
+using MyVideoResume.Client.Pages.Shared;
 
-namespace MyVideoResume.Client.Shared;
-
-public enum PreviewMode
-{
-    View,
-    Edit
-}
+namespace MyVideoResume.Client.Pages;
 
 public static class EnumExtensions
 {
@@ -124,7 +110,7 @@ public class BaseComponent : LayoutComponentBase
         NavigationManager.NavigateTo($"{path}/{parameter}");
     }
 
-    public Type? ResolveComponent(string componentName, string namespacevalue)
+    public Type ResolveComponent(string componentName, string namespacevalue)
     {
         return string.IsNullOrEmpty(componentName) ? null
             : Type.GetType($"{namespacevalue}.{componentName}");

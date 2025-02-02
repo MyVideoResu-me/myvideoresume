@@ -1,4 +1,5 @@
-﻿using MyVideoResume.Abstractions.Core;
+﻿using MyVideoResume.Abstractions.Business.Tasks;
+using MyVideoResume.Abstractions.Core;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -10,6 +11,6 @@ namespace MyVideoResume.Abstractions.Business;
 
 
 
-public class Appointment: Todo, IActionItem
+public class Appointment: TaskItem
 {
 }

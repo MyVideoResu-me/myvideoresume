@@ -1,7 +1,7 @@
 ﻿using DocumentFormat.OpenXml.Office2010.Excel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using MyVideoResume.Abstractions.Business;
+using MyVideoResume.Abstractions.Business.Tasks;
 using MyVideoResume.Abstractions.Core;
 using MyVideoResume.Abstractions.Job;
 using MyVideoResume.Application.Job;
@@ -28,9 +28,9 @@ public partial class TaskController : ControllerBase
 
     [HttpGet("{id}")]
     [Authorize]
-    public async Task<ActionResult<TodoDTO>> Get(string id)
+    public async Task<ActionResult<TaskDTO>> Get(string id)
     {
-        var result = new TodoDTO();
+        var result = new TaskDTO();
         try
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -45,9 +45,9 @@ public partial class TaskController : ControllerBase
 
     [HttpGet]
     [Authorize]
-    public async Task<ActionResult<List<TodoDTO>>> Get()
+    public async Task<ActionResult<List<TaskDTO>>> Get()
     {
-        var result = new List<TodoDTO>();
+        var result = new List<TaskDTO>();
         try
         {
             //result = await _service.GetJobSummaryItems(onlyPublic: true);

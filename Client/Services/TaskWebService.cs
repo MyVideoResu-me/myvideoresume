@@ -5,8 +5,8 @@ using MyVideoResume.Abstractions.Core;
 using MyVideoResume.Web.Common;
 using System.Net.Http.Json;
 using MyVideoResume.Data.Models.Business;
-using MyVideoResume.Abstractions.Business;
 using Microsoft.Extensions.Caching.Hybrid;
+using MyVideoResume.Abstractions.Business.Tasks;
 
 namespace MyVideoResume.Client.Services;
 
@@ -19,14 +19,14 @@ public partial class TaskWebService : BaseWebService
         this._logger = logger;
     }
 
-    public async Task<List<TodoDTO>> GetTasks() //Eventually Pass in a Filter Object
+    public async Task<List<TaskDTO>> GetTasks() //Eventually Pass in a Filter Object
     {
-        var result = new List<TodoDTO> { };
+        var result = new List<TaskDTO> { };
         try
         {
             var uri = new Uri($"{_navigationManager.BaseUri}{Paths.Tasks_API_View}");
             var response = await _httpClient.GetAsync(uri);
-            result = await response.ReadAsync<List<TodoDTO>>();
+            result = await response.ReadAsync<List<TaskDTO>>();
         }
         catch (Exception ex)
         {
@@ -36,14 +36,14 @@ public partial class TaskWebService : BaseWebService
         return result;
     }
 
-    public async Task<TodoDTO> GetTask(string id)
+    public async Task<TaskDTO> GetTask(string id)
     {
-        var result = new TodoDTO();
+        var result = new TaskDTO();
         try
         {
             var uri = new Uri($"{_navigationManager.BaseUri}{Paths.Tasks_API_View}/{id}");
             var response = await _httpClient.GetAsync(uri);
-            result = await response.ReadAsync<TodoDTO>();
+            result = await response.ReadAsync<TaskDTO>();
         }
         catch (Exception ex)
         {
@@ -70,9 +70,9 @@ public partial class TaskWebService : BaseWebService
         return result;
     }
 
-    public async Task<ResponseResult<TodoDTO>> Save(TodoDTO item)
+    public async Task<ResponseResult<TaskDTO>> Save(TaskDTO item)
     {
-        var r = new ResponseResult<TodoDTO>();
+        var r = new ResponseResult<TaskDTO>();
         try
         {
             var uri = new Uri($"{_navigationManager.BaseUri}{Paths.Tasks_API_Save}");
@@ -80,7 +80,7 @@ public partial class TaskWebService : BaseWebService
             var jsonText = JsonSerializer.Serialize(item);
 
             var response = await _httpClient.PostAsJsonAsync<string>(uri, jsonText);
-            r = await response.ReadAsync<ResponseResult<TodoDTO>>();
+            r = await response.ReadAsync<ResponseResult<TaskDTO>>();
         }
         catch (Exception ex)
         {

@@ -1,23 +1,4 @@
-﻿using Microsoft.AspNetCore.Components;
-using Microsoft.JSInterop;
-using MyVideoResume.Client.Services;
-using Radzen;
-using Microsoft.AspNetCore.Components.Authorization;
-using System.ComponentModel;
-using System.Linq;
-using MyVideoResume.Web.Common;
-using MyVideoResume.Client.Services.FeatureFlag;
-using MyVideoResume.Data.Models.Resume;
-using System.Text.Json;
-using MyVideoResume.Abstractions.Resume.Formats.JSONResumeFormat;
-using AgeCalculator.Extensions;
-using MyVideoResume.Client.Pages.App.People.Resumes.Templates;
-using BlazorTemplater;
-using static System.Net.WebRequestMethods;
-using MyVideoResume.Client.Shared.Security;
-using MyVideoResume.Client.Shared;
-using MyVideoResume.Client.Pages.App.People.Resumes;
-using System.IO;
+﻿using MyVideoResume.Web.Common;
 using MyVideoResume.Abstractions.Account.Profiles;
 
 namespace MyVideoResume.Client.Pages.App;

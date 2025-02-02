@@ -13,7 +13,6 @@ using MyVideoResume.Abstractions.Resume;
 using MyVideoResume.Abstractions.Resume.Formats.JSONResumeFormat;
 using MyVideoResume.Client.Pages.App.People.Resumes.Templates;
 using MyVideoResume.Client.Services;
-using MyVideoResume.Client.Shared;
 using MyVideoResume.Data.Models.MetaContent;
 using MyVideoResume.Data.Models.Resume;
 using MyVideoResume.Web.Common;
@@ -182,7 +181,7 @@ public partial class BuilderPageV2
                     if (Resume.ResumeTemplate != null)
                     {
                         ComponentType = ResolveComponent(Resume.ResumeTemplate.TransformerComponentName, Resume.ResumeTemplate.Namespace);
-                        ComponentParameters = new Dictionary<string, object>() { { "resume", Resume }, { "mode", StandardTemplate.DisplayMode.Edit } };
+                        ComponentParameters = new Dictionary<string, object>() { { "resume", Resume }, { "mode", DisplayMode.Edit } };
                     }
                 }
             }

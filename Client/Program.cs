@@ -1,18 +1,15 @@
-using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Radzen;
 using Microsoft.AspNetCore.Components.Authorization;
 using Blazored.LocalStorage;
 using MyVideoResume.Client.Services;
 using MyVideoResume.Services;
-using MyVideoResume.Client.Shared.Security.Recaptcha;
 using MyVideoResume.Web.Common;
 //using Refit;
-using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
-using System;
 using MyVideoResume.Client.Services.FeatureFlag;
 using AutoMapper;
 using MyVideoResume.Mapper;
+using MyVideoResume.Client.Pages.Shared.Security.Recaptcha;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.Services.AddBlazorBootstrap();

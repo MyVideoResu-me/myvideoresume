@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MyVideoResume.Abstractions.Account.Profiles;
+using MyVideoResume.Abstractions.Core;
 using MyVideoResume.Data.Models.Jobs;
 using MyVideoResume.Data.Models.Resume;
 using System;
@@ -20,6 +21,13 @@ public class UserProfileEntity : UserProfile
     public Guid Id { get; set; }
 
     [DeleteBehavior(DeleteBehavior.NoAction)]
+    public List<Phone>? Phones { get; set; }
+
+    [DeleteBehavior(DeleteBehavior.NoAction)]
+    public List<Email>? Emails { get; set; }
+
+
+    [DeleteBehavior(DeleteBehavior.NoAction)]
     public JobPreferencesEntity JobPreferences { get; set; }
 
     [DeleteBehavior(DeleteBehavior.NoAction)]
@@ -29,7 +37,7 @@ public class UserProfileEntity : UserProfile
     public List<ApplicantToJobEntity> JobApplications { get; set; }
 
     [DeleteBehavior(DeleteBehavior.NoAction)]
-    public AddressEntity? MailingAddress { get; set; }
+    public List<AddressEntity>? MailingAddresses { get; set; }
 
     [DeleteBehavior(DeleteBehavior.NoAction)]
     public AddressEntity? BillingAddress { get; set; }

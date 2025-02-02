@@ -1,26 +1,16 @@
-using System;
-using System.Web;
-using System.Linq;
-using System.Collections.Generic;
-using System.Net.Http;
-using System.Threading.Tasks;
 using System.Text;
 using System.Text.Json;
 using System.Security.Claims;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using Radzen;
 using MyVideoResume.Data.Models;
-using MyVideoResume.Client.Shared.Security.Recaptcha;
 using MyVideoResume.Web.Common;
-using MyVideoResume.Data.Models.Jobs;
 using MyVideoResume.Abstractions.Core;
-using HarfBuzzSharp;
 using Microsoft.Extensions.Caching.Hybrid;
-using MyVideoResume.Abstractions.Match;
 using MyVideoResume.Data.Models.Account;
 using MyVideoResume.Abstractions.Account.Profiles;
+using MyVideoResume.Client.Pages.Shared.Security.Recaptcha;
 
 namespace MyVideoResume.Client.Services;
 

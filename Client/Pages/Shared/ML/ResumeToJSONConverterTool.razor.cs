@@ -2,7 +2,7 @@
 using Microsoft.JSInterop;
 using Blazored.LocalStorage;
 
-namespace MyVideoResume.Client.Shared.ML;
+namespace MyVideoResume.Client.Pages.Shared.ML;
 
 public partial class ResumeToJSONConverterTool
 {

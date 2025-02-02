@@ -23,6 +23,10 @@ public class Address : Location
     public string PostalZipCode { get; set; }
 
     public string StateProvince { get; set; }
+
+    public bool IsDefault { get; set; }
+
+    public CommunicationType ContactType { get; set; }
 }
 
 public class Location : GISData

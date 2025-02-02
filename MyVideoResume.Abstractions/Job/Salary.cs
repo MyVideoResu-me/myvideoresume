@@ -1,15 +1,11 @@
-﻿using System;
+﻿using MyVideoResume.Abstractions.Core;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace MyVideoResume.Abstractions.Job;
-
-public enum PaySchedule
-{
-    Hourly, Daily, Weekly, BiWeekly, Monthly, Quarterly, Yearly
-}
 
 public class Salary
 {

@@ -11,13 +11,13 @@ namespace MyVideoResume.Application;
 
 public class EmailService
 {
-    private readonly IConfiguration configuration;
-    private readonly ILogger<EmailService> logger;
+    private readonly IConfiguration _configuration;
+    private readonly ILogger<EmailService> _logger;
 
     public EmailService(IConfiguration configuration, ILogger<EmailService> logger)
     {
-        this.configuration = configuration;
-        this.logger = logger;
+        this._configuration = configuration;
+        this._logger = logger;
     }
 
     public async Task SendEmailAsync(string to, string subject, string body)
@@ -25,7 +25,7 @@ public class EmailService
         try
         {
             var mailMessage = new System.Net.Mail.MailMessage();
-            mailMessage.From = new System.Net.Mail.MailAddress(configuration.GetValue<string>("Smtp:Email"));
+            mailMessage.From = new System.Net.Mail.MailAddress(_configuration.GetValue<string>("Smtp:Email"));
             mailMessage.Body = body;
             mailMessage.Subject = subject;
             mailMessage.BodyEncoding = System.Text.Encoding.UTF8;
@@ -33,19 +33,19 @@ public class EmailService
             mailMessage.IsBodyHtml = true;
             mailMessage.To.Add(to);
 
-            var client = new System.Net.Mail.SmtpClient(configuration.GetValue<string>("Smtp:Host"))
+            var client = new System.Net.Mail.SmtpClient(_configuration.GetValue<string>("Smtp:Host"))
             {
                 UseDefaultCredentials = false,
-                EnableSsl = configuration.GetValue<bool>("Smtp:Ssl"),
-                Port = configuration.GetValue<int>("Smtp:Port"),
-                Credentials = new System.Net.NetworkCredential(configuration.GetValue<string>("Smtp:User"), configuration.GetValue<string>("Smtp:Password"))
+                EnableSsl = _configuration.GetValue<bool>("Smtp:Ssl"),
+                Port = _configuration.GetValue<int>("Smtp:Port"),
+                Credentials = new System.Net.NetworkCredential(_configuration.GetValue<string>("Smtp:User"), _configuration.GetValue<string>("Smtp:Password"))
             };
 
             await client.SendMailAsync(mailMessage);
         }
         catch (Exception ex)
         {
-            logger.LogError(ex.Message, ex);
+            _logger.LogError(ex.Message, ex);
         }
     }
 }

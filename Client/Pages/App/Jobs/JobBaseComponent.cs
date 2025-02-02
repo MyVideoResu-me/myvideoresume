@@ -6,7 +6,6 @@ using MyVideoResume.Abstractions.Resume.Formats.JSONResumeFormat;
 using MyVideoResume.Client.Pages.App.Jobs.Template;
 using MyVideoResume.Client.Services;
 using MyVideoResume.Client.Services.FeatureFlag;
-using MyVideoResume.Client.Shared;
 using MyVideoResume.Data.Models.Jobs;
 using MyVideoResume.Data.Models.Resume;
 using Radzen;

@@ -10,22 +10,6 @@ using System.Threading.Tasks;
 
 namespace MyVideoResume.Abstractions.Job;
 
-public enum JobOrigin
-{
-    JobSeeker,
-    Employer,
-    Crawler
-}
-
-
-public enum JobStatus
-{
-    Draft,
-    Open,
-    Closed,
-    Hired
-}
-
 public class JobBase : GISData
 {
     //CreatedByUser

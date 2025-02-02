@@ -20,14 +20,16 @@ public class AccountService
     private readonly ILogger<AccountService> _logger;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly RoleManager<ApplicationRole> _roleManager;
+    private readonly TaskService _taskService;
 
-    public AccountService(DataContext dataContextService, ILogger<AccountService> logger, IMapper mapper, UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager)
+    public AccountService(DataContext dataContextService, ILogger<AccountService> logger, IMapper mapper, UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, TaskService taskService)
     {
         this._dataContext = dataContextService;
         this._logger = logger;
         this._mapper = mapper;
         this._userManager = userManager;
         this._roleManager = roleManager;
+        this._taskService = taskService;
     }
 
     public async Task<List<string>> GetUserRoles(string userId)
@@ -66,7 +68,12 @@ public class AccountService
                 await _userManager.RemoveFromRoleAsync(user, Enum.GetName(MyVideoResumeRoles.Recruiter));
                 await _userManager.RemoveFromRoleAsync(user, Enum.GetName(MyVideoResumeRoles.JobSeeker));
                 await _userManager.AddToRoleAsync(user, Enum.GetName(profileRequest.RoleSelected.Value));
-                var userRoles = _userManager.GetRolesAsync(user);
+                //var userRoles = _userManager.GetRolesAsync(user);
+
+                //Add Tasks
+                //await _taskService.UpdateTasksByRole();
+
+
             }
             result.Result = profileRequest;
         }
@@ -98,13 +105,14 @@ public class AccountService
 
         return profile;
     }
-    public async Task<CompanyProfileEntity> CreateCompanyProfile(string userId, UserProfileEntity userProfile)
+
+    public async Task<UserCompanyRoleAssociationEntity> CreateCompanyProfile(string userId, UserProfileEntity userProfile)
     {
-        var companyProfile = new CompanyProfileEntity();
+        var association = new UserCompanyRoleAssociationEntity();
         try
         {
             //Check and see if there is an existing Company Association for this user
-            var association = _dataContext.UserCompanyRolesAssociation.Include(x => x.UserProfile).FirstOrDefault(x => x.UserProfile.UserId == userId);
+            association = _dataContext.UserCompanyRolesAssociation.Include(x => x.UserProfile).FirstOrDefault(x => x.UserProfile.UserId == userId);
 
             if (association != null)
             {
@@ -116,12 +124,11 @@ public class AccountService
                         association.UpdateDateTime = DateTime.UtcNow;
                         association.InviteStatusEndDateTime = DateTime.UtcNow;
                         _dataContext.UserCompanyRolesAssociation.Update(association);
-                        await _dataContext.SaveChangesAsync();
                     }
                 }
             }
 
-            companyProfile = _dataContext.CompanyProfiles.FirstOrDefault(x => x.UserId == userId);
+            var companyProfile = _dataContext.CompanyProfiles.FirstOrDefault(x => x.UserId == userId);
             if (companyProfile == null)
             {
                 var dateTime = DateTime.UtcNow;
@@ -133,8 +140,6 @@ public class AccountService
                 //Create the Company Profile
                 companyProfile = new CompanyProfileEntity() { UserProfile = userProfile, Name = string.Empty, UserId = userId, CreationDateTime = dateTime, UpdateDateTime = dateTime, BillingAddress = addressEntity, MailingAddress = addressEntity, TermsOfUseAgreementAcceptedDateTime = DateTime.UtcNow, TermsOfUserAgreementVersion = "2024.11.10" };
                 _dataContext.CompanyProfiles.Add(companyProfile);
-
-                await _dataContext.SaveChangesAsync();
             }
 
             if (association == null && companyProfile != null)
@@ -148,7 +153,6 @@ public class AccountService
             {
                 companyProfile.CompanyUsers = new List<UserProfileEntity>() { userProfile };
                 _dataContext.CompanyProfiles.Update(companyProfile);
-                await _dataContext.SaveChangesAsync();
             }
             else //There are users associated; validate they don't exist and add them.
             {
@@ -157,9 +161,11 @@ public class AccountService
                 {
                     companyProfile.CompanyUsers.Add(userProfile);
                     _dataContext.CompanyProfiles.Update(companyProfile);
-                    await _dataContext.SaveChangesAsync();
                 }
             }
+
+            await _dataContext.SaveChangesAsync();
+
         }
         catch (Exception ex)
         {
@@ -167,7 +173,7 @@ public class AccountService
             throw;
         }
 
-        return companyProfile;
+        return association;
     }
 
     public async Task CreateAccount(string userId)
@@ -176,8 +182,10 @@ public class AccountService
         var userProfile = await this.CreateUserProfile(userId);
 
         //Create a Company Profile and Associate it with the userProfile (checks to see if there is already a Company Role assignment invite; if it exists then return that company)
-        await this.CreateCompanyProfile(userId, userProfile);
+        var association = await this.CreateCompanyProfile(userId, userProfile);
 
+        //Let's Create the Onboarding Tasks
+        var tasks = await _taskService.CreateOnboardingTasks(userId, association.UserProfile, association.CompanyProfile);
     }
 
     public async Task<UserCompanyRoleAssociationEntity> CreateUserCompanyRoleAssociation(string userId, UserProfileEntity userProfile, CompanyProfileEntity companyProfile, InviteStatus status, List<MyVideoResumeRoles> roles)

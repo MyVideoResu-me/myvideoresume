@@ -1,20 +1,5 @@
-using System;
-using System.Web;
-using System.Linq;
-using System.Collections.Generic;
-using System.Net.Http;
-using System.Threading.Tasks;
-using System.Text;
-using System.Text.Json;
-using System.Security.Claims;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Authorization;
 using Radzen;
-using MyVideoResume.Data.Models;
-using MyVideoResume.Client.Shared.Security.Recaptcha;
-using MyVideoResume.Data;
-using MyVideoResume.Abstractions.Resume;
 using MyVideoResume.Web.Common;
 
 namespace MyVideoResume.Client.Services.FeatureFlag;

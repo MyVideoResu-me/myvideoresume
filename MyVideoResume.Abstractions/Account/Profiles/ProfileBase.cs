@@ -7,24 +7,14 @@ using System.Threading.Tasks;
 
 namespace MyVideoResume.Abstractions.Account.Profiles;
 
-public enum AccountType
-{
-    Free,
-    Monthly,
-    Annual
-}
-
-public enum AccountUsageType
-{
-    Individual,
-    Business
-}
-
 public class ProfileBase : CommonBase
 {
     //User who created
     public string UserId { get; set; }
-    public string? Phone { get; set; }
+
+    public List<string> SocialProfiles { get; set; }
+
+    
     public DateTime? TermsOfUseAgreementAcceptedDateTime { get; set; }
     public string? TermsOfUserAgreementVersion { get; set; }
 

@@ -11,8 +11,9 @@ using Radzen.Blazor;
 using System.Net.Http.Json;
 using Blazored.LocalStorage;
 using MyVideoResume.Web.Common;
+using MyVideoResume.Client.Services;
 
-namespace MyVideoResume.Client.Shared.ML;
+namespace MyVideoResume.Client.Pages.Shared.ML;
 
 public partial class SentimentAnalysisTool
 {

@@ -2,8 +2,8 @@
 @using AgeCalculator.Extensions
 @using MyVideoResume.Abstractions.Resume
 @using MyVideoResume.Abstractions.Resume.Formats.JSONResumeFormat
+@using MyVideoResume.Client.Pages.Shared.MetaContent
 @using MyVideoResume.Client.Services.FeatureFlag
-@using MyVideoResume.Client.Shared.MetaContent
 @using MyVideoResume.Data.Models.MetaContent
 @using MyVideoResume.Data.Models.Resume
 @inherits ResumeComponent
@@ -434,7 +434,6 @@
 <script src="resumeActions.js"></script>
 
 @code {
-    public enum DisplayMode { Edit, View }
     [Parameter] public DisplayMode Mode { get; set; } = DisplayMode.View;
     protected RadzenTimeline Timeline { get; set; }
     protected string ResumeName { get; set; }
