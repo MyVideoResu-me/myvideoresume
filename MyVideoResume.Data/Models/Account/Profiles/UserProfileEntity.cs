@@ -20,11 +20,11 @@ public class UserProfileEntity : UserProfile
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public Guid Id { get; set; }
 
-    [DeleteBehavior(DeleteBehavior.NoAction)]
-    public List<Phone>? Phones { get; set; }
+    //[DeleteBehavior(DeleteBehavior.NoAction)]
+    //public List<Phone>? Phones { get; set; }
 
-    [DeleteBehavior(DeleteBehavior.NoAction)]
-    public List<Email>? Emails { get; set; }
+    //[DeleteBehavior(DeleteBehavior.NoAction)]
+    //public List<Email>? Emails { get; set; }
 
 
     [DeleteBehavior(DeleteBehavior.NoAction)]
