@@ -12,7 +12,7 @@ public class ProfileBase : CommonBase
     //User who created
     public string UserId { get; set; }
 
-    public List<string> SocialProfiles { get; set; }
+    public List<string>? SocialProfiles { get; set; }
 
     
     public DateTime? TermsOfUseAgreementAcceptedDateTime { get; set; }

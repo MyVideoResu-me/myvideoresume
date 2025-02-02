@@ -92,7 +92,7 @@ public class AccountService
             {
                 var jobPreferences = new JobPreferencesEntity() { UserId = userId, CreationDateTime = DateTime.UtcNow, UpdateDateTime = DateTime.UtcNow };
                 _dataContext.JobPreferences.Add(jobPreferences);
-                profile = new UserProfileEntity() { FirstName = string.Empty, LastName = string.Empty, UserId = userId, CreationDateTime = DateTime.UtcNow, UpdateDateTime = DateTime.UtcNow, JobPreferences = jobPreferences };
+                profile = new UserProfileEntity() { FirstName = string.Empty, SocialProfiles = new List<string>(), LastName = string.Empty, UserId = userId, CreationDateTime = DateTime.UtcNow, UpdateDateTime = DateTime.UtcNow, JobPreferences = jobPreferences };
                 _dataContext.UserProfiles.Add(profile);
                 await _dataContext.SaveChangesAsync();
             }
@@ -138,7 +138,7 @@ public class AccountService
                 _dataContext.Addresses.Add(addressEntity);
 
                 //Create the Company Profile
-                companyProfile = new CompanyProfileEntity() { UserProfile = userProfile, Name = string.Empty, UserId = userId, CreationDateTime = dateTime, UpdateDateTime = dateTime, BillingAddress = addressEntity, MailingAddress = addressEntity, TermsOfUseAgreementAcceptedDateTime = DateTime.UtcNow, TermsOfUserAgreementVersion = "2024.11.10" };
+                companyProfile = new CompanyProfileEntity() { SocialProfiles = new List<string>(), UserProfile = userProfile, Name = string.Empty, UserId = userId, CreationDateTime = dateTime, UpdateDateTime = dateTime, BillingAddress = addressEntity, MailingAddress = addressEntity, TermsOfUseAgreementAcceptedDateTime = DateTime.UtcNow, TermsOfUserAgreementVersion = "2024.11.10" };
                 _dataContext.CompanyProfiles.Add(companyProfile);
             }
 
