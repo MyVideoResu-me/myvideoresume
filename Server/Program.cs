@@ -98,6 +98,7 @@ builder.Services.AddScoped<JobService>();
 builder.Services.AddScoped<ResumeWebService>();
 builder.Services.AddSingleton<IResumePromptEngine, ResumePromptEngine>();
 builder.Services.AddScoped<ResumeService>();
+builder.Services.AddScoped<TaskService>();
 builder.Services.AddScoped<MatchService>();
 builder.Services.AddSingleton<ResumeBackgroundJobService>();
 builder.Services.AddSingleton<JobBackgroundService>();
