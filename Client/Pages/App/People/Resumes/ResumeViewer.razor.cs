@@ -52,12 +52,6 @@ public partial class ResumeViewer
             }
             else
             {
-                //if Not authenticated show login
-                if (Security.IsNotAuthenticated())
-                {
-                    await ShowUnAuthorizedNoClose($"{Paths.Resume_View}/{Slug}");
-                }
-
                 if (Resume.MetaResume != null && Resume.MetaResume.Basics != null)
                     tempTitlePart = Resume.MetaResume.Basics.Name;
 
@@ -71,6 +65,11 @@ public partial class ResumeViewer
             ResumePageTitle = $"MyVideoResu.ME - Resume - {tempTitlePart}";
             StateHasChanged();
 
+            //if Not authenticated show login
+            if (Security.IsNotAuthenticated())
+            {
+                await ShowUnAuthorizedNoClose($"{Paths.Resume_View}/{Slug}");
+            }
         }
         catch (Exception ex)
         {
