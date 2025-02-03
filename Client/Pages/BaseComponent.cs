@@ -59,11 +59,23 @@ public class BaseComponent : LayoutComponentBase
 
     [Inject] protected SecurityWebService Security { get; set; }
 
+    public async Task<dynamic> ShowUnAuthorizedNoClose(string returnPath)
+    {
+        var options = new DialogOptions() { CloseDialogOnEsc = false, CloseDialogOnOverlayClick = false, ShowClose = false };
+        var result = await ShowUnAuthorizedOptions(returnPath, options);
+        return result;
+    }
     public async Task<dynamic> ShowUnAuthorized(string returnPath)
+    {
+        var result = await ShowUnAuthorizedOptions(returnPath, null);
+        return result;
+    }
+
+    private async Task<dynamic> ShowUnAuthorizedOptions(string returnPath, DialogOptions options)
     {
         var param = new Dictionary<string, object>();
         param.Add("Path", returnPath);
-        var result = await DialogService.OpenAsync<UnAuthorizedComponent>("Sign In / Create Account", param);
+        var result = await DialogService.OpenAsync<UnAuthorizedComponent>("Sign In / Create Account", param, options);
         return result;
     }
 

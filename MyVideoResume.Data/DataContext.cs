@@ -24,9 +24,9 @@ public partial class DataContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        #if DEBUG
+#if DEBUG
         optionsBuilder.EnableSensitiveDataLogging();
-        #endif
+#endif
 
         base.OnConfiguring(optionsBuilder);
     }
@@ -56,8 +56,16 @@ public partial class DataContext : DbContext
     public DbSet<ResumeTemplateEntity> ResumeTemplates { get; set; } = default!;
     public DbSet<ApplicantToJobEntity> ApplicantsToJobs { get; set; } = default!;
 
+
+    public DbSet<JobWebsiteEntity> JobWebsites { get; set; } = default!;
+
     public DbSet<QueueJobToResumeEntity> QueueForJobs { get; set; } = default!;
     public DbSet<QueueResumeToJobEntity> QueueForResumes { get; set; } = default!;
+    public DbSet<QueueJobToProcessEntity> QueueForJobsToProcess { get; set; } = default!;
+    public DbSet<QueueResumeToResumeEntity> QueueForResumesToResumes { get; set; } = default!;
+    public DbSet<QueueJobToJobEntity> QueueForJobsToJobs { get; set; } = default!;
+
+
 
     public DbSet<TaskEntity> Tasks { get; set; } = default!;
     public DbSet<BoardEntity> Boards { get; set; } = default!;

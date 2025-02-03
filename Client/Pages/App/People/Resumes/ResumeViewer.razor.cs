@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Components.Web.Virtualization;
 using Microsoft.JSInterop;
 using MyVideoResume.Client.Services;
 using MyVideoResume.Data.Models.Resume;
+using MyVideoResume.Web.Common;
 using Radzen;
 using Radzen.Blazor;
 
@@ -51,6 +52,12 @@ public partial class ResumeViewer
             }
             else
             {
+                //if Not authenticated show login
+                if (Security.IsNotAuthenticated())
+                {
+                    await ShowUnAuthorizedNoClose($"{Paths.Resume_View}/{Slug}");
+                }
+
                 if (Resume.MetaResume != null && Resume.MetaResume.Basics != null)
                     tempTitlePart = Resume.MetaResume.Basics.Name;
 

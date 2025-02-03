@@ -27,6 +27,7 @@ using MyVideoResume.Mapper;
 using MyVideoResume.Data.Models.Account;
 using MyVideoResume.Application.Account;
 using MyVideoResume.Client.Pages.Shared.Security.Recaptcha;
+using MyVideoResume.Application.Job.BackgroundProcessing;
 
 var builder = WebApplication.CreateBuilder(args);
 //Logging
@@ -101,7 +102,9 @@ builder.Services.AddScoped<ResumeService>();
 builder.Services.AddScoped<TaskService>();
 builder.Services.AddScoped<MatchService>();
 builder.Services.AddSingleton<ResumeBackgroundJobService>();
-builder.Services.AddSingleton<JobBackgroundService>();
+builder.Services.AddSingleton<JobQueueProcessor>();
+builder.Services.AddSingleton<JobRecommendationProcessor>();
+builder.Services.AddSingleton<JobWebsiteProcessor>();
 builder.Services.AddSingleton<IFeatureFlagService, SplitFeatureFlagService>();
 builder.Services.AddScoped<FeatureFlagClientService>();
 builder.Services.AddScoped<FeatureFlagWebService>();

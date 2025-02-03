@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MyVideoResume.Data;
 
@@ -11,9 +12,11 @@ using MyVideoResume.Data;
 namespace MyVideoResume.Data.Migrations.MyVideoResume
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20250202155623_Job Processing Queue")]
+    partial class JobProcessingQueue
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1119,9 +1122,6 @@ namespace MyVideoResume.Data.Migrations.MyVideoResume
                     b.Property<int>("Privacy_ShowJob")
                         .HasColumnType("int");
 
-                    b.Property<Guid?>("QueueJobToJobEntityId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.PrimitiveCollection<string>("Requirements")
                         .HasColumnType("nvarchar(max)");
 
@@ -1166,8 +1166,6 @@ namespace MyVideoResume.Data.Migrations.MyVideoResume
                     b.HasIndex("CreatedByUserId");
 
                     b.HasIndex("EquityId");
-
-                    b.HasIndex("QueueJobToJobEntityId");
 
                     b.HasIndex("SalaryId");
 
@@ -1247,6 +1245,7 @@ namespace MyVideoResume.Data.Migrations.MyVideoResume
                         .HasColumnType("datetime2");
 
                     b.Property<string>("LastProcessingStatus")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ParsingRegularExpression")
@@ -1354,45 +1353,6 @@ namespace MyVideoResume.Data.Migrations.MyVideoResume
                     b.ToTable("MetaData", t =>
                         {
                             t.HasTrigger("MetaData_Trigger");
-                        });
-
-                    b.HasAnnotation("SqlServer:UseSqlOutputClause", false);
-                });
-
-            modelBuilder.Entity("MyVideoResume.Data.Models.Queues.QueueJobToJobEntity", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime?>("CreationDateTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("DeletedDateTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("EndBatchProcessDateTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid?>("JobId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime?>("StartBatchProcessDateTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("UpdateDateTime")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("JobId");
-
-                    b.ToTable("QueueJobToJob", t =>
-                        {
-                            t.HasTrigger("QueueJobToJob_Trigger");
                         });
 
                     b.HasAnnotation("SqlServer:UseSqlOutputClause", false);
@@ -2046,10 +2006,6 @@ namespace MyVideoResume.Data.Migrations.MyVideoResume
                         .HasForeignKey("EquityId")
                         .OnDelete(DeleteBehavior.NoAction);
 
-                    b.HasOne("MyVideoResume.Data.Models.Queues.QueueJobToJobEntity", null)
-                        .WithMany("SimilarJobs")
-                        .HasForeignKey("QueueJobToJobEntityId");
-
                     b.HasOne("MyVideoResume.Data.Models.Jobs.SalaryEntity", "Salary")
                         .WithMany()
                         .HasForeignKey("SalaryId")
@@ -2076,16 +2032,6 @@ namespace MyVideoResume.Data.Migrations.MyVideoResume
                         .WithMany("MetaData")
                         .HasForeignKey("ResumeInformationEntityId")
                         .OnDelete(DeleteBehavior.NoAction);
-                });
-
-            modelBuilder.Entity("MyVideoResume.Data.Models.Queues.QueueJobToJobEntity", b =>
-                {
-                    b.HasOne("MyVideoResume.Data.Models.Jobs.JobItemEntity", "Job")
-                        .WithMany()
-                        .HasForeignKey("JobId")
-                        .OnDelete(DeleteBehavior.NoAction);
-
-                    b.Navigation("Job");
                 });
 
             modelBuilder.Entity("MyVideoResume.Data.Models.Queues.QueueJobToProcessEntity", b =>
@@ -2217,11 +2163,6 @@ namespace MyVideoResume.Data.Migrations.MyVideoResume
                     b.Navigation("Activities");
 
                     b.Navigation("Tasks");
-                });
-
-            modelBuilder.Entity("MyVideoResume.Data.Models.Queues.QueueJobToJobEntity", b =>
-                {
-                    b.Navigation("SimilarJobs");
                 });
 
             modelBuilder.Entity("MyVideoResume.Data.Models.Queues.QueueJobToResumeEntity", b =>
