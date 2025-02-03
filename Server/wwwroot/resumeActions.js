@@ -38,3 +38,16 @@ function copyToClipboard(jsonText) {
         console.error('Failed to copy: ', err);
     }
 }
+
+function sendHeightToParent() {
+    const height = document.documentElement.scrollHeight;
+    window.parent.postMessage({ height: height });
+}
+
+// Call sendHeightToParent when the content loads and when it changes (e.g., on window resize)
+window.addEventListener('load', sendHeightToParent);
+window.addEventListener('resize', sendHeightToParent);
+
+// Optionally, you can also send height updates periodically using setInterval
+// setInterval(sendHeightToParent, 500); // Send height every 500ms
+
