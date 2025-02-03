@@ -9,6 +9,7 @@ using Hangfire.Common;
 using MyVideoResume.Application.Resume;
 using Hangfire.Storage;
 using MyVideoResume.Application.Job.BackgroundProcessing;
+using Microsoft.Extensions.Configuration;
 
 namespace MyVideoResume.Workers;
 
@@ -71,6 +72,7 @@ public class RecurringJobsService : BackgroundService
     private readonly JobQueueProcessor _jobQueueProcessor;
     private readonly JobRecommendationProcessor _jobRecommendationProcessor;
     private readonly JobWebsiteProcessor _jobWebsiteProcessor;
+    private readonly IConfiguration _configuration;
 
     public RecurringJobsService(
         [NotNull] IBackgroundJobClient backgroundJobs,
@@ -79,12 +81,14 @@ public class RecurringJobsService : BackgroundService
         [NotNull] ResumeBackgroundJobService resumeService,
         [NotNull] JobQueueProcessor jobQueueProcessor,
         [NotNull] JobRecommendationProcessor jobRecommendationProcessor,
-        [NotNull] JobWebsiteProcessor jobWebsiteProcessor)
+        [NotNull] JobWebsiteProcessor jobWebsiteProcessor,
+        [NotNull] IConfiguration configuration)
     {
         _backgroundJobs = backgroundJobs ?? throw new ArgumentNullException(nameof(backgroundJobs));
         _recurringJobs = recurringJobs ?? throw new ArgumentNullException(nameof(recurringJobs));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _resumeService = resumeService;
+        _configuration = configuration;
         _jobQueueProcessor = jobQueueProcessor;
         _jobRecommendationProcessor = jobRecommendationProcessor;
         _jobWebsiteProcessor = jobWebsiteProcessor;
@@ -102,38 +106,44 @@ public class RecurringJobsService : BackgroundService
                 }
             }
 
-            _recurringJobs.AddOrUpdate("SemanticScoring", () => _resumeService.ProcessSemanticScore(), "0 */8 * * *"); //Daily 8AM
+            var backgroundJobsEnabled = _configuration.GetValue<bool>("BackgroundJobsEnabled");
 
-            _recurringJobs.AddOrUpdate("Process-Queue-ResumeToJob", () => _resumeService.ProcessResumeQueue(), "*/5 * * * *"); //Every 5 Minutes
+            if (backgroundJobsEnabled)
+            {
 
-            _recurringJobs.AddOrUpdate("Process-Queue-JobToResume", () => _jobRecommendationProcessor.ProcessJobQueue(), "*/10 * * * *"); //Every 10 Minutes
+                _recurringJobs.AddOrUpdate("SemanticScoring", () => _resumeService.ProcessSemanticScore(), "0 */8 * * *"); //Daily 8AM
+
+                _recurringJobs.AddOrUpdate("Process-Queue-ResumeToJob", () => _resumeService.ProcessResumeQueue(), "*/5 * * * *"); //Every 5 Minutes
+
+                _recurringJobs.AddOrUpdate("Process-Queue-JobToResume", () => _jobRecommendationProcessor.ProcessJobQueue(), "*/10 * * * *"); //Every 10 Minutes
 
 #if DEBUG
-            _recurringJobs.AddOrUpdate("Process-CrawlWebsiteQueueJobs", () => _jobWebsiteProcessor.CrawlWebsiteQueueJobs(), "*/5 * * * *"); //Every 5 Minutes
+                _recurringJobs.AddOrUpdate("Process-CrawlWebsiteQueueJobs", () => _jobWebsiteProcessor.CrawlWebsiteQueueJobs(), "*/5 * * * *"); //Every 5 Minutes
 #else
             _recurringJobs.AddOrUpdate("Process-CrawlWebsiteQueueJobs", () => _jobWebsiteProcessor.CrawlWebsiteQueueJobs(), "0 * * * *"); //Every 1 hour
 #endif
 
 #if DEBUG
-            _recurringJobs.AddOrUpdate("Process-Queue-ProcessJobFromJobQueue", () => _jobQueueProcessor.ProcessJobFromJobQueue(), "*/5 * * * *"); //Every 5 Minutes
+                _recurringJobs.AddOrUpdate("Process-Queue-ProcessJobFromJobQueue", () => _jobQueueProcessor.ProcessJobFromJobQueue(), "*/5 * * * *"); //Every 5 Minutes
 #else
             _recurringJobs.AddOrUpdate("Process-Queue-ProcessJobFromJobQueue", () => _jobQueueProcessor.ProcessJobFromJobQueue(), "*/30 * * * *"); //Every 30 Min
 #endif
 
-            //_recurringJobs.AddOrUpdate("Send", () => Console.WriteLine("Hello, seconds!"), "*/15 * * * * *");
-            //_recurringJobs.AddOrUpdate("SemanticScoring", () => _resumeService.ProcessSemanticScore(), "0 */8 * * *"); //Every 8 Hours
-            //_recurringJobs.AddOrUpdate("SemanticScoring", () => _resumeService.ProcessSemanticScore(), Cron.Minutely); //Minutely
-            //_recurringJobs.AddOrUpdate("SemanticScoring", () => _resumeService.ProcessSemanticScore(), "25 15 * * *"); //Hourly
-            //_recurringJobs.AddOrUpdate("neverfires", () => Console.WriteLine("Can only be triggered"), "0 0 31 2 *");
-            //_recurringJobs.AddOrUpdate("Hawaiian", () => Console.WriteLine("Hawaiian"), "15 08 * * *", new RecurringJobOptions
-            //{
-            //    TimeZone = TimeZoneInfo.FindSystemTimeZoneById("Hawaiian Standard Time")
-            //});
-            //_recurringJobs.AddOrUpdate("UTC", () => Console.WriteLine("UTC"), "15 18 * * *");
-            //_recurringJobs.AddOrUpdate("Russian", () => Console.WriteLine("Russian"), "15 21 * * *", new RecurringJobOptions
-            //{
-            //    TimeZone = TimeZoneInfo.Local
-            //});
+                //_recurringJobs.AddOrUpdate("Send", () => Console.WriteLine("Hello, seconds!"), "*/15 * * * * *");
+                //_recurringJobs.AddOrUpdate("SemanticScoring", () => _resumeService.ProcessSemanticScore(), "0 */8 * * *"); //Every 8 Hours
+                //_recurringJobs.AddOrUpdate("SemanticScoring", () => _resumeService.ProcessSemanticScore(), Cron.Minutely); //Minutely
+                //_recurringJobs.AddOrUpdate("SemanticScoring", () => _resumeService.ProcessSemanticScore(), "25 15 * * *"); //Hourly
+                //_recurringJobs.AddOrUpdate("neverfires", () => Console.WriteLine("Can only be triggered"), "0 0 31 2 *");
+                //_recurringJobs.AddOrUpdate("Hawaiian", () => Console.WriteLine("Hawaiian"), "15 08 * * *", new RecurringJobOptions
+                //{
+                //    TimeZone = TimeZoneInfo.FindSystemTimeZoneById("Hawaiian Standard Time")
+                //});
+                //_recurringJobs.AddOrUpdate("UTC", () => Console.WriteLine("UTC"), "15 18 * * *");
+                //_recurringJobs.AddOrUpdate("Russian", () => Console.WriteLine("Russian"), "15 21 * * *", new RecurringJobOptions
+                //{
+                //    TimeZone = TimeZoneInfo.Local
+                //});
+            }
         }
         catch (Exception e)
         {

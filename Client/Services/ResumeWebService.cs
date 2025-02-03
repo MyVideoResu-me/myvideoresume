@@ -13,6 +13,7 @@ namespace MyVideoResume.Client.Services;
 
 public partial class ResumeWebService : BaseWebService
 {
+    protected HybridCache _cache;
     private readonly MatchWebService matchWebService;
     private readonly SecurityWebService _securityService;
     private readonly ILogger<ResumeWebService> _logger;
@@ -22,6 +23,7 @@ public partial class ResumeWebService : BaseWebService
         this._logger = logger;
         this._securityService = securityService;
         this.matchWebService = matchWebService;
+        this._cache = cache;
     }
 
     public async Task<ResponseResult<float>> GetSentimentAnalysisById(string id)
@@ -99,9 +101,13 @@ public partial class ResumeWebService : BaseWebService
         var result = new ResumeInformationEntity();
         try
         {
-            var uri = new Uri($"{_navigationManager.BaseUri}api/resume/{resumeId}");
-            var response = await _httpClient.GetAsync(uri);
-            result = await response.ReadAsync<ResumeInformationEntity>();
+            var cachedResult = await _cache.GetOrCreateAsync(resumeId, async (x) =>
+            {
+                var uri = new Uri($"{_navigationManager.BaseUri}api/resume/{resumeId}");
+                var response = await _httpClient.GetAsync(uri);
+                return result = await response.ReadAsync<ResumeInformationEntity>();
+            });
+            result = cachedResult;
         }
         catch (Exception ex)
         {
