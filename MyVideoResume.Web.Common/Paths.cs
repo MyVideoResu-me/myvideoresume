@@ -9,10 +9,13 @@ namespace MyVideoResume.Web.Common;
 public static class Paths
 {
     public const string Site_Root = "/";
+    public const string Site_Login = "/login";
+    public const string Site_Logout = "/logout";
     public const string Site_About = "/about";
     public const string Site_Help = "articles/how-to";
     public const string Site_ContactUs = "/work-with-us";
     public const string Site_ReleaseNotes = "/release-notes";
+    public const string Site_Pricing = "/pricing";
     public const string Admin_BackgroundJobsPortal = "/Workers";
     public const string Admin_ApplicationUsers = "admin/application-users";
     public const string Admin_ApplicationRoles = "admin/application-roles";

@@ -14,10 +14,17 @@
             <RadzenColumn SizeXS="10" Size="9">
                 <RadzenStack AlignItems="AlignItems.Center" Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.End" Gap="0.5rem" class="rz-px-2">
                     <RadzenMenu Responsive="false">
-                        <RadzenMenuItem Icon="add_circle">
-                            <RadzenMenuItem Text="Create Job" Path=@Paths.Jobs_View Icon="note_add"></RadzenMenuItem>
-                            <RadzenMenuItem Text="Create Resume" Path=@Paths.Resume_View Icon="video_call"></RadzenMenuItem>
-                        </RadzenMenuItem>
+                        <AuthorizeView>
+                            <Authorized>
+                                <RadzenMenuItem Icon="add_circle">
+                                    <RadzenMenuItem Text="Create Job" Path=@Paths.Jobs_View Icon="note_add" Visible="@Security.IsInRole("Recruiter")"></RadzenMenuItem>
+                                    <RadzenMenuItem Text="Create Resume" Path=@Paths.Resume_View Icon="video_call" Visible="@Security.IsInRole("JobSeeker", "Recruiter")"></RadzenMenuItem>
+                                </RadzenMenuItem>
+                            </Authorized>
+                            <NotAuthorized>
+                                <RadzenButton ButtonStyle="ButtonStyle.Light" Style="font-weight: bold" Text="$" Click=@(()=> NavigateTo(@Paths.Site_Pricing))></RadzenButton>
+                            </NotAuthorized>
+                        </AuthorizeView>
                     </RadzenMenu>
                     <AuthorizeView>
                         <Authorized>
@@ -36,7 +43,7 @@
                             </RadzenProfileMenu>
                         </Authorized>
                         <NotAuthorized>
-                            <RadzenLink Icon="login" Path="Login" Text=" Sign In" />
+                            <RadzenButton ButtonStyle="ButtonStyle.Primary" Icon="Login" Click=@(()=> NavigateTo(Paths.Site_Login)) Text="Sign In"></RadzenButton>
                         </NotAuthorized>
                     </AuthorizeView>
                     <RadzenAppearanceToggle DarkTheme="standard-dark" />

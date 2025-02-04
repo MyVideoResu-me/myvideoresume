@@ -1,17 +1,93 @@
-@page "/people/profile/{UserId}"
+@page "/people/profile/{slug}"
+@page "/people/profiles/{slug}"
+@using MyVideoResume.Abstractions.Account.Profiles
+@using MyVideoResume.Data.Models.Account.Profiles
 @inherits AppBaseComponent
 
 
-<PageTitle>MyVideoResu.ME - Profile - </PageTitle>
-<RadzenRow>
-    <RadzenColumn Size="12">
-        <RadzenText Text="People" TextStyle="Radzen.Blazor.TextStyle.DisplayH2" TagName="Radzen.Blazor.TagName.Auto"></RadzenText>
-        <RadzenCard>
-            <RadzenRow>
-                <RadzenColumn>
-                    Coming soon
-                </RadzenColumn>
-            </RadzenRow>
-        </RadzenCard>
-    </RadzenColumn>
-</RadzenRow>
+<PageTitle>@ItemTitle</PageTitle>
+@if (IsDeleted)
+{
+    <RadzenRow>
+        <RadzenColumn Size="12">
+            <RadzenText Text="No Longer Available" TextStyle="Radzen.Blazor.TextStyle.DisplayH1" TagName="Radzen.Blazor.TagName.Auto"></RadzenText>
+        </RadzenColumn>
+    </RadzenRow>
+
+}
+else
+{
+    if (Item.Privacy_ShowProfile != DisplayPrivacy.ToPublic)
+    {
+        <AuthorizeView>
+            <Authorized>
+                <RadzenRow>
+                    <RadzenColumn Size="12">
+                        <ProfileViewer></ProfileViewer>
+                    </RadzenColumn>
+                </RadzenRow>
+            </Authorized>
+            <NotAuthorized>
+                <RadzenRow>
+                    <RadzenColumn Size="12">
+                        <UnAuthorizedComponent Path=@RedirectUrl()></UnAuthorizedComponent>
+                    </RadzenColumn>
+                </RadzenRow>
+            </NotAuthorized>
+        </AuthorizeView>
+    }
+    else
+    {
+        //View if Public
+        //View if Logged in
+        //View if not deleted
+        //TODO When marked NonPublic => Prompt for the user to login to see the Profile
+        <RadzenRow>
+            <RadzenColumn Size="12">
+                <ProfileViewer></ProfileViewer>
+            </RadzenColumn>
+        </RadzenRow>
+    }
+}
+
+
+@code
+{
+    [Parameter] public String Slug { get; set; }
+    [Inject] ILogger<Profile> Logger { get; set; }
+    public bool IsDeleted { get; set; }
+    public string ItemTitle { get; set; }
+    public UserProfileDTO Item { get; set; } = new UserProfileDTO();
+    public string RedirectUrl() { return ""; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        try
+        {
+            var tempTitlePart = "View";
+            var result = await Security.GetUserProfile(Slug);
+            Item = result.Result;
+
+            if (Item == null || Item.DeletedDateTime.HasValue)
+                IsDeleted = true;
+
+            if (IsDeleted)
+            {
+                tempTitlePart = "Not Available";
+            }
+            else
+            {
+                if (Item.FirstName != null && Item.LastName != null)
+                    tempTitlePart = $"{Item.FirstName} {Item.LastName}";
+            }
+
+            ItemTitle = $"MyVideoResu.ME - Profile - {tempTitlePart}";
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex.Message, ex);
+        }
+    }
+}

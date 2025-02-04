@@ -6,7 +6,7 @@ namespace MyVideoResume.Client.Pages.App;
 
 public class AppBaseComponent : BaseComponent
 {
-    public UserProfileDTO Profile { get; set; }
+    public UserProfileDTO AuthenticatedUserProfile { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -19,7 +19,7 @@ public class AppBaseComponent : BaseComponent
                 ShowErrorNotification("Error", "Error Loading Profile");
             else
             {
-                Profile = response.Result;
+                AuthenticatedUserProfile = response.Result;
                 StateHasChanged();
             }
         }
@@ -29,10 +29,10 @@ public class AppBaseComponent : BaseComponent
     {
         if (firstRender)
         {
-            if (Profile != null && (Profile.IsRoleSelected == null || Profile.IsRoleSelected == false))
+            if (AuthenticatedUserProfile != null && (AuthenticatedUserProfile.IsRoleSelected == null || AuthenticatedUserProfile.IsRoleSelected == false))
             {
                 //TODO: Show the Welcome Message and Select a Role. Clean UP the Resume.
-                await ShowRoleSelector(Profile);
+                await ShowRoleSelector(AuthenticatedUserProfile);
             }
         }
     }

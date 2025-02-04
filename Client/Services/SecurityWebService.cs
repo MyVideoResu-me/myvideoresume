@@ -145,20 +145,25 @@ public partial class SecurityWebService : BaseWebService
         var result = new ResponseResult<UserProfileDTO>();
         try
         {
-            var uri = new Uri($"{_navigationManager.BaseUri}api/account/userprofile/{userId}");
-            var response = await _httpClient.GetAsync(uri);
-            result = await response.ReadAsync<ResponseResult<UserProfileDTO>>();
+            var profile = await _cache.GetOrCreateAsync(userId, async (x) =>
+            {
+                var uri = new Uri($"{_navigationManager.BaseUri}api/account/userprofile/{userId}");
+                var response = await _httpClient.GetAsync(uri);
+                result = await response.ReadAsync<ResponseResult<UserProfileDTO>>();
 
-            if (result.ErrorMessage.HasValue() || result.Result == null)
-                throw new NullReferenceException();
+                if (result.ErrorMessage.HasValue() || result.Result == null)
+                    throw new NullReferenceException();
 
+                return result;
+            });
+
+            result = profile;
         }
         catch (Exception ex)
         {
             _logger.LogError(ex.Message, ex);
             result.ErrorMessage = ex.Message;
         }
-
         return result;
     }
 
