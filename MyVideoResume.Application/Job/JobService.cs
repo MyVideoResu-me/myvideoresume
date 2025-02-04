@@ -105,14 +105,15 @@ public partial class JobService
     {
         var result = new ResponseResult<JobItemEntity>();
 
-        var user = await _dataContext.UserCompanyRolesAssociation.Include(x=>x.UserProfile).Include(x=>x.CompanyProfile).FirstOrDefaultAsync(x=> x.UserProfile.UserId == userId);
+        var user = await _dataContext.UserCompanyRolesAssociation.Include(x => x.UserProfile).Include(x => x.CompanyProfile).FirstOrDefaultAsync(x => x.UserProfile.UserId == userId);
 
-        if (user != null) {
+        if (user != null)
+        {
             _dataContext.Jobs.Add(item);
             item.UserId = userId;
             item.CreatedByUser = user.UserProfile;
             item.CreationDateTime = DateTime.UtcNow;
-        _dataContext.SaveChanges();
+            _dataContext.SaveChanges();
             result.Result = item;
         }
         return result;
@@ -121,32 +122,47 @@ public partial class JobService
     public async Task<ResponseResult<JobItemEntity>> SaveJobByUrl(string url)
     {
         var result = new ResponseResult<JobItemEntity>();
-        var response = string.Empty;
-        // Download the Chromium revision if it does not already exist
-        await new BrowserFetcher().DownloadAsync();
-        using (var browser = await Puppeteer.LaunchAsync(new LaunchOptions { Headless = true, AcceptInsecureCerts = true, Args = new string[] { "--no-sandbox", "--disable-web-security" } }))
-        using (var page = await browser.NewPageAsync())
+        try
         {
-            var res = await page.GoToAsync(url);
-
-            response = await res.TextAsync();
-
-            if (res.Status == System.Net.HttpStatusCode.Forbidden || response.Contains("You have been blocked"))
+            var response = string.Empty;
+            // Download the Chromium revision if it does not already exist
+            await new BrowserFetcher().DownloadAsync();
+            using (var browser = await Puppeteer.LaunchAsync(new LaunchOptions { Headless = true, AcceptInsecureCerts = true, Args = new string[] { "--no-sandbox", "--disable-web-security" } }))
+            using (var page = await browser.NewPageAsync())
             {
-                result.ErrorMessage = "Failed to Load Job.";
+                var res = await page.GoToAsync(url);
+                if (res != null)
+                {
+                    response = await res.TextAsync();
+
+
+                    if (res.Status == System.Net.HttpStatusCode.Forbidden || response.Contains("You have been blocked"))
+                    {
+                        result.ErrorMessage = "Failed to Load Job.";
+                    }
+                    else
+                    {
+                        result = await _engine.ExtractJob(response);
+                    }
+                    //var jsSelectAllAnchors = @"Array.from(document.querySelectorAll('a')).map(a => a.href);";
+                    //var urls = await page.EvaluateExpressionAsync<string[]>(jsSelectAllAnchors);
+                    //foreach (string url in urls)
+                    //{
+                    //    Console.WriteLine($"Url: {url}");
+                    //}
+                    //Console.WriteLine("Press any key to continue...");
+                    //Console.ReadLine();
+                }
+                else
+                {
+                    result.ErrorMessage = "Unable to Process URL";
+                }
             }
-            else
-            {
-                result = await _engine.ExtractJob(response);
-            }
-            //var jsSelectAllAnchors = @"Array.from(document.querySelectorAll('a')).map(a => a.href);";
-            //var urls = await page.EvaluateExpressionAsync<string[]>(jsSelectAllAnchors);
-            //foreach (string url in urls)
-            //{
-            //    Console.WriteLine($"Url: {url}");
-            //}
-            //Console.WriteLine("Press any key to continue...");
-            //Console.ReadLine();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.Message, ex);
+            result.ErrorMessage = ex.Message;
         }
 
         ////call the URL

@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using MyVideoResume.Abstractions.Account.Profiles;
 using MyVideoResume.Abstractions.Core;
+using MyVideoResume.Application.Business;
 using MyVideoResume.Data;
 using MyVideoResume.Data.Models;
 using MyVideoResume.Data.Models.Account;

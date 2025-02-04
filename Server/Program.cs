@@ -25,9 +25,12 @@ using MyVideoResume.Application.Job;
 using AutoMapper;
 using MyVideoResume.Mapper;
 using MyVideoResume.Data.Models.Account;
-using MyVideoResume.Application.Account;
+using Account = MyVideoResume.Application.Account;
 using MyVideoResume.Client.Pages.Shared.Security.Recaptcha;
 using MyVideoResume.Application.Job.BackgroundProcessing;
+using MyVideoResume.Application.Payments;
+using Stripe;
+using MyVideoResume.Application.Business;
 
 var builder = WebApplication.CreateBuilder(args);
 //Logging
@@ -88,7 +91,7 @@ builder.Services.AddControllers().AddOData(opt =>
 });
 builder.Services.AddOpenApi();
 
-builder.Services.AddScoped<AccountService>();
+builder.Services.AddScoped<Account.AccountService>();
 builder.Services.AddScoped<MenuService>();
 builder.Services.AddSingleton<DocumentProcessor>();
 builder.Services.AddSingleton<RecaptchaService>();
@@ -118,6 +121,11 @@ builder.Services.AddHeaderPropagation(o => o.Headers.Add("Cookie"));
 builder.Services.AddAuthentication();
 builder.Services.AddAuthenticationStateDeserialization();
 builder.Services.AddAuthorization();
+
+//Payments
+builder.Services.Configure<StripeConfig>(builder.Configuration.GetSection("Stripe"));
+StripeConfiguration.ApiKey = builder.Configuration.GetSection("Stripe")["ApiKey"];
+StripeConfiguration.ClientId = builder.Configuration.GetSection("Stripe")["ClientId"];
 
 //AI & ML 
 builder.Services.AddSentimentAnalysis(builder);

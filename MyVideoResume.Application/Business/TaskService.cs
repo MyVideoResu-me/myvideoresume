@@ -3,11 +3,12 @@ using Microsoft.Extensions.Logging;
 using MyVideoResume.Abstractions.Business;
 using MyVideoResume.Abstractions.Business.Tasks;
 using MyVideoResume.Abstractions.Core;
+using MyVideoResume.Application.Account;
 using MyVideoResume.Data;
 using MyVideoResume.Data.Models.Account.Profiles;
 using MyVideoResume.Data.Models.Business.Tasks;
 
-namespace MyVideoResume.Application.Account;
+namespace MyVideoResume.Application.Business;
 
 public class TaskService
 {
