@@ -45,8 +45,6 @@ public class RequestLoggingMiddleware
                 if (!requestPath.Contains("/api/"))
                 {
                     DataCollectionTypes? dataCollectionType = null;
-                    string? extractValue = ExtractId(requestPath, ["/resumes/", "/resume/", "/jobs/", "/job/", "/people/profile/", "/people/profiles/"]);
-
                     //TODO: add CompanyProfile, CompanyJobPage, Embedded pages.
                     if (requestPath.Contains("/resumes/", StringComparison.OrdinalIgnoreCase) || requestPath.Contains("/resume/", StringComparison.OrdinalIgnoreCase))
                     {
@@ -64,6 +62,7 @@ public class RequestLoggingMiddleware
                     //only capture data for those specific endpoints for Data Collection
                     if (dataCollectionType.HasValue)
                     {
+                        string? extractValue = ExtractId(requestPath, ["/resumes/", "/resume/", "/jobs/", "/job/", "/people/profile/", "/people/profiles/"]);
 
                         // Extract and parse the User-Agent string using UAParser
                         var userAgentString = context.Request.Headers["User-Agent"].ToString();
