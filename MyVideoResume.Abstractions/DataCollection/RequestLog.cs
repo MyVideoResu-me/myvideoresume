@@ -7,15 +7,17 @@ using System.Threading.Tasks;
 
 namespace MyVideoResume.Abstractions.DataCollection;
 
-public class RequestLog: CommonBase
+public class RequestLog : CommonBase
 {
     public string Url { get; set; }
     public string? Method { get; set; }
     public string? UserAgent { get; set; }
     public string? IpAddress { get; set; }
     public string? Referrer { get; set; }
-    public string? UserId { get; set; }
 
+    //Logged in User who is visiting the artifact
+    public string? UserId { get; set; }
+    public string? DataCollectionId { get; set; }
     public DataCollectionTypes? DataCollectionType { get; set; }
 
     // New properties for parsed user-agent information
@@ -25,6 +27,7 @@ public class RequestLog: CommonBase
     public string? OSVersion { get; set; }     // Operating system version
     public string? Device { get; set; }        // Device type
 
+    //Processed after Initial Logging
     public string? UserProfileId { get; set; }
     public string? CompanyProfileId { get; set; }
 
