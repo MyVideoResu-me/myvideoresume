@@ -31,6 +31,9 @@ using MyVideoResume.Application.Job.BackgroundProcessing;
 using MyVideoResume.Application.Payments;
 using Stripe;
 using MyVideoResume.Application.Business;
+using DocumentFormat.OpenXml.Office2016.Drawing.ChartDrawing;
+using MyVideoResume.Application.DataCollection;
+using UAParser;
 
 var builder = WebApplication.CreateBuilder(args);
 //Logging
@@ -122,6 +125,11 @@ builder.Services.AddAuthentication();
 builder.Services.AddAuthenticationStateDeserialization();
 builder.Services.AddAuthorization();
 
+builder.Services.AddSingleton<Parser>(Parser.GetDefault());
+
+// Register other services
+builder.Services.AddTransient<IRequestLogger, RequestLogger>();
+
 //Payments
 builder.Services.Configure<StripeConfig>(builder.Configuration.GetSection("Stripe"));
 StripeConfiguration.ApiKey = builder.Configuration.GetSection("Stripe")["ApiKey"];
@@ -191,7 +199,7 @@ else
 
 
 app.UseSerilogRequestLogging();
-
+app.UseMiddleware<RequestLoggingMiddleware>();
 app.UseHttpsRedirection();
 app.MapControllers();
 app.UseHeaderPropagation();

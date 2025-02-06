@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace MyVideoResume.Abstractions.Job;
 
-public class Fee
+public class Fee : CommonBase
 {
     public string UserId { get; set; }
     public string Description { get; set; }

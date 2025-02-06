@@ -480,3 +480,22 @@ public enum MetaType
     YouTube = 10,
     HtmlContent = 15,
 }
+
+public enum ProfileStatus { 
+    NoStatus,
+    OpenToWork,
+    Hiring,
+}
+
+public enum DataCollectionTypes { 
+    Resume,
+    ResumeEmbedded,
+    UserProfile,
+    UserProfileEmbedded,
+    CompanyProfile,
+    CompanyProfileEmbedded,
+    CompanyJobPage,
+    CompanyJobPageEmbedded,
+    Job,
+    JobEmbedded
+}

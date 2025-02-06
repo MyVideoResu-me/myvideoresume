@@ -73,11 +73,3 @@ public class JobItem : JobBase
     public JobStatus? Status { get; set; }
     public int? HiringTarget { get; set; } = null;
 }
-
-public class JobDTO : JobBase
-{
-    public string Id { get; set; }
-
-    public ContactPersonDTO CreatedByUser { get; set; }
-    public ContactPersonDTO? ContactUser { get; set; }
-}

@@ -26,8 +26,10 @@ public class UserProfile : ProfileBase
     public DateTime? DateOfBirth { get; set; }
 
     public bool? IsRoleSelected { get; set; }
-
     public DateTime? IsRoleSelectedDateTime { get; set; }
+
+    public ProfileStatus? ProfileStatus { get; set; } //Hiring => Show Jobs they own that are public; OpenToWork => Show featured Resume
+    public DateTime? ProfileStatusDataTime { get; set; }
 
     public MyVideoResumeRoles? RoleSelected { get; set; }
 
