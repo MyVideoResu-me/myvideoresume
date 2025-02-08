@@ -11,6 +11,7 @@ using Microsoft.Extensions.Caching.Hybrid;
 using MyVideoResume.Data.Models.Account;
 using MyVideoResume.Abstractions.Account.Profiles;
 using MyVideoResume.Client.Pages.Shared.Security.Recaptcha;
+using MyVideoResume.Extensions;
 
 namespace MyVideoResume.Client.Services;
 

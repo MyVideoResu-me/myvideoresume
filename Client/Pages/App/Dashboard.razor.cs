@@ -14,6 +14,7 @@ using MyVideoResume.Abstractions.Resume;
 using MyVideoResume.Client.Services;
 using MyVideoResume.Data;
 using MyVideoResume.Data.Models.Resume;
+using MyVideoResume.Extensions;
 using MyVideoResume.Web.Common;
 using Radzen;
 using Radzen.Blazor;

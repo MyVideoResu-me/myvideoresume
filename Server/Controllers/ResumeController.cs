@@ -12,6 +12,7 @@ using MyVideoResume.Data;
 using MyVideoResume.Data.Models;
 using MyVideoResume.Data.Models.Resume;
 using MyVideoResume.Documents;
+using MyVideoResume.Extensions;
 using MyVideoResume.Services;
 using MyVideoResume.Web.Common;
 using System.Security.Claims;

@@ -11,6 +11,7 @@ using MyVideoResume.Data.Models.Jobs;
 using MyVideoResume.Abstractions.Account.Profiles;
 using MyVideoResume.Web.Common;
 using MyVideoResume.Abstractions.Core;
+using MyVideoResume.Extensions;
 
 namespace MyVideoResume.Client.Pages.App.Account;
 

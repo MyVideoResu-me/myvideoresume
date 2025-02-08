@@ -10,6 +10,7 @@ using MyVideoResume.Abstractions.Resume;
 using MyVideoResume.Application.Account;
 using MyVideoResume.Data;
 using MyVideoResume.Data.Models.Resume;
+using MyVideoResume.Extensions;
 using MyVideoResume.Web.Common;
 using Radzen;
 using System.Net.Http.Json;

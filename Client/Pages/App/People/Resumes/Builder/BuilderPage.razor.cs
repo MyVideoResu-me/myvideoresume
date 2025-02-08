@@ -16,6 +16,7 @@ using MyVideoResume.Abstractions.Resume.Formats.JSONResumeFormat;
 using MyVideoResume.Client.Pages.App.People.Resumes.Templates;
 using MyVideoResume.Client.Services;
 using MyVideoResume.Data.Models.Resume;
+using MyVideoResume.Extensions;
 using MyVideoResume.Web.Common;
 using Radzen;
 using Radzen.Blazor;

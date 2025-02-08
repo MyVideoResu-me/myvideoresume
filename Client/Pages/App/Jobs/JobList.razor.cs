@@ -12,6 +12,7 @@ using MyVideoResume.Abstractions.Job;
 using MyVideoResume.Abstractions.Resume;
 using MyVideoResume.Client.Services;
 using MyVideoResume.Data.Models.Jobs;
+using MyVideoResume.Extensions;
 using MyVideoResume.Web.Common;
 using Radzen;
 using Radzen.Blazor;

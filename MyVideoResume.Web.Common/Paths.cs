@@ -65,14 +65,3 @@ public static class CacheKeys
     public const string UserProfile = "UserProfile";
     public const string UserRoles = "UserRoles";
 }
-
-
-public static class Extensions
-{
-    public static bool HasValue(this string value)
-    {
-        var result = !string.IsNullOrWhiteSpace(value);
-
-        return result;
-    }
-}

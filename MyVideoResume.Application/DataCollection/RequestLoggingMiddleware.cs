@@ -12,7 +12,8 @@ using Microsoft.Extensions.Configuration;
 using MyVideoResume.Abstractions.Core;
 using System.Security.Policy;
 using Splitio.Constants;
-using MyVideoResume.Web.Common;
+using MyVideoResume.Extensions;
+using System.Text.RegularExpressions;
 
 namespace MyVideoResume.Application.DataCollection;
 
@@ -40,7 +41,8 @@ public class RequestLoggingMiddleware
 
             if (dataCollectionEnabled)
             {
-                var requestPath = context.Request.Path.ToString();
+                var request = context.Request;
+                var requestPath = request.Url();
 
                 if (!requestPath.Contains("/api/"))
                 {
@@ -112,16 +114,13 @@ public class RequestLoggingMiddleware
     {
         var extractedValue = string.Empty;
 
-        foreach (var prefix in prefixes)
-        {
-            int startIndex = requestPath.IndexOf(prefix);
+        string slugOrGuidPattern = @"/(?:resumes?|job|jobs?|person|profile)/([^/?]+)";  // Match slug or GUID before query string
+        Match match = Regex.Match(requestPath, slugOrGuidPattern);
 
-            if (startIndex != -1)
-            {
-                // Extract the substring after "/resumes/"
-                extractedValue = requestPath.Substring(startIndex + prefix.Length);
-            }
-        }
+        //TODO: NameValueCollection queryParams = HttpUtility.ParseQueryString(uri.Query); (get all the referrer information)
+
+        extractedValue = match.Success ? match.Groups[1].Value : string.Empty;  // Extract GUID if found
+
         return extractedValue;
     }
 

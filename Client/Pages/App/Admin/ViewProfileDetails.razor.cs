@@ -10,6 +10,7 @@ using Radzen.Blazor;
 using MyVideoResume.Data.Models.Account;
 using MyVideoResume.Abstractions.Account.Profiles;
 using MyVideoResume.Web.Common;
+using MyVideoResume.Extensions;
 
 namespace MyVideoResume.Client.Pages.App.Admin;
 

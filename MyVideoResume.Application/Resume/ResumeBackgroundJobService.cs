@@ -9,6 +9,7 @@ using MyVideoResume.Abstractions.Core;
 using MyVideoResume.Abstractions.Match;
 using MyVideoResume.Data;
 using MyVideoResume.Data.Models.Jobs;
+using MyVideoResume.Extensions;
 using MyVideoResume.Web.Common;
 using Radzen;
 using System.Net.Http.Json;

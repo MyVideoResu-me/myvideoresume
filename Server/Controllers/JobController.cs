@@ -8,6 +8,7 @@ using MyVideoResume.Application.Resume;
 using MyVideoResume.Data.Models.Jobs;
 using MyVideoResume.Data.Models.Resume;
 using MyVideoResume.Documents;
+using MyVideoResume.Extensions;
 using MyVideoResume.Web.Common;
 using System.Security.Claims;
 

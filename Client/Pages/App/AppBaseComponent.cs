@@ -1,5 +1,6 @@
 ﻿using MyVideoResume.Web.Common;
 using MyVideoResume.Abstractions.Account.Profiles;
+using MyVideoResume.Extensions;
 
 namespace MyVideoResume.Client.Pages.App;
 

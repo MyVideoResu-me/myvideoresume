@@ -14,6 +14,7 @@ using MyVideoResume.Application.Resume;
 using MyVideoResume.Data;
 using MyVideoResume.Data.Models.Jobs;
 using MyVideoResume.Data.Models.Queues;
+using MyVideoResume.Extensions;
 using MyVideoResume.Web.Common;
 using PuppeteerSharp;
 using Radzen;

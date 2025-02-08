@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Components;
 using Radzen;
 using MyVideoResume.Web.Common;
 using MyVideoResume.Client.Pages.Shared.Security.Recaptcha;
+using MyVideoResume.Extensions;
 
 namespace MyVideoResume.Client.Pages.Web;
 

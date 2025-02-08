@@ -29,6 +29,7 @@
 	  <ProjectReference Include="..\MyVideoResume.AI\MyVideoResume.AI.csproj" />
 	  <ProjectReference Include="..\MyVideoResume.Data\MyVideoResume.Data.csproj" />
 	  <ProjectReference Include="..\MyVideoResume.Documents\MyVideoResume.Documents.csproj" />
+	  <ProjectReference Include="..\MyVideoResume.Extensions\MyVideoResume.Extensions.csproj" />
 	  <ProjectReference Include="..\MyVideoResume.Web.Common\MyVideoResume.Web.Common.csproj" />
 	</ItemGroup>
 
