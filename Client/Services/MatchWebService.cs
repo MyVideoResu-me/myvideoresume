@@ -75,4 +75,23 @@ public partial class MatchWebService: BaseWebService
         return r;
     }
 
+    public async Task<ResponseResult<JobResumeBestResumeResponse>> BestResumeByJobResumeContent(string jobDescription, string resumeContent)
+    {
+        var r = new ResponseResult<JobResumeBestResumeResponse>();
+        try
+        {
+            var uri = new Uri($"{_navigationManager.BaseUri}api/match/bestresume");
+            var request = new JobResumeByContentMatchRequest() { JobContent = jobDescription, ResumeContent = resumeContent };
+            var response = await _httpClient.PostAsJsonAsync<JobResumeByContentMatchRequest>(uri, request);
+            r = await response.ReadAsync<ResponseResult<JobResumeBestResumeResponse>>();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.Message, ex);
+            r.ErrorMessage = ex.Message;
+        }
+        return r;
+    }
+
+
 }

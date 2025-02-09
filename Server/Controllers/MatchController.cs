@@ -80,4 +80,22 @@ public partial class MatchController : ControllerBase
         return result;
     }
 
+
+    [Authorize]
+    [HttpPost("bestresume")]
+    public async Task<ActionResult<ResponseResult<JobResumeBestResumeResponse>>> BestResumeByJobResumeContent([FromBody] JobResumeByContentMatchRequest request)
+    {
+        var result = new ResponseResult<JobResumeBestResumeResponse>();
+        try
+        {
+            result = await _service.BestResumeByJobResumeContent(request);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.Message, ex);
+            result.ErrorMessage = ex.Message;
+        }
+        return result;
+    }
+
 }

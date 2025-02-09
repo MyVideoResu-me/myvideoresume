@@ -50,6 +50,7 @@ public static class Paths
     public const string Tools_Sentiment = "Tools/SentimentAnalysis";
     public const string Tools_SummarizeResume = "Tools/SummarizeResume";
     public const string Tools_JobMatch = "Tools/JobResumeMatch";
+    public const string Tools_BestResume = "Tools/JobResumeBestResume";
     public const string Tools_PdfToJson = "Tools/pdftojson";
 }
 

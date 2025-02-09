@@ -31,6 +31,124 @@ public class MatchService : OpenAIPromptEngine
         ""Score"": ""float""
     }";
 
+    private readonly string jsonResumeRecommendationFormat = @"
+    {
+        ""SummaryRecommendations"": ""Summary Recommendations as Markdown"",
+        ""Score"": ""float"",
+        ""Resume"":
+        {
+          ""basics"": {
+            ""name"": ""John Doe"",
+            ""label"": ""Programmer"",
+            ""image"": """",
+            ""email"": ""john@gmail.com"",
+            ""phone"": ""(912) 555-4321"",
+            ""url"": ""https://johndoe.com"",
+            ""summary"": ""A summary of John Doe…"",
+            ""location"": {
+              ""address"": ""2712 Broadway St"",
+              ""postalCode"": ""CA 94115"",
+              ""city"": ""San Francisco"",
+              ""countryCode"": ""US"",
+              ""region"": ""California""
+            },
+            ""profiles"": [{
+              ""network"": ""Twitter"",
+              ""username"": ""john"",
+              ""url"": ""https://twitter.com/john""
+            }]
+          },
+          ""work"": [{
+            ""name"": ""Company"",
+            ""position"": ""President"",
+            ""url"": ""https://company.com"",
+            ""startDate"": ""2013-01-01"",
+            ""endDate"": ""2014-01-01"",
+            ""summary"": ""Summary Description of all the highlights…"",
+            ""highlights"": [
+              ""Started the company"",
+              ""Another accomplishment""
+            ]
+          }],
+          ""volunteer"": [{
+            ""organization"": ""Organization"",
+            ""position"": ""Volunteer"",
+            ""url"": ""https://organization.com/"",
+            ""startDate"": ""2012-01-01"",
+            ""endDate"": ""2013-01-01"",
+            ""summary"": ""Description…"",
+            ""highlights"": [
+              ""Awarded 'Volunteer of the Month'""
+            ]
+          }],
+          ""education"": [{
+            ""institution"": ""University"",
+            ""url"": ""https://institution.com/"",
+            ""area"": ""Software Development"",
+            ""studyType"": ""Bachelor"",
+            ""startDate"": ""2011-01-01"",
+            ""endDate"": ""2013-01-01"",
+            ""score"": ""4.0"",
+            ""courses"": [
+              ""DB1101 - Basic SQL""
+            ]
+          }],
+          ""awards"": [{
+            ""title"": ""Award"",
+            ""date"": ""2014-11-01"",
+            ""awarder"": ""Company"",
+            ""summary"": ""Description…""
+          }],
+          ""certificates"": [{
+            ""name"": ""Certificate"",
+            ""date"": ""2021-11-07"",
+            ""issuer"": ""Company"",
+            ""url"": ""https://certificate.com""
+          }],
+          ""publications"": [{
+            ""name"": ""Publication"",
+            ""publisher"": ""Company"",
+            ""releaseDate"": ""2014-10-01"",
+            ""url"": ""https://publication.com"",
+            ""summary"": ""Description…""
+          }],
+          ""skills"": [{
+            ""name"": ""Web Development"",
+            ""level"": ""Master"",
+            ""keywords"": [
+              ""HTML"",
+              ""CSS"",
+              ""JavaScript""
+            ]
+          }],
+          ""languages"": [{
+            ""language"": ""English"",
+            ""fluency"": ""Native speaker""
+          }],
+          ""interests"": [{
+            ""name"": ""Wildlife"",
+            ""keywords"": [
+              ""Ferrets"",
+              ""Unicorns""
+            ]
+          }],
+          ""references"": [{
+            ""name"": ""Jane Doe"",
+            ""reference"": ""Reference…""
+          }],
+          ""projects"": [{
+            ""name"": ""Project"",
+            ""startDate"": ""2019-01-01"",
+            ""endDate"": ""2021-01-01"",
+            ""description"": ""Description..."",
+            ""highlights"": [
+              ""Won award at AIHacks 2016""
+            ],
+            ""url"": ""https://project.com/""
+          }]
+        }
+    }";
+
     public MatchService(ILogger<MatchService> logger, JobService jobService, ResumeService resumeService, IConfiguration configuration) : base(logger, configuration)
     {
         _jobService = jobService;
@@ -92,4 +210,28 @@ public class MatchService : OpenAIPromptEngine
         }
         return r;
     }
+
+    public async Task<ResponseResult<JobResumeBestResumeResponse>> BestResumeByJobResumeContent(JobResumeByContentMatchRequest request)
+    {
+        var r = new ResponseResult<JobResumeBestResumeResponse>();
+        try
+        {
+            var prompt = "Given a person's Resume and Job Description, create a resume that best matches the job description. I need you to score the new resume. The score is from 0 to 100. 100 being a perfect match. Include a recommendation summary that provides details about the new resume. If the score is below 80, include feedback, recommendations and next steps for the candidate to improve. Bold the headings. Return the score, new resume and recommendations in the given Json structure. Respond with no formatting for the JSON. The recommendations should be in Markdown.";
+            var userResumeInput = $"Resume: {request.ResumeContent}";
+            var userJobInput = $"Job Description: {request.JobContent}";
+            var jsonFormatInput = $"JSON: {jsonResumeRecommendationFormat}";
+            var result = await this.Process(prompt, new[] { userResumeInput, userJobInput, jsonFormatInput });
+            var temp = JsonSerializer.Deserialize<JobResumeBestResumeResponse>(result.Result, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            r.Result = temp;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.Message, ex);
+            r.ErrorMessage = ex.Message;
+        }
+        return r;
+    }
+
+
+    
 }

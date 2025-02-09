@@ -14,7 +14,7 @@ namespace MyVideoResume.Client.Pages.Shared.ML;
 public partial class JobResumeMatchTool
 {
     [Inject]
-    protected ILogger<SummarizeResumeTool> Logger { get; set; }
+    protected ILogger<JobResumeMatchTool> Logger { get; set; }
 
     [Inject]
     protected ResumeWebService Service { get; set; }
