@@ -137,6 +137,10 @@ a {
     visibility: hidden;
 }
 
+iframe {
+    border: none;
+}
+
 .share {
     background-color: #aaa;
     border: none;

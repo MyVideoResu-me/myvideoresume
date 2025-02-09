@@ -12,6 +12,8 @@ public static class Paths
     public const string Site_Login = "/login";
     public const string Site_Logout = "/logout";
     public const string Site_About = "/about";
+    public const string Site_TermsOfUse = "/termsofuse";
+    public const string Site_PrivacyPolicy = "/privacypolicy";
     public const string Site_Help = "articles/how-to";
     public const string Site_ContactUs = "/work-with-us";
     public const string Site_ReleaseNotes = "/release-notes";
