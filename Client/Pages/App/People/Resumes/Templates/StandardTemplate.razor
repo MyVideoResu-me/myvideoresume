@@ -12,18 +12,16 @@
 {
     <RadzenRow>
         <RadzenColumn Style="max-width: 100%">
-            @if (ShowEditOptions())
-            {
-                <div style="float: right; padding-right: 35px">
-                    <RadzenMenu Responsive="false">
-                        <RadzenMenuItem Icon="more_horiz">
-                            <RadzenMenuItem Text="Edit" Path=@Paths.Jobs_View Icon="edit" Click=@(()=> Edit()) Visible=@FeatureFlagService.IsResumeBuilderEnabled></RadzenMenuItem>
-                            <RadzenMenuItem Text="Json" Icon="download" Click=@(()=> DownloadAsJson(Resume))></RadzenMenuItem>
-                            <RadzenMenuItem Text="Html" Icon="download" Click=@(()=> DownloadAsHtml(Resume))></RadzenMenuItem>
-                        </RadzenMenuItem>
-                    </RadzenMenu>
-                </div>
-            }
+            <div style="float: right; padding-right: 35px">
+                <RadzenSplitButton Icon="cycle" Click=@(args => Actions(args)) Text="Actions" ButtonStyle="ButtonStyle.Danger">
+                    <ChildContent>
+                        <RadzenSplitButtonItem Icon="share" Text="Share" Value="share" />
+                        <RadzenSplitButtonItem Icon="edit" Text="Edit" Value="edit" Visible=@(FeatureFlagService.IsResumeBuilderEnabled & ShowEditOptions()) />
+                        <RadzenSplitButtonItem Icon="download" Text="JSON" Value="json" Visible=@ShowEditOptions() />
+                        <RadzenSplitButtonItem Icon="download" Text="Html" Value="html" Visible=@ShowEditOptions() />
+                    </ChildContent>
+                </RadzenSplitButton>
+            </div>
             <RadzenText Text=@Title() TextStyle="Radzen.Blazor.TextStyle.DisplayH2" TagName="Radzen.Blazor.TagName.Auto"></RadzenText>
             <RadzenStack AlignItems="AlignItems.Normal" Orientation="Orientation.Horizontal">
                 @if (ShowContactDetails()) //TO DO: check the user's role
@@ -450,6 +448,32 @@
             }
         }
     }
+
+
+    protected async Task Actions(RadzenSplitButtonItem args)
+    {
+        if (args != null)
+        {
+            switch (args.Value)
+            {
+                case "json":
+                    await DownloadAsJson(Resume);
+                    break;
+                case "html":
+                    await DownloadAsHtml(Resume);
+                    break;
+                case "edit":
+                    Edit();
+                    break;
+                case "share":
+                    var result = await ShowShareOptions($"{NavigationManager.Uri}", "#resume, #myvideoresume", "MyVideoResu.ME");
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+
 
     protected bool DisplayMetaData(string id)
     {

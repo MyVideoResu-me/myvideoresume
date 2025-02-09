@@ -15,6 +15,9 @@ public class RequestLog : CommonBase
     public string? IpAddress { get; set; }
     public string? Referrer { get; set; }
 
+    public string? ReferrerUserId { get; set; }
+    public string? CampaignId { get; set; }
+
     //Logged in User who is visiting the artifact
     public string? UserId { get; set; }
     public string? DataCollectionId { get; set; }

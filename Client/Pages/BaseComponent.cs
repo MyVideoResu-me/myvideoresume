@@ -8,6 +8,7 @@ using MyVideoResume.Client.Services.FeatureFlag;
 using MyVideoResume.Abstractions.Account.Profiles;
 using MyVideoResume.Client.Pages.Shared.Security;
 using MyVideoResume.Client.Pages.Shared;
+using Microsoft.AspNetCore.Http;
 
 namespace MyVideoResume.Client.Pages;
 
@@ -68,6 +69,16 @@ public class BaseComponent : LayoutComponentBase
     public async Task<dynamic> ShowUnAuthorized(string returnPath)
     {
         var result = await ShowUnAuthorizedOptions(returnPath, null);
+        return result;
+    }
+
+    public async Task<dynamic> ShowShareOptions(string urlToShare, string hashtags, string title)
+    {
+        var param = new Dictionary<string, object>();
+        param.Add("UrlToShare", urlToShare);
+        param.Add("Hashtags", hashtags);
+        param.Add("Title", title);
+        var result = await DialogService.OpenAsync<ShareOptionsComponent>("Share Options", param);
         return result;
     }
 

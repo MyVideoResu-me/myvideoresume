@@ -14,6 +14,10 @@ using System.Security.Policy;
 using Splitio.Constants;
 using MyVideoResume.Extensions;
 using System.Text.RegularExpressions;
+using System.Collections.Specialized;
+using System.Web;
+using System.Reflection.Metadata;
+using MyVideoResume.Web.Common;
 
 namespace MyVideoResume.Application.DataCollection;
 
@@ -65,6 +69,10 @@ public class RequestLoggingMiddleware
                     if (dataCollectionType.HasValue)
                     {
                         string? extractValue = ExtractId(requestPath, ["/resumes/", "/resume/", "/jobs/", "/job/", "/people/profile/", "/people/profiles/"]);
+                        Uri uri = new Uri(requestPath);
+                        NameValueCollection queryParams = HttpUtility.ParseQueryString(uri.Query); //(get all the referrer information)
+                        var campaignId = queryParams[Constants.CampaignId];
+                        var referrerUserId = queryParams[Constants.ReferrerUserId];
 
                         // Extract and parse the User-Agent string using UAParser
                         var userAgentString = context.Request.Headers["User-Agent"].ToString();
@@ -84,9 +92,11 @@ public class RequestLoggingMiddleware
                             UserAgent = userAgentString,  // Original User-Agent string
                             IpAddress = context.Connection.RemoteIpAddress?.ToString(),
                             CreationDateTime = DateTime.UtcNow,
+                            CampaignId = campaignId, //Was this part of a Campaign?
+                            ReferrerUserId = referrerUserId, //Is this a Share via email by a User?
                             UserId = GetUserIdFromClaims(context),  // Extract User ID
-                            Browser = uaResult.UserAgent.Family,   // Browser name (e.g., Chrome, Firefox)
-                            BrowserVersion = uaResult.UserAgent.ToString(),  // Full browser version string (e.g., Chrome/91.0.4472)
+                            Browser = uaResult.UA.Family,   // Browser name (e.g., Chrome, Firefox)
+                            BrowserVersion = uaResult.UA.ToString(),  // Full browser version string (e.g., Chrome/91.0.4472)
                             OS = uaResult.OS.Family,              // Operating system name (e.g., Windows, macOS)
                             OSVersion = uaResult.OS.ToString(),   // Full operating system version (e.g., Windows 10)
                             Device = uaResult.Device.Family,      // Device type (e.g., Desktop, Mobile, Tablet)
@@ -116,8 +126,6 @@ public class RequestLoggingMiddleware
 
         string slugOrGuidPattern = @"/(?:resumes?|job|jobs?|person|profile)/([^/?]+)";  // Match slug or GUID before query string
         Match match = Regex.Match(requestPath, slugOrGuidPattern);
-
-        //TODO: NameValueCollection queryParams = HttpUtility.ParseQueryString(uri.Query); (get all the referrer information)
 
         extractedValue = match.Success ? match.Groups[1].Value : string.Empty;  // Extract GUID if found
 

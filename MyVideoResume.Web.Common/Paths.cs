@@ -58,6 +58,8 @@ public static class Constants
 
     public const string HttpClientFactory = "MyVideoResume.Server";
     public const string BaseUriConfigurationProperty = "BaseUri";
+    public const string CampaignId = "Cam";
+    public const string ReferrerUserId = "Ref";
 }
 
 public static class CacheKeys
