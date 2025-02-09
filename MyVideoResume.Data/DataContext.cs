@@ -10,6 +10,7 @@ using MyVideoResume.Data.Models.Account.Profiles;
 using MyVideoResume.Data.Models.Queues;
 using MyVideoResume.Data.Models.Business.Tasks;
 using MyVideoResume.Data.Models.DataCollection;
+using MyVideoResume.Data.Models.Business;
 
 namespace MyVideoResume.Data;
 

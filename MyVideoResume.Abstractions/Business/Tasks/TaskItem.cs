@@ -36,6 +36,7 @@ public class TaskItem : CommonBase
 
     public TaskType TaskType { get; set; }
     public TaskType? SubTaskType { get; set; }
+    public Actions? ActionToTake { get; set; }
 
     public ActionItemStatus Status { get; set; }
 }

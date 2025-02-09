@@ -7,6 +7,7 @@ using System.Net.Http.Json;
 using MyVideoResume.Data.Models.Business;
 using Microsoft.Extensions.Caching.Hybrid;
 using MyVideoResume.Abstractions.Business.Tasks;
+using MyVideoResume.Data.Models.Business.Tasks;
 
 namespace MyVideoResume.Client.Services;
 
@@ -88,5 +89,37 @@ public partial class TaskWebService : BaseWebService
             _logger.LogError(ex.Message, ex);
         }
         return r;
+    }
+
+    public async Task<String> GetUrl(TaskEntity item)
+    {
+        var part = "/";
+        switch (item.TaskType)
+        {
+            case TaskType.Onboarding:
+                if (item.SubTaskType == TaskType.OnboardingProfile) {
+                    part = $"/profile/settings?Action=Profile";
+                }
+                if (item.SubTaskType == TaskType.OnboardingProfileSettings) {
+                    part = $"/profile/settings?Action=Settings";
+                }
+                if (item.SubTaskType == TaskType.OnboardingPrivacy)
+                {
+                    part = $"/profile/settings?Action=Privacy";
+                }
+                break;
+            case TaskType.Company:
+                //Example /company/profile/Id
+                //Example /company/
+                part = Paths.Companies_View + "/";
+
+                if (item.ActionToTake == Actions.Create)
+                { }
+                part = part + item.CompanyProfile.Id;
+                break;
+
+        }
+        var url = $"{_navigationManager.BaseUri}{part}";
+        return url;
     }
 }

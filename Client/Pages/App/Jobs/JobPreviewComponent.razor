@@ -49,17 +49,17 @@
     public JobItemDTO ResumeItem { get; set; } = null;
 
     [Parameter]
-    public PreviewMode Mode { get; set; } = PreviewMode.View;
+    public Actions Mode { get; set; } = Actions.ReadView;
 
     public bool DisplayItem()
     {
         var result = false;
         switch (Mode)
         {
-            case PreviewMode.View:
+            case Actions.ReadView:
                 result = false;
                 break;
-            case PreviewMode.Edit:
+            case Actions.UpdateEdit:
                 result = ResumeItem.UserId == Security.User.Id;
                 break;
             default:

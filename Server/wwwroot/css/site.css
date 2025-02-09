@@ -133,6 +133,10 @@ a {
                 color: gray;
             }
 
+.grecaptcha-badge {
+    visibility: hidden;
+}
+
 .share {
     background-color: #aaa;
     border: none;

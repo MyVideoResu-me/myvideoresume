@@ -4,7 +4,7 @@ using MyVideoResume.Data.Models.Account.Profiles;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace MyVideoResume.Data.Models;
+namespace MyVideoResume.Data.Models.Business;
 
 [Table("UserCompanyRolesAssociation")]
 public class UserCompanyRoleAssociationEntity: CommonBase

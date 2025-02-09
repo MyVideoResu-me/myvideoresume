@@ -11,7 +11,7 @@
     </RadzenRow>
     <RadzenRow>
         <RadzenColumn SizeSM=12 SizeXL="12" Size="11">
-            <RadzenTabs>
+            <RadzenTabs SelectedIndex=@tabSelected>
                 <Tabs>
                     <RadzenTabsItem Text="Profile Settings">
                         <RadzenTemplateForm Method="post" Submit="@SaveUserProfile" TItem="UserProfileDTO" Data="@userProfile">

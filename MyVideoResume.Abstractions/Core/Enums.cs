@@ -32,10 +32,12 @@ public enum MyVideoResumeRoles
     Recruiter = 40,
 }
 
-public enum PreviewMode
+public enum Actions
 {
-    View,
-    Edit
+    Create,
+    ReadView,
+    UpdateEdit,
+    Delete,
 }
 
 public enum CommunicationType { Personal, Work, Other }
@@ -238,9 +240,15 @@ public enum TaskType
     Interview = 5,
     Onboarding = 10,
     OnboardingProfile = 11,
+    OnboardingProfileSettings = 12,
+    OnboardingPrivacy = 13,
+
     Recruiter = 20,
+    RecruiterPreferences = 31,
     JobSeeker = 30,
+    JobSeekerPreferences = 31,
     Company = 40, //Update Company Profile; Add Contact Details; Add Job;
+    CompanySettings = 41,
     Profile = 50, //Update Profile; Add Contact Details
     Job = 60,
     Resume = 70,

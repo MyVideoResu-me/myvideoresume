@@ -12,7 +12,7 @@
         @foreach (var resume in ResumeItems)
         {
             <RadzenColumn Size="12" SizeXS="12" SizeSM="12" SizeMD="4" SizeLG="3" SizeXL="3" SizeXX="2">
-                <ResumePreviewComponent ResumeItem=@resume DeleteCompleted=@DeleteCompletedHandler Mode="PreviewMode.Edit"></ResumePreviewComponent>
+                <ResumePreviewComponent ResumeItem=@resume DeleteCompleted=@DeleteCompletedHandler Mode="Actions.UpdateEdit"></ResumePreviewComponent>
             </RadzenColumn>
         }
 

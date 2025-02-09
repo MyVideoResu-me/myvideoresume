@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using System.ComponentModel;
 using System.Dynamic;
 
 namespace MyVideoResume.Extensions;
@@ -31,5 +32,26 @@ public static class Extensions
         var result = !string.IsNullOrWhiteSpace(value);
 
         return result;
+    }
+
+    static public SortedList<string, string> ToSortedList(this Enum enumValue)
+    {
+        var field = enumValue.GetType().GetFields();
+        var y = field.Where(x =>
+        {
+            var attributes = x.GetCustomAttributes(typeof(DescriptionAttribute), false);
+            if (attributes != null && attributes.Length > 0)
+                return true;
+            return false;
+        }).Select(x =>
+        {
+            var attributes = x.GetCustomAttributes(typeof(DescriptionAttribute), false);
+            var key = string.Empty;
+            var value = string.Empty;
+            value = (attributes.FirstOrDefault() as DescriptionAttribute).Description;
+            key = x.Name;
+            return new KeyValuePair<string, string>(key, value);
+        }).ToDictionary();
+        return new SortedList<string, string>(y);
     }
 }

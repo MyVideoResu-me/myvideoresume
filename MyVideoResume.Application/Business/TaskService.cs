@@ -25,36 +25,61 @@ public class TaskService
 
     public async Task<List<TaskEntity>> CreateOnboardingTasks(string userId, UserProfileEntity userProfile, CompanyProfileEntity companyProfile)
     {
-        //Lets confirm that the onboarding tasks don't exist
-        var onboardingTasks = _dataContext.Tasks.FirstOrDefault(x => x.TaskType == TaskType.Onboarding && x.AssignedToUserId == userId);
-        if (onboardingTasks == null)
+        var tasks = new List<TaskEntity>();
+        try
         {
-            //Check if there is a Default Board
-            var board = _dataContext.Boards.FirstOrDefault(x => x.CreatedByUserId == userId && x.IsDefault == true);
-            if (board == null)
+            //Lets confirm that the onboarding tasks don't exist
+            var onboardingTasks = _dataContext.Tasks.FirstOrDefault(x => x.TaskType == TaskType.Onboarding && x.AssignedToUserId == userId);
+            if (onboardingTasks == null)
             {
-                board = new BoardEntity() { CreatedByUser = userProfile, Tasks = new List<TaskEntity>(), CreatedByUserId = userId, CompanyProfile = companyProfile, Name = "My Board", IsDefault = true, CreationDateTime = DateTime.UtcNow };
+                //Check if there is a Default Board
+                var board = _dataContext.Boards.FirstOrDefault(x => x.CreatedByUserId == userId && x.IsDefault == true);
+                if (board == null)
+                {
+                    board = new BoardEntity() { CreatedByUser = userProfile, Tasks = new List<TaskEntity>(), CreatedByUserId = userId, CompanyProfile = companyProfile, Name = "My Board", IsDefault = true, CreationDateTime = DateTime.UtcNow };
+                }
+
+                //What are the tasks that they should complete to be 100% profile
+                TaskEntity taskProfile = new TaskEntity()
+                {
+                    AssignedToUser = userProfile,
+                    AssignedToUserId = userId,
+                    CreationDateTime = DateTime.UtcNow,
+                    Start = DateTime.UtcNow,
+                    Status = ActionItemStatus.ToDo,
+                    CompanyProfile = companyProfile,
+                    TaskType = TaskType.Onboarding,
+                    SubTaskType = TaskType.OnboardingProfile,
+                    Text = "Update Your Profile",
+                    Description = "Please update your profile."
+                };
+                tasks.Add(taskProfile);
+
+                TaskEntity taskProfileSettings = new TaskEntity()
+                {
+                    AssignedToUser = userProfile,
+                    AssignedToUserId = userId,
+                    CreationDateTime = DateTime.UtcNow,
+                    Start = DateTime.UtcNow,
+                    Status = ActionItemStatus.ToDo,
+                    CompanyProfile = companyProfile,
+                    TaskType = TaskType.Onboarding,
+                    SubTaskType = TaskType.OnboardingProfileSettings,
+                    Text = "Update Your Profile Settings",
+                    Description = "Please update your profile settings."
+                };
+                tasks.Add(taskProfileSettings);
+
+                board.Tasks.AddRange(tasks);
+                await _dataContext.SaveChangesAsync();
             }
-
-            //What are the tasks that they should complete to be 100% profile
-            TaskEntity task = new TaskEntity()
-            {
-                AssignedToUser = userProfile,
-                AssignedToUserId = userId,
-                CreationDateTime = DateTime.UtcNow,
-                Start = DateTime.UtcNow,
-                Status = ActionItemStatus.ToDo,
-                CompanyProfile = companyProfile,
-                TaskType = TaskType.Onboarding,
-                SubTaskType = TaskType.OnboardingProfile,
-                Text = string.Empty
-            };
-
-            board.Tasks.Add(task);
-
-            await _dataContext.SaveChangesAsync();
         }
-        return null;
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.Message, ex);
+        }
+
+        return tasks;
     }
 
     public async Task<List<TaskEntity>> UpdateTasksByRole(string userId)
@@ -62,4 +87,7 @@ public class TaskService
 
         return null;
     }
+
+
+
 }

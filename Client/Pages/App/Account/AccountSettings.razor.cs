@@ -12,12 +12,13 @@ using MyVideoResume.Abstractions.Account.Profiles;
 using MyVideoResume.Web.Common;
 using MyVideoResume.Abstractions.Core;
 using MyVideoResume.Extensions;
+using Microsoft.AspNetCore.WebUtilities;
 
 namespace MyVideoResume.Client.Pages.App.Account;
 
 public partial class AccountSettings
 {
-
+    protected int tabSelected = 1;
     protected string oldPassword = "";
     protected string newPassword = "";
     protected string confirmPassword = "";
@@ -34,6 +35,22 @@ public partial class AccountSettings
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
+
+        var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
+
+        if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("Action", out var action))
+        {
+            switch (action)
+            {
+                case "security":
+                    tabSelected = 2;
+                    break;
+                default:
+                    tabSelected = 1;
+                    break;
+            }
+        }
+
         user = await Security.GetUserById($"{Security.User.Id}");
         var result = await Security.GetUserProfile();
         if (!result.ErrorMessage.HasValue())

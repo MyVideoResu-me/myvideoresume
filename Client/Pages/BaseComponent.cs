@@ -12,30 +12,6 @@ using Microsoft.AspNetCore.Http;
 
 namespace MyVideoResume.Client.Pages;
 
-public static class EnumExtensions
-{
-    static public SortedList<string, string> ToSortedList(this Enum enumValue)
-    {
-        var field = enumValue.GetType().GetFields();
-        var y = field.Where(x =>
-        {
-            var attributes = x.GetCustomAttributes(typeof(DescriptionAttribute), false);
-            if (attributes != null && attributes.Length > 0)
-                return true;
-            return false;
-        }).Select(x =>
-        {
-            var attributes = x.GetCustomAttributes(typeof(DescriptionAttribute), false);
-            var key = string.Empty;
-            var value = string.Empty;
-            value = (attributes.FirstOrDefault() as DescriptionAttribute).Description;
-            key = x.Name;
-            return new KeyValuePair<string, string>(key, value);
-        }).ToDictionary();
-        return new SortedList<string, string>(y);
-    }
-}
-
 public class BaseComponent : LayoutComponentBase
 {
     [Inject] protected FeatureFlagClientService FeatureFlagService { get; set; }

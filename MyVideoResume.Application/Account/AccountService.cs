@@ -9,6 +9,7 @@ using MyVideoResume.Data;
 using MyVideoResume.Data.Models;
 using MyVideoResume.Data.Models.Account;
 using MyVideoResume.Data.Models.Account.Profiles;
+using MyVideoResume.Data.Models.Business;
 using MyVideoResume.Data.Models.Jobs;
 
 namespace MyVideoResume.Application.Account;
