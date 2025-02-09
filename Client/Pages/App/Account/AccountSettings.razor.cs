@@ -18,7 +18,7 @@ namespace MyVideoResume.Client.Pages.App.Account;
 
 public partial class AccountSettings
 {
-    protected int tabSelected = 1;
+    protected int tabSelected = 0;
     protected string oldPassword = "";
     protected string newPassword = "";
     protected string confirmPassword = "";
@@ -43,10 +43,10 @@ public partial class AccountSettings
             switch (action)
             {
                 case "security":
-                    tabSelected = 2;
+                    tabSelected = 1;
                     break;
                 default:
-                    tabSelected = 1;
+                    tabSelected = 0;
                     break;
             }
         }
