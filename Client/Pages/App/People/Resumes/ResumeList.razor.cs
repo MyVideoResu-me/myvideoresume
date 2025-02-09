@@ -4,6 +4,7 @@ using MyVideoResume.Data.Models.Resume;
 using MyVideoResume.Extensions;
 using MyVideoResume.Web.Common;
 using Radzen.Blazor;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace MyVideoResume.Client.Pages.App.People.Resumes;
 
@@ -66,7 +67,7 @@ public partial class ResumeList
             ResumeItems = await ResumeWebService.GetResumeSummaryItems();
     }
 
-    async Task OpenAITools(RadzenSplitButtonItem args, ResumeSummaryItem item)
+    async Task OpenActions(RadzenSplitButtonItem args, ResumeSummaryItem item)
     {
         if (args != null)
             switch (args.Value)
@@ -76,6 +77,19 @@ public partial class ResumeList
                     break;
                 case "jobmatch":
                     await OpenJobMatchAnalysis(item);
+                    break;
+                case "edit":
+                    NavigateTo("resumes/builder", item.Id);
+                    break;
+                case "view":
+                    NavigateTo("resumes", item.Id);
+                    break;
+                case "share":
+                    var url = $"{NavigationManager.BaseUri}resumes/{item.Id}";
+                    var result = await ShowShareOptions(url, "#resume, #myvideoresume", "MyVideoResu.ME");
+                    break;
+                case "delete":
+                    await Delete(item);
                     break;
                 default:
                     break;
