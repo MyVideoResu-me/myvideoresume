@@ -1,0 +1,103 @@
+﻿@inherits ResumeComponent
+
+<RadzenSplitButton Variant="Variant.Flat" ButtonStyle="ButtonStyle.Primary" Click=@(args => OpenActions(args, Item)) Text="Actions" Icon="cycle">
+    <ChildContent>
+        <RadzenSplitButtonItem Text="View" Value="view" Icon="preview" Visible=@(!DisableView) />
+        <RadzenSplitButtonItem Text="Edit" Value="edit" Icon="edit" Visible=@(DisplayItem(Item) && FeatureFlagService.IsResumeBuilderEnabled) />
+        <RadzenSplitButtonItem Text="Delete" Value="delete" Icon="delete" Visible=@DisplayItem(Item) />
+        <RadzenSplitButtonItem Icon="download" Text="JSON" Value="json" Visible=@DisplayItem(Item) />
+        <RadzenSplitButtonItem Icon="download" Text="Html" Value="html" Visible=@DisplayItem(Item) />
+        <RadzenSplitButtonItem Text="Share" Value="share" Icon="share" />
+        <RadzenSplitButtonItem Text="Sentiment Analysis" Value="sentiment" Icon="mood" Visible=@DisplayItem(Item) />
+        <RadzenSplitButtonItem Text="Job Match" Value="jobmatch" Icon="join_inner" Visible=@DisplayItem(Item) />
+    </ChildContent>
+</RadzenSplitButton>
+
+
+@code
+{
+    [Parameter] public IResumeItem Item { get; set; }
+    [Parameter] public bool DisableView { get; set; } = false;
+    [Parameter] public EventCallback<ResponseResult> Deleted { get; set; }
+
+    public bool DisplayItem(IResumeItem item)
+    {
+        var result = false;
+        result = item.UserId == Security.User.Id;
+        return result;
+    }
+
+    async Task OpenActions(RadzenSplitButtonItem args, IResumeItem item)
+    {
+        if (args != null)
+            switch (args.Value)
+            {
+                case "json":
+                    //Call Web Service and Get the RESUME JSON
+                    ShowInformationNotification("Processing", "Request Queued to be processed");
+                    var resultJson = await ResumeWebService.GetResume(item.Id);
+                    if (resultJson != null)
+                    {
+                        _ = DownloadAsJson(resultJson.MetaResume as JSONResume);
+                    }
+                    ShowSuccessNotification("Processed", "Check downloads");
+                    break;
+                case "html":
+                    //Call Web Service and Get the RESUME JSON
+                    ShowInformationNotification("Processing", "Request Queued to be processed");
+                    var resultHtml = await ResumeWebService.GetResume(item.Id);
+                    if (resultHtml != null)
+                    {
+                        _ = DownloadAsHtml(resultHtml.MetaResume as JSONResume);
+                    }
+                    ShowSuccessNotification("Processed", "Check downloads");
+                    break;
+                case "sentiment":
+                    await OpenSentimentAnalysis(item);
+                    break;
+                case "jobmatch":
+                    await OpenJobMatchAnalysis(item);
+                    break;
+                case "edit":
+                    NavigateTo("resumes/builder", item.Id);
+                    break;
+                case "view":
+                    NavigateTo("resumes", item.Id);
+                    break;
+                case "share":
+                    var url = $"{NavigationManager.BaseUri}resumes/{item.Id}";
+                    var result = await ShowShareOptions(url, "#resume, #myvideoresume", "MyVideoResu.ME");
+                    break;
+                case "delete":
+                    await Delete(item);
+                    break;
+                default:
+                    break;
+            }
+        else
+            NavigateTo("resumes", item.Id);
+    }
+
+    protected async Task Delete(IResumeItem item)
+    {
+        var result = new ResponseResult();
+        result = await ResumeWebService.Delete(item.Id);
+        if (result.ErrorMessage.HasValue())
+        {
+            ShowErrorNotification("Failed to Delete", string.Empty);
+        }
+        else
+        {
+            ShowSuccessNotification("Resume Deleted", string.Empty);
+            if (Deleted.HasDelegate)
+                await Deleted.InvokeAsync(result);
+        }
+    }
+
+    protected async Task OpenJobMatchAnalysis(IResumeItem item)
+    {
+        var result = await DialogService.OpenAsync("Job Match", ds =>
+    @<ResumeJobMatchWizardComponent ResumeSummaryItem=@item></ResumeJobMatchWizardComponent>
+                                                                                                                                                                                                                  );
+    }
+}

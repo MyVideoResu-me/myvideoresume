@@ -74,6 +74,12 @@ public class BaseComponent : LayoutComponentBase
         return result;
     }
 
+    public void ShowInformationNotification(string title, string message)
+    {
+        ShowNotification(title, message, NotificationSeverity.Info);
+    }
+
+
     public void ShowSuccessNotification(string title, string message)
     {
         ShowNotification(title, message, NotificationSeverity.Success);

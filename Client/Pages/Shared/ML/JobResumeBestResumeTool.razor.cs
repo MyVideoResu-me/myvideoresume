@@ -15,6 +15,8 @@ using MyVideoResume.Data.Models.Jobs;
 using System.Text.Json;
 using MyVideoResume.Client.Pages.App.People.Resumes.Templates;
 using MyVideoResume.Data.Models.Resume;
+using MyVideoResume.Abstractions.Resume;
+using MyVideoResume.Abstractions.Resume.Formats.JSONResumeFormat;
 
 namespace MyVideoResume.Client.Pages.Shared.ML;
 
@@ -60,8 +62,8 @@ public partial class JobResumeBestResumeTool
                     var resumeSerialized = JsonSerializer.Serialize(matchResult.Resume, new JsonSerializerOptions() { PropertyNameCaseInsensitive = true });
                     resumeSerialized = resumeSerialized.Replace("\"Id\":null", $"\"Id\":\"{Guid.NewGuid().ToString()}\"");
 
-                    var metaResume = JsonSerializer.Deserialize<MetaResumeEntity>(resumeSerialized);
-                    var resumeInformationEntity = new ResumeInformationEntity() { ResumeSerialized = resumeSerialized, MetaResume = metaResume };
+                    var metaResume = JsonSerializer.Deserialize<JSONResumeDTO>(resumeSerialized);
+                    var resumeInformationEntity = new ResumeInformationDTO() { ResumeSerialized = resumeSerialized, MetaResume = metaResume };
 
                     var resumeText = new ComponentRenderer<BasicTemplate>()
                     .AddService<FeatureFlagClientService>(FeatureFlagService)

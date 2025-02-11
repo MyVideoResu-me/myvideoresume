@@ -53,7 +53,7 @@ public partial class Dashboard
         }
     }
 
-    async Task UploadCompletedHandler(ResponseResult<ResumeInformationEntity> result)
+    async Task UploadCompletedHandler(ResponseResult<ResumeInformationDTO> result)
     {
         if (result.ErrorMessage.HasValue())
         {

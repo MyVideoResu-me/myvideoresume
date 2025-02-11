@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.Web.Virtualization;
 using Microsoft.JSInterop;
 using MyVideoResume.Abstractions.Core;
+using MyVideoResume.Abstractions.MetaContent;
 using MyVideoResume.Abstractions.Resume;
 using MyVideoResume.Abstractions.Resume.Formats.JSONResumeFormat;
 using MyVideoResume.Client.Pages.App.People.Resumes.Templates;
@@ -28,10 +29,10 @@ public partial class BuilderPageV2
 
     [Inject] ILogger<BuilderPageV2> Logger { get; set; }
 
-    public ResumeInformationEntity Resume { get; set; } = new ResumeInformationEntity()
+    public ResumeInformationDTO Resume { get; set; } = new ResumeInformationDTO()
     {
-        MetaData = new List<MetaDataEntity>(),
-        MetaResume = new MetaResumeEntity() { Basics = new() { Location = new() }, Awards = new(), Certificates = new(), Education = new List<Education>(), Interests = new(), Languages = new List<LanguageItem>(), Projects = new List<Project>(), Publications = new List<Publication>(), References = new List<ReferenceItem>(), Skills = new List<Skill>(), Volunteer = new List<Volunteer>(), Work = new List<Work>() }
+        MetaData = new List<MetaDataDTO>(),
+        MetaResume = new JSONResumeDTO() { Basics = new() { Location = new() }, Awards = new(), Certificates = new(), Education = new List<Education>(), Interests = new(), Languages = new List<LanguageItem>(), Projects = new List<Project>(), Publications = new List<Publication>(), References = new List<ReferenceItem>(), Skills = new List<Skill>(), Volunteer = new List<Volunteer>(), Work = new List<Work>() }
     };
 
     public Type ComponentType { get; set; }

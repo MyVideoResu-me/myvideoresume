@@ -96,16 +96,16 @@ public partial class ResumeWebService : BaseWebService
         return result;
     }
 
-    public async Task<ResumeInformationEntity> GetResume(string resumeId)
+    public async Task<ResumeInformationDTO> GetResume(string resumeId)
     {
-        var result = new ResumeInformationEntity();
+        var result = new ResumeInformationDTO();
         try
         {
             var cachedResult = await _cache.GetOrCreateAsync(resumeId, async (x) =>
             {
                 var uri = new Uri($"{_navigationManager.BaseUri}api/resume/{resumeId}");
                 var response = await _httpClient.GetAsync(uri);
-                return result = await response.ReadAsync<ResumeInformationEntity>();
+                return result = await response.ReadAsync<ResumeInformationDTO>();
             });
             result = cachedResult;
         }
@@ -135,9 +135,9 @@ public partial class ResumeWebService : BaseWebService
         return result;
     }
 
-    public async Task<ResponseResult<ResumeInformationEntity>> Save(ResumeInformationEntity resume)
+    public async Task<ResponseResult<ResumeInformationDTO>> Save(ResumeInformationDTO resume)
     {
-        var r = new ResponseResult<ResumeInformationEntity>();
+        var r = new ResponseResult<ResumeInformationDTO>();
         try
         {
             var uri = new Uri($"{_navigationManager.BaseUri}{Paths.Resume_API_Save}");
@@ -145,7 +145,7 @@ public partial class ResumeWebService : BaseWebService
             var jsonText = JsonSerializer.Serialize(resume);
 
             var response = await _httpClient.PostAsJsonAsync<string>(uri, jsonText);
-            r = await response.ReadAsync<ResponseResult<ResumeInformationEntity>>();
+            r = await response.ReadAsync<ResponseResult<ResumeInformationDTO>>();
         }
         catch (Exception ex)
         {

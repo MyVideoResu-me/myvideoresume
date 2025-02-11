@@ -1,5 +1,6 @@
 ﻿@using AgeCalculator
 @using AgeCalculator.Extensions
+@using MyVideoResume.Abstractions.MetaContent
 @using MyVideoResume.Abstractions.Resume
 @using MyVideoResume.Abstractions.Resume.Formats.JSONResumeFormat
 @using MyVideoResume.Client.Pages.Shared.MetaContent
@@ -13,14 +14,7 @@
     <RadzenRow>
         <RadzenColumn Style="max-width: 100%">
             <div style="float: right; padding-right: 35px">
-                <RadzenSplitButton Icon="cycle" Click=@(args => Actions(args)) Text="Actions" ButtonStyle="ButtonStyle.Danger">
-                    <ChildContent>
-                        <RadzenSplitButtonItem Icon="share" Text="Share" Value="share" />
-                        <RadzenSplitButtonItem Icon="edit" Text="Edit" Value="edit" Visible=@(FeatureFlagService.IsResumeBuilderEnabled & ShowEditOptions()) />
-                        <RadzenSplitButtonItem Icon="download" Text="JSON" Value="json" Visible=@ShowEditOptions() />
-                        <RadzenSplitButtonItem Icon="download" Text="Html" Value="html" Visible=@ShowEditOptions() />
-                    </ChildContent>
-                </RadzenSplitButton>
+                <ResumeActionsComponent DisableView="true" Item=@Resume></ResumeActionsComponent>
             </div>
             <RadzenText Text=@Title() TextStyle="Radzen.Blazor.TextStyle.DisplayH2" TagName="Radzen.Blazor.TagName.Auto"></RadzenText>
             <RadzenStack AlignItems="AlignItems.Normal" Orientation="Orientation.Horizontal">
@@ -456,12 +450,6 @@
         {
             switch (args.Value)
             {
-                case "json":
-                    await DownloadAsJson(Resume);
-                    break;
-                case "html":
-                    await DownloadAsHtml(Resume);
-                    break;
                 case "edit":
                     Edit();
                     break;
@@ -474,11 +462,10 @@
         }
     }
 
-
     protected bool DisplayMetaData(string id)
     {
         var display = false;
-        MetaDataEntity metaItem = null;
+        MetaDataDTO metaItem = null;
         if (Resume.MetaDataLookup.TryGetValue(id, out metaItem))
         {
             display = true;
@@ -488,7 +475,7 @@
 
     protected async Task OpenMetaData(MouseEventArgs args, string id)
     {
-        MetaDataEntity metaItem = null;
+        MetaDataDTO metaItem = null;
         if (Resume.MetaDataLookup.TryGetValue(id, out metaItem))
         {
             //To Do (Handle the Different Formats)

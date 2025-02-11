@@ -27,6 +27,7 @@
 		<PackageReference Include="System.Net.Http.Json" Version="9.0.1" />
 		<PackageReference Include="Radzen.Blazor" Version="5.9.0" />
 		<Compile Include="../Server/Models/**/*.cs" />
+		<Content Remove="Pages\App\People\Resumes\ResumeComponentx.razor" />
 		<PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="9.0.1" />
 		<PackageReference Include="System.Private.Uri" Version="4.3.2" />
 		<PackageReference Include="System.Security.Cryptography.Pkcs" Version="9.0.1" />

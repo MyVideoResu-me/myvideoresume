@@ -71,7 +71,7 @@
     [Inject] public JobWebService JobService { get; set; }
     [Inject] public ResumeWebService ResumeService { get; set; }
     [Inject] protected JobWebService JobWebService { get; set; }
-    [Parameter] public ResumeSummaryItem ResumeSummaryItem { get; set; }
+    [Parameter] public IResumeItem ResumeSummaryItem { get; set; }
     public string JobUrl { get; set; }
     public string JobContent { get; set; }
     public string MatchContent { get; set; }

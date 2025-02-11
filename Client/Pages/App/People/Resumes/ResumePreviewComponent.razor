@@ -33,20 +33,15 @@
         </RadzenRow>
     </RadzenCard>
     <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Center" Gap="0">
-        <RadzenButton ButtonStyle="ButtonStyle.Danger" Variant="Variant.Text" Icon="delete" Text="Delete" Click=Delete Visible=@DisplayItem() />
-        <RadzenButton ButtonStyle="ButtonStyle.Dark" Variant="Variant.Text" Icon="edit" Text="Edit" Visible=@FeatureFlagService.IsResumeBuilderEnabled Click=@(()=> NavigateTo("resumes/builder", ResumeItem.Id)) />
         <RadzenButton ButtonStyle="ButtonStyle.Dark" Variant="Variant.Text" Icon="preview" Text="View" Click=@(()=> NavigateTo("resumes", ResumeItem.Id)) />
+        <ResumeActionsComponent Deleted=@DeleteCompletedHandler Item=@ResumeItem></ResumeActionsComponent>
     </RadzenStack>
 </RadzenCard>
 
 @code {
     [Parameter] public EventCallback<ResponseResult> DeleteCompleted { get; set; }
-    [Inject] protected ResumeWebService ResumeWebService { get; set; }
-    [Parameter]
-    public ResumeSummaryItem ResumeItem { get; set; } = null;
-
-    [Parameter]
-    public Actions Mode { get; set; } = Actions.ReadView;
+    [Parameter] public ResumeSummaryItem ResumeItem { get; set; } = null;
+    [Parameter] public Actions Mode { get; set; } = Actions.ReadView;
 
     public bool DisplayItem()
     {
@@ -81,10 +76,9 @@
 
     }
 
-    protected async Task Delete()
+    async Task DeleteCompletedHandler(ResponseResult result)
     {
-        var result = new ResponseResult();
-        result = await ResumeWebService.Delete(ResumeItem.Id);
-        await DeleteCompleted.InvokeAsync(result);
+        if (DeleteCompleted.HasDelegate)
+            await DeleteCompleted.InvokeAsync(result);
     }
 }

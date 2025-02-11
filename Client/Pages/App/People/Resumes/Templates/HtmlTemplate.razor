@@ -1,6 +1,5 @@
 ﻿@using AgeCalculator
 @using AgeCalculator.Extensions
-@using MyVideoResume.Abstractions.MetaContent
 @using MyVideoResume.Abstractions.Resume
 @using MyVideoResume.Abstractions.Resume.Formats.JSONResumeFormat
 @using MyVideoResume.Data.Models.MetaContent
@@ -8,14 +7,14 @@
 @inherits AppBaseComponent
 @layout EmptyLayout
 
-@if (Resume != null && Resume.MetaResume != null)
+@if (Resume != null)
 {
     <RadzenRow>
         <RadzenStack AlignItems="AlignItems.Normal" Orientation="Orientation.Vertical">
             <RadzenText Text=@Title() TextStyle="Radzen.Blazor.TextStyle.DisplayH2" TagName="Radzen.Blazor.TagName.Auto"></RadzenText>
-            <RadzenText Text=@Resume.MetaResume.Basics.Email TextStyle="Radzen.Blazor.TextStyle.Body1" TagName="Radzen.Blazor.TagName.Auto"></RadzenText>
-            <RadzenText Text=@Resume.MetaResume.Basics.Phone TextStyle="Radzen.Blazor.TextStyle.Body1" TagName="Radzen.Blazor.TagName.Auto"></RadzenText>
-            <RadzenLink Path=@Resume.MetaResume.Basics.Url Text="My Website" Icon="globe" target="_blank" Visible=Resume.MetaResume.Basics.Url.HasValue() />
+            <RadzenText Text=@Resume.Basics.Email TextStyle="Radzen.Blazor.TextStyle.Body1" TagName="Radzen.Blazor.TagName.Auto"></RadzenText>
+            <RadzenText Text=@Resume.Basics.Phone TextStyle="Radzen.Blazor.TextStyle.Body1" TagName="Radzen.Blazor.TagName.Auto"></RadzenText>
+            <RadzenLink Path=@Resume.Basics.Url Text="My Website" Icon="globe" target="_blank" Visible=Resume.Basics.Url.HasValue() />
         </RadzenStack>
     </RadzenRow>
     <RadzenRow Style="padding-bottom:15px">
@@ -25,20 +24,20 @@
                 <div style="padding:15px;">
                     <RadzenRow>
                         <RadzenColumn SizeSM="12">
-                            <RadzenText TextStyle="TextStyle.Body1">@Resume.MetaResume.Basics?.Summary</RadzenText>
+                            <RadzenText TextStyle="TextStyle.Body1">@Resume.Basics?.Summary</RadzenText>
                         </RadzenColumn>
                     </RadzenRow>
                 </div>
             </RadzenCard>
         </RadzenColumn>
     </RadzenRow>
-    @if (Resume.MetaResume.Work != null && Resume.MetaResume.Work.Count > 0)
+    @if (Resume.Work != null && Resume.Work.Count > 0)
     {
         <RadzenRow Style="padding-bottom:15px">
             <RadzenColumn Style="max-width: 100%">
                 <RadzenCard>
                     <RadzenText Text="Work Experience" TextStyle="Radzen.Blazor.TextStyle.DisplayH5" TagName="Radzen.Blazor.TagName.Auto"></RadzenText>
-                    @foreach (var item in Resume.MetaResume.Work.OrderByDescending(x => x.EndDate))
+                    @foreach (var item in Resume.Work.OrderByDescending(x => x.EndDate))
                     {
                         <div style="padding:15px;">
                             <RadzenRow>
@@ -78,13 +77,13 @@
     }
 
 
-    @if (Resume.MetaResume.Education != null && Resume.MetaResume.Education.Count > 0)
+    @if (Resume.Education != null && Resume.Education.Count > 0)
     {
         <RadzenRow Style="padding-bottom:15px">
             <RadzenColumn Style="max-width: 100%">
                 <RadzenCard>
                     <RadzenText Text="Education" TextStyle="Radzen.Blazor.TextStyle.DisplayH5" TagName="Radzen.Blazor.TagName.Auto"></RadzenText>
-                    @foreach (var item in Resume.MetaResume.Education)
+                    @foreach (var item in Resume.Education)
                     {
                         <div style="padding:15px;">
                             <RadzenRow>
@@ -110,13 +109,13 @@
         </RadzenRow>
     }
 
-    @if (Resume.MetaResume.Volunteer != null && Resume.MetaResume.Volunteer.Count > 0)
+    @if (Resume.Volunteer != null && Resume.Volunteer.Count > 0)
     {
         <RadzenRow Style="padding-bottom:15px">
             <RadzenColumn Style="max-width: 100%">
                 <RadzenCard>
                     <RadzenText Text="Volunteering" TextStyle="Radzen.Blazor.TextStyle.DisplayH5" TagName="Radzen.Blazor.TagName.Auto"></RadzenText>
-                    @foreach (var item in Resume.MetaResume.Volunteer)
+                    @foreach (var item in Resume.Volunteer)
                     {
                         <div style="padding:15px;">
                             <RadzenRow>
@@ -142,13 +141,13 @@
         </RadzenRow>
     }
 
-    @if (Resume.MetaResume.Skills != null && Resume.MetaResume.Skills.Count > 0)
+    @if (Resume.Skills != null && Resume.Skills.Count > 0)
     {
         <RadzenRow Style="padding-bottom:15px">
             <RadzenColumn Style="max-width: 100%">
                 <RadzenCard>
                     <RadzenText Text="Skills" TextStyle="Radzen.Blazor.TextStyle.DisplayH5" TagName="Radzen.Blazor.TagName.Auto"></RadzenText>
-                    @foreach (var item in Resume.MetaResume.Skills)
+                    @foreach (var item in Resume.Skills)
                     {
                         <div style="padding:15px;">
                             <RadzenText TextStyle="TextStyle.Body1">@item.Name</RadzenText>
@@ -179,7 +178,7 @@
         <RadzenRow Style="padding-bottom:15px">
             <RadzenColumn Style="max-width: 100%">
                 <RadzenCard>
-                    @foreach (var item in Resume.MetaResume.Projects.OrderByDescending(x => x.EndDate))
+                    @foreach (var item in Resume.Projects.OrderByDescending(x => x.EndDate))
                     {
                         <div style="padding:15px;">
                             <RadzenRow>
@@ -222,13 +221,20 @@
 @code {
     private const string placeholder = "Placeholder";
     [Parameter]
-    public ResumeInformationDTO Resume { get; set; } = new ResumeInformationDTO()
+    public JSONResume Resume { get; set; } = new JSONResume()
         {
-            Description = placeholder,
-            Privacy_ShowResume = DisplayPrivacy.ToPublic,
-            Privacy_ShowContactDetails = DisplayPrivacy.ToPublic,
-            MetaData = new List<MetaDataDTO>(),
-            MetaResume = new JSONResumeDTO() { Basics = new() { Name = placeholder, Email = placeholder, Phone = placeholder, Summary = placeholder, Location = new() }, Awards = new(), Certificates = new(), Education = new List<Education>(), Interests = new(), Languages = new List<LanguageItem>(), Projects = new List<Project>(), Publications = new List<Publication>(), References = new List<ReferenceItem>(), Skills = new List<Skill>(), Volunteer = new List<Volunteer>() { new() { Organization = placeholder, Summary = placeholder, Highlights = new() { placeholder } } }, Work = new List<Work>() { new() { Highlights = new() { placeholder }, Name = placeholder, Summary = placeholder, Position = placeholder, StartDate = placeholder, EndDate = placeholder } } }
+            Basics = new() { Name = placeholder, Email = placeholder, Phone = placeholder, Summary = placeholder, Location = new() },
+            Awards = new(),
+            Certificates = new(),
+            Education = new List<Education>(),
+            Interests = new(),
+            Languages = new List<LanguageItem>(),
+            Projects = new List<Project>(),
+            Publications = new List<Publication>(),
+            References = new List<ReferenceItem>(),
+            Skills = new List<Skill>(),
+            Volunteer = new List<Volunteer>() { new() { Organization = placeholder, Summary = placeholder, Highlights = new() { placeholder } } },
+            Work = new List<Work>() { new() { Highlights = new() { placeholder }, Name = placeholder, Summary = placeholder, Position = placeholder, StartDate = placeholder, EndDate = placeholder } }
         };
 
     protected string ToFrom(string to, string from)
@@ -266,42 +272,42 @@
 
     protected string Title()
     {
-        if (Resume.MetaResume.Basics == null)
-            Resume.MetaResume.Basics = new Basics();
+        if (Resume.Basics == null)
+            Resume.Basics = new Basics();
 
-        if (string.IsNullOrEmpty(Resume.MetaResume.Basics.Name))
-            Resume.MetaResume.Basics.Name = Resume.Name;
+        if (!Resume.Basics.Name.HasValue())
+            Resume.Basics.Name = "Export";
 
-        return Resume.MetaResume.Basics.Name;
+        return Resume.Basics.Name;
     }
 
     protected bool ShowWorkSection()
     {
-        return Resume.MetaResume.Work != null && Resume.MetaResume.Work.Count > 0;
+        return Resume.Work != null && Resume.Work.Count > 0;
     }
     protected bool ShowVolunteerSection()
     {
-        return Resume.MetaResume.Volunteer != null && Resume.MetaResume.Volunteer.Count > 0;
+        return Resume.Volunteer != null && Resume.Volunteer.Count > 0;
     }
     protected bool ShowProjectsSection()
     {
-        return Resume.MetaResume.Projects != null && Resume.MetaResume.Projects.Count > 0;
+        return Resume.Projects != null && Resume.Projects.Count > 0;
     }
     protected bool ShowReferencesSection()
     {
-        return Resume.MetaResume.References != null && Resume.MetaResume.References.Count > 0;
+        return Resume.References != null && Resume.References.Count > 0;
     }
     protected bool ShowSkillsSection()
     {
-        return Resume.MetaResume.Skills != null && Resume.MetaResume.Skills.Count > 0;
+        return Resume.Skills != null && Resume.Skills.Count > 0;
     }
     protected bool ShowEducationSection()
     {
-        return Resume.MetaResume.Education != null && Resume.MetaResume.Education.Count > 0;
+        return Resume.Education != null && Resume.Education.Count > 0;
     }
     protected bool ShowAwardsSection()
     {
-        return Resume.MetaResume.Awards != null && Resume.MetaResume.Awards.Count > 0;
+        return Resume.Awards != null && Resume.Awards.Count > 0;
     }
 
 

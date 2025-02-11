@@ -64,7 +64,7 @@
     [Inject] public MatchWebService MatchWebService { get; set; }
     [Parameter] public JobItemDTO Item { get; set; }
     public string Content { get; set; }
-    public ResumeInformationEntity ExtractedResume { get; set; }
+    public ResumeInformationDTO ExtractedResume { get; set; }
     public string MatchContent { get; set; }
     public float MatchScore { get; set; }
     public RadzenSteps Steps { get; set; }
@@ -113,7 +113,7 @@
     }
 
 
-    async Task UploadCompletedHandler(ResponseResult<ResumeInformationEntity> result)
+    async Task UploadCompletedHandler(ResponseResult<ResumeInformationDTO> result)
     {
         if (result.ErrorMessage.HasValue())
         {

@@ -34,9 +34,9 @@ public enum MyVideoResumeRoles
 
 public enum Actions
 {
-    Create,
     ReadView,
     UpdateEdit,
+    Create,
     Delete,
 }
 

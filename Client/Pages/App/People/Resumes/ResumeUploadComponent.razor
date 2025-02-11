@@ -6,10 +6,10 @@
 <UploadToJsonComponent Url=@Paths.Resume_API_CreateFromFile UploadCompleted=@UploadCompletedHandler></UploadToJsonComponent>
 
 @code {
-    [Parameter] public EventCallback<ResponseResult<ResumeInformationEntity>> UploadCompleted { get; set; }
+    [Parameter] public EventCallback<ResponseResult<ResumeInformationDTO>> UploadCompleted { get; set; }
     async Task UploadCompletedHandler(string result)
     {
-        var response = new ResponseResult<ResumeInformationEntity>();
+        var response = new ResponseResult<ResumeInformationDTO>();
         if (!result.HasValue())
         {
             var errorText = "Failed Creating Resume";
@@ -19,7 +19,7 @@
         else
         {
             ShowSuccessNotification("Resume Created", string.Empty);
-            var resume = JsonSerializer.Deserialize<ResumeInformationEntity>(result, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            var resume = JsonSerializer.Deserialize<ResumeInformationDTO>(result, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
             response.Result = resume;
         }
 

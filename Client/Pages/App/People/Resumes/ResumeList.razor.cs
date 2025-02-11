@@ -15,29 +15,9 @@ public partial class ResumeList
     List<ResumeSummaryItem> ResumeItems { get; set; } = new List<ResumeSummaryItem>();
     IList<ResumeSummaryItem> SelectedResumeItems { get; set; } = new List<ResumeSummaryItem>();
 
-    public bool DisplayItem(ResumeSummaryItem item)
-    {
-        var result = false;
-        result = item.UserId == Security.User.Id;
-        return result;
-    }
 
 
 
-    protected async Task Delete(ResumeSummaryItem item)
-    {
-        var result = new ResponseResult();
-        result = await ResumeWebService.Delete(item.Id);
-        if (result.ErrorMessage.HasValue())
-        {
-            ShowErrorNotification("Failed to Delete", string.Empty);
-        }
-        else
-        {
-            ShowSuccessNotification("Resume Deleted", string.Empty);
-            ResumeItems = await ResumeWebService.GetResumeSummaryItems();
-        }
-    }
 
     async Task DeleteCompletedHandler(ResponseResult result)
     {
@@ -61,41 +41,11 @@ public partial class ResumeList
             ResumeItems = await ResumeWebService.GetResumeSummaryItems();
     }
 
-    protected async Task ResumeCreated(ResponseResult<ResumeInformationEntity> result)
+    protected async Task ResumeCreated(ResponseResult<ResumeInformationDTO> result)
     {
         if (!result.ErrorMessage.HasValue())
             ResumeItems = await ResumeWebService.GetResumeSummaryItems();
     }
 
-    async Task OpenActions(RadzenSplitButtonItem args, ResumeSummaryItem item)
-    {
-        if (args != null)
-            switch (args.Value)
-            {
-                case "sentiment":
-                    await OpenSentimentAnalysis(item);
-                    break;
-                case "jobmatch":
-                    await OpenJobMatchAnalysis(item);
-                    break;
-                case "edit":
-                    NavigateTo("resumes/builder", item.Id);
-                    break;
-                case "view":
-                    NavigateTo("resumes", item.Id);
-                    break;
-                case "share":
-                    var url = $"{NavigationManager.BaseUri}resumes/{item.Id}";
-                    var result = await ShowShareOptions(url, "#resume, #myvideoresume", "MyVideoResu.ME");
-                    break;
-                case "delete":
-                    await Delete(item);
-                    break;
-                default:
-                    break;
-            }
-        else
-            await OpenSentimentAnalysis(item);
-    }
 
 }
