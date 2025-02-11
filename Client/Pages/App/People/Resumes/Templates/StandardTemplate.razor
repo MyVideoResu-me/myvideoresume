@@ -14,7 +14,7 @@
     <RadzenRow>
         <RadzenColumn Style="max-width: 100%">
             <div style="float: right; padding-right: 35px">
-                <ResumeActionsComponent DisableView="true" Item=@Resume></ResumeActionsComponent>
+                <ResumeActionsComponent DisableView="true" Deleted=DeleteCompletedHandler Item=@Resume></ResumeActionsComponent>
             </div>
             <RadzenText Text=@Title() TextStyle="Radzen.Blazor.TextStyle.DisplayH2" TagName="Radzen.Blazor.TagName.Auto"></RadzenText>
             <RadzenStack AlignItems="AlignItems.Normal" Orientation="Orientation.Horizontal">
@@ -483,6 +483,11 @@
             param.Add("MetaData", metaItem);
             var result = await DialogService.OpenAsync<MetaContentPlayer>(string.Empty, param);
         }
+    }
+    async Task DeleteCompletedHandler(ResponseResult result)
+    {
+        if (!result.ErrorMessage.HasValue())
+            NavigateTo(Paths.Resume_View);
     }
 
     protected void Edit()

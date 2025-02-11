@@ -80,17 +80,22 @@
 
     protected async Task Delete(IResumeItem item)
     {
-        var result = new ResponseResult();
-        result = await ResumeWebService.Delete(item.Id);
-        if (result.ErrorMessage.HasValue())
+        //Confirm Dialogue and if true then Delete...
+        var confirm = await DialogService.Confirm("Are you sure?", "Delete", new ConfirmOptions() { OkButtonText = "Yes", CancelButtonText = "No" });
+        if (confirm.HasValue && confirm.Value)
         {
-            ShowErrorNotification("Failed to Delete", string.Empty);
-        }
-        else
-        {
-            ShowSuccessNotification("Resume Deleted", string.Empty);
-            if (Deleted.HasDelegate)
-                await Deleted.InvokeAsync(result);
+            var result = new ResponseResult();
+            result = await ResumeWebService.Delete(item.Id);
+            if (result.ErrorMessage.HasValue())
+            {
+                ShowErrorNotification("Failed to Delete", string.Empty);
+            }
+            else
+            {
+                ShowSuccessNotification("Resume Deleted", string.Empty);
+                if (Deleted.HasDelegate)
+                    await Deleted.InvokeAsync(result);
+            }
         }
     }
 
@@ -98,6 +103,6 @@
     {
         var result = await DialogService.OpenAsync("Job Match", ds =>
     @<ResumeJobMatchWizardComponent ResumeSummaryItem=@item></ResumeJobMatchWizardComponent>
-                                                                                                                                                                                                                  );
+                                                                                                                                                                                                          );
     }
 }

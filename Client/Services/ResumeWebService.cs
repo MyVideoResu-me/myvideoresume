@@ -126,6 +126,7 @@ public partial class ResumeWebService : BaseWebService
             var content = new FormUrlEncodedContent(new Dictionary<string, string> { { "resumeId", resumeId } });
             var response = await _httpClient.PostAsync(uri, content);
             result = await response.ReadAsync<ResponseResult>();
+            await _cache.RemoveAsync(resumeId);
         }
         catch (Exception ex)
         {
