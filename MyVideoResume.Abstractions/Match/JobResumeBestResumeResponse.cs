@@ -7,5 +7,6 @@ public class JobResumeBestResumeResponse
 {
     public JSONResume Resume { get; set; }
     public string SummaryRecommendations { get; set; }
-    public float Score { get; set; }
+    public float OldScore { get; set; }
+    public float NewScore { get; set; }
 }

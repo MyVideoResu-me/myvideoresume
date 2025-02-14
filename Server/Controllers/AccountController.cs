@@ -10,6 +10,9 @@ using DocumentFormat.OpenXml.Spreadsheet;
 using MyVideoResume.Data.Models.Account;
 using MyVideoResume.Application.Account;
 using MyVideoResume.Abstractions.Core;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Text;
 
 namespace MyVideoResume.Server.Controllers;
 
@@ -44,6 +47,36 @@ public partial class AccountController : Controller
         this.configuration = configuration;
         this.accountService = accountService;
     }
+
+    #region JWTBearer
+    [HttpPost]
+    public async Task<IActionResult> GenerateToken(string userName, string password)
+    {
+        var user = await userManager.FindByNameAsync(userName);
+        if (user != null && await userManager.CheckPasswordAsync(user, password))
+        {
+            var claims = new[]
+            {
+                new Claim(JwtRegisteredClaimNames.Sub, user.UserName),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+            };
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"]));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+            var token = new JwtSecurityToken(
+                issuer: configuration["Jwt:Issuer"],
+                audience: configuration["Jwt:Audience"],
+                claims: claims,
+                expires: DateTime.Now.AddMinutes(30),
+                signingCredentials: creds);
+
+            return Ok(new { token = new JwtSecurityTokenHandler().WriteToken(token) });
+        }
+
+        return Unauthorized();
+    }
+    #endregion
 
     #region Security
     private IActionResult RedirectWithError(string error, ErrorCodes errorCode, string redirectUrl = null)
@@ -386,8 +419,6 @@ If you didn't request this registration, you can safely ignore this email. Someo
 
         return new string(chars.ToArray());
     }
-
-
     #endregion
 
 }

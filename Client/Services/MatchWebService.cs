@@ -8,10 +8,12 @@ using System.Net.Http.Json;
 using MyVideoResume.Data.Models.Jobs;
 using MyVideoResume.Abstractions.Match;
 using Microsoft.Extensions.Caching.Hybrid;
+using MyVideoResume.Abstractions.Resume;
+using MyVideoResume.Extensions;
 
 namespace MyVideoResume.Client.Services;
 
-public partial class MatchWebService: BaseWebService
+public partial class MatchWebService : BaseWebService
 {
     private readonly ILogger<MatchWebService> _logger;
 
@@ -25,10 +27,18 @@ public partial class MatchWebService: BaseWebService
         var r = new ResponseResult<JobResumeMatchResponse>();
         try
         {
-            var uri = new Uri($"{_navigationManager.BaseUri}api/match");
-            var request = new JobContentResumeIdMatchRequest() { JobContent = jobDescription, ResumeId = resumeId };
-            var response = await _httpClient.PostAsJsonAsync<JobContentResumeIdMatchRequest>(uri, request);
-            r = await response.ReadAsync<ResponseResult<JobResumeMatchResponse>>();
+            string combinedValue = jobDescription + resumeId;
+            string combinedKey = combinedValue.GenerateSHA256Hash();
+
+            var cachedResult = await _cache.GetOrCreateAsync(combinedKey, async (x) =>
+            {
+                var uri = new Uri($"{_navigationManager.BaseUri}api/match");
+                var request = new JobContentResumeIdMatchRequest() { JobContent = jobDescription, ResumeId = resumeId };
+                var response = await _httpClient.PostAsJsonAsync<JobContentResumeIdMatchRequest>(uri, request);
+                return r = await response.ReadAsync<ResponseResult<JobResumeMatchResponse>>();
+            });
+
+            r = cachedResult;
         }
         catch (Exception ex)
         {
@@ -43,10 +53,19 @@ public partial class MatchWebService: BaseWebService
         var r = new ResponseResult<JobResumeMatchResponse>();
         try
         {
-            var uri = new Uri($"{_navigationManager.BaseUri}api/match/byid");
-            var request = new JobResumeIdMatchRequest() { JobId = jobId, ResumeId = resumeId };
-            var response = await _httpClient.PostAsJsonAsync<JobResumeIdMatchRequest>(uri, request);
-            r = await response.ReadAsync<ResponseResult<JobResumeMatchResponse>>();
+            string combinedValue = jobId + resumeId;
+            string combinedKey = combinedValue.GenerateSHA256Hash();
+
+            var cachedResult = await _cache.GetOrCreateAsync(combinedKey, async (x) =>
+            {
+                var uri = new Uri($"{_navigationManager.BaseUri}api/match/byid");
+                var request = new JobResumeIdMatchRequest() { JobId = jobId, ResumeId = resumeId };
+                var response = await _httpClient.PostAsJsonAsync<JobResumeIdMatchRequest>(uri, request);
+                return r = await response.ReadAsync<ResponseResult<JobResumeMatchResponse>>();
+            });
+
+            r = cachedResult;
+
         }
         catch (Exception ex)
         {
@@ -62,10 +81,18 @@ public partial class MatchWebService: BaseWebService
         var r = new ResponseResult<JobResumeMatchResponse>();
         try
         {
-            var uri = new Uri($"{_navigationManager.BaseUri}api/match/bycontent");
-            var request = new JobResumeByContentMatchRequest() { JobContent = jobDescription, ResumeContent = resumeContent };
-            var response = await _httpClient.PostAsJsonAsync<JobResumeByContentMatchRequest>(uri, request);
-            r = await response.ReadAsync<ResponseResult<JobResumeMatchResponse>>();
+            string combinedValue = jobDescription + resumeContent + "MatchByJobResumeContent";
+            string combinedKey = combinedValue.GenerateSHA256Hash();
+
+            var cachedResult = await _cache.GetOrCreateAsync(combinedKey, async (x) =>
+            {
+                var uri = new Uri($"{_navigationManager.BaseUri}api/match/bycontent");
+                var request = new JobResumeByContentMatchRequest() { JobContent = jobDescription, ResumeContent = resumeContent };
+                var response = await _httpClient.PostAsJsonAsync<JobResumeByContentMatchRequest>(uri, request);
+                return r = await response.ReadAsync<ResponseResult<JobResumeMatchResponse>>();
+            });
+
+            r = cachedResult;
         }
         catch (Exception ex)
         {
@@ -80,10 +107,26 @@ public partial class MatchWebService: BaseWebService
         var r = new ResponseResult<JobResumeBestResumeResponse>();
         try
         {
-            var uri = new Uri($"{_navigationManager.BaseUri}api/match/bestresume");
-            var request = new JobResumeByContentMatchRequest() { JobContent = jobDescription, ResumeContent = resumeContent };
-            var response = await _httpClient.PostAsJsonAsync<JobResumeByContentMatchRequest>(uri, request);
-            r = await response.ReadAsync<ResponseResult<JobResumeBestResumeResponse>>();
+            string combinedValue = jobDescription + resumeContent + "BestResumeByJobResumeContent";
+            string combinedKey = combinedValue.GenerateSHA256Hash();
+
+            var cachedResult = await _cache.GetOrCreateAsync(combinedKey, async (x) =>
+            {
+                var uri = new Uri($"{_navigationManager.BaseUri}api/match/bestresume");
+                var request = new JobResumeByContentMatchRequest() { JobContent = jobDescription, ResumeContent = resumeContent };
+                var response = await _httpClient.PostAsJsonAsync<JobResumeByContentMatchRequest>(uri, request);
+                r = await response.ReadAsync<ResponseResult<JobResumeBestResumeResponse>>();
+                if (r.ErrorMessage.HasValue())
+                    return null;
+                else
+                    return r;
+            });
+
+            if (cachedResult == null)
+                await _cache.RemoveAsync(combinedKey);
+            
+            r = cachedResult;
+
         }
         catch (Exception ex)
         {
@@ -92,6 +135,4 @@ public partial class MatchWebService: BaseWebService
         }
         return r;
     }
-
-
 }

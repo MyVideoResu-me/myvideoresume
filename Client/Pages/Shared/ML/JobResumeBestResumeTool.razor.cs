@@ -36,7 +36,8 @@ public partial class JobResumeBestResumeTool
 
     public string Result { get; set; } = "Resume";
     public string Recommendations { get; set; } = "Recommendations";
-    public float Score { get; set; }
+    public float OldScore { get; set; }
+    public float NewScore { get; set; }
     public bool Busy { get; set; } = false;
     public string Resume { get; set; } = "Copy & Paste Resume";
     public string JobDescription { get; set; } = "Copy & Paste Job Description";
@@ -57,7 +58,8 @@ public partial class JobResumeBestResumeTool
                 if (matchResult != null)
                 {
                     Recommendations = Markdown.ToHtml(matchResult.SummaryRecommendations);
-                    Score = matchResult.Score;
+                    OldScore = matchResult.OldScore;
+                    NewScore = matchResult.NewScore;
 
                     var resumeSerialized = JsonSerializer.Serialize(matchResult.Resume, new JsonSerializerOptions() { PropertyNameCaseInsensitive = true });
                     resumeSerialized = resumeSerialized.Replace("\"Id\":null", $"\"Id\":\"{Guid.NewGuid().ToString()}\"");

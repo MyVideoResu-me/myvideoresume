@@ -35,7 +35,8 @@
                     <RadzenButton Click=JobResumeMatchAsync Disabled=@(!JobDescription.HasValue() && !Resume.HasValue()) IsBusy=@Busy>Generate</RadzenButton>
                 </RadzenColumn>
                 <RadzenColumn>
-                    <RadzenText TextStyle="TextStyle.H2">Score: @Score</RadzenText>
+                    <RadzenText TextStyle="TextStyle.H2">Old Score: @OldScore</RadzenText>
+                    <RadzenText TextStyle="TextStyle.H2">New Score: @NewScore</RadzenText>
                 </RadzenColumn>
             </RadzenRow>
             <RadzenRow>

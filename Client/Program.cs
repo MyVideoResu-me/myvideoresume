@@ -44,6 +44,8 @@ builder.Services.AddScoped<ResumeWebService>();
 builder.Services.AddScoped<MenuService>();
 builder.Services.AddScoped<AuthenticationStateProvider, ApplicationAuthenticationStateProvider>();
 
+//builder.Services.AddApiAuthorization();
+
 var mapperConfiguration = new MapperConfiguration(configuration =>
 {
     var profile = new MappingProfile();

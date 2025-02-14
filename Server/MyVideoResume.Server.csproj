@@ -12,9 +12,12 @@
 		<PackageReference Include="Blazor.Bootstrap" Version="3.2.0" />
 		<PackageReference Include="Blazored.LocalStorage" Version="4.5.0" />
 		<PackageReference Include="IdentityModel" Version="7.0.0" />
+		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.2" />
 		<PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.1" />
 		<PackageReference Include="Microsoft.Extensions.Caching.Hybrid" Version="9.1.0-preview.1.25064.3" />
 		<PackageReference Include="Microsoft.Extensions.ML" Version="4.0.1" />
+		<PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="8.4.0" />
+		<PackageReference Include="Microsoft.IdentityModel.Tokens" Version="8.4.0" />
 		<PackageReference Include="Microsoft.ML" Version="4.0.1" />
 		<PackageReference Include="Radzen.Blazor" Version="5.9.0" />
 		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="9.0.1" />
