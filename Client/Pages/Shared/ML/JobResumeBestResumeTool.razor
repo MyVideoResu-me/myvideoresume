@@ -35,12 +35,17 @@
                     <RadzenButton Click=JobResumeMatchAsync Disabled=@(!JobDescription.HasValue() && !Resume.HasValue()) IsBusy=@Busy>Generate</RadzenButton>
                 </RadzenColumn>
                 <RadzenColumn>
-                    <RadzenText TextStyle="TextStyle.H2">Old Score: @OldScore</RadzenText>
-                    <RadzenText TextStyle="TextStyle.H2">New Score: @NewScore</RadzenText>
+                    <RadzenStack AlignItems="AlignItems.Stretch" JustifyContent="JustifyContent.Left" Orientation="Orientation.Horizontal">
+                    <RadzenText TextStyle="TextStyle.H5">Original Resume Score: @OldScore</RadzenText>
+                    <RadzenText TextStyle="TextStyle.H5">New Resume Score: @NewScore</RadzenText>
+                    </RadzenStack>
                 </RadzenColumn>
             </RadzenRow>
             <RadzenRow>
                 Tailored Resume:
+                <RadzenAlert Variant="Variant.Filled" AlertStyle="AlertStyle.Warning" Size="AlertSize.Small" Shade="Shade.Dark" AllowClose=false>
+                    The resume generated should be reviewed for accuracy and validated before using. Do not lie on your resume. Integrity & Honesty are valuable characteristics that all employers expect.
+                </RadzenAlert>
                 <RadzenHtmlEditor @bind-Value=@Result style="height: 475px; width:100%;" Placeholder="Resume">
                     <RadzenHtmlEditorUndo />
                     <RadzenHtmlEditorRedo />
