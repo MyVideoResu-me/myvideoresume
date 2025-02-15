@@ -43,7 +43,7 @@
                                 <Template Context="data">
                                     <RadzenSplitButton Variant="Variant.Flat" ButtonStyle="ButtonStyle.Light" Click=@(args => OpenAITools(args, data)) Text="Tools" Icon="tools_ladder">
                                         <ChildContent>
-                                            <RadzenSplitButtonItem Text="Job Match" Value="jobmatch" Icon="join_inner" />
+                                            <RadzenSplitButtonItem Text="Job Match Analysis" Value="jobmatch" Icon="join_inner" />
                                         </ChildContent>
                                     </RadzenSplitButton>
                                 </Template>
@@ -65,7 +65,7 @@
 @code{
     protected async Task OpenJobMatchAnalysis(JobItemDTO item)
     {
-        var result = await DialogService.OpenAsync("Job Match", ds =>
+        var result = await DialogService.OpenAsync("Job Match Analysis", ds =>
             @<JobResumeMatchWizardComponent Item=@item></JobResumeMatchWizardComponent>
         );
     }
