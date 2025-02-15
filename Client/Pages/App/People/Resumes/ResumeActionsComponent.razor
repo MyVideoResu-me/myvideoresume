@@ -1,4 +1,4 @@
-﻿@inherits ResumeComponent
+﻿@inherits ResumeActionsPanel
 
 <RadzenSplitButton Variant="Variant.Flat" ButtonStyle="ButtonStyle.Primary" Click=@(args => OpenActions(args, Item)) Text="Actions" Icon="cycle">
     <ChildContent>
@@ -16,41 +16,16 @@
 
 @code
 {
-    [Parameter] public IResumeItem Item { get; set; }
-    [Parameter] public bool DisableView { get; set; } = false;
-    [Parameter] public EventCallback<ResponseResult> Deleted { get; set; }
-
-    public bool DisplayItem(IResumeItem item)
-    {
-        var result = false;
-        result = item.UserId == Security.User.Id;
-        return result;
-    }
-
     async Task OpenActions(RadzenSplitButtonItem args, IResumeItem item)
     {
         if (args != null)
             switch (args.Value)
             {
                 case "json":
-                    //Call Web Service and Get the RESUME JSON
-                    ShowInformationNotification("Processing", "Request Queued to be processed");
-                    var resultJson = await ResumeWebService.GetResume(item.Id);
-                    if (resultJson != null)
-                    {
-                        _ = DownloadAsJson(resultJson.MetaResume as JSONResume);
-                    }
-                    ShowSuccessNotification("Processed", "Check downloads");
+                    await JsonAction(item);
                     break;
                 case "html":
-                    //Call Web Service and Get the RESUME JSON
-                    ShowInformationNotification("Processing", "Request Queued to be processed");
-                    var resultHtml = await ResumeWebService.GetResume(item.Id);
-                    if (resultHtml != null)
-                    {
-                        _ = DownloadAsHtml(resultHtml.MetaResume as JSONResume);
-                    }
-                    ShowSuccessNotification("Processed", "Check downloads");
+                    await HtmlAction(item);
                     break;
                 case "sentiment":
                     await OpenSentimentAnalysis(item);
@@ -59,50 +34,28 @@
                     await OpenJobMatchAnalysis(item);
                     break;
                 case "edit":
-                    NavigateTo("resumes/builder", item.Id);
+                    await EditAction(item);
                     break;
                 case "view":
-                    NavigateTo("resumes", item.Id);
+                    await ViewAction(item);
                     break;
                 case "share":
-                    var url = $"{NavigationManager.BaseUri}resumes/{item.Id}";
-                    var result = await ShowShareOptions(url, "#resume, #myvideoresume", "MyVideoResu.ME");
+                    await ShareAction(item);
                     break;
                 case "delete":
-                    await Delete(item);
+                    await DeleteAction(item);
                     break;
                 default:
                     break;
             }
         else
-            NavigateTo("resumes", item.Id);
+            await OpenResumeActionPanel(item);
+    }
+    protected async Task OpenResumeActionPanel(IResumeItem item)
+    {
+        var result = await DialogService.OpenAsync("Actions", ds =>
+    @<ResumeActionsPanel Item=@item DisableView=@DisableView Deleted=@Deleted></ResumeActionsPanel>
+                                                                                                                                                                                          );
     }
 
-    protected async Task Delete(IResumeItem item)
-    {
-        //Confirm Dialogue and if true then Delete...
-        var confirm = await DialogService.Confirm("Are you sure?", "Delete", new ConfirmOptions() { OkButtonText = "Yes", CancelButtonText = "No" });
-        if (confirm.HasValue && confirm.Value)
-        {
-            var result = new ResponseResult();
-            result = await ResumeWebService.Delete(item.Id);
-            if (result.ErrorMessage.HasValue())
-            {
-                ShowErrorNotification("Failed to Delete", string.Empty);
-            }
-            else
-            {
-                ShowSuccessNotification("Resume Deleted", string.Empty);
-                if (Deleted.HasDelegate)
-                    await Deleted.InvokeAsync(result);
-            }
-        }
-    }
-
-    protected async Task OpenJobMatchAnalysis(IResumeItem item)
-    {
-        var result = await DialogService.OpenAsync("Job Match", ds =>
-    @<ResumeJobMatchWizardComponent ResumeSummaryItem=@item></ResumeJobMatchWizardComponent>
-                                                                                                                                                                                                          );
-    }
 }

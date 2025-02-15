@@ -1,3 +1,31 @@
+.fixed-button {
+    position: fixed; /* Fixed position relative to the viewport */
+    right: 20px; /* Float the button to the right */
+    bottom: 20px; /* Optional: adjust vertical position */
+    padding: 10px 20px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+    .fixed-button:hover {
+        background-color: #45a049;
+    }
+
+.rz-fileupload-buttonbar {
+    height:90px;
+}
+
+.rz-fileupload .rz-button {
+    vertical-align: middle;
+    -webkit-appearance: none !important;
+    height: 100%;
+    align-content: center;
+    width: 100%;
+}
 
 #blazor-error-ui {
     background: lightyellow;
