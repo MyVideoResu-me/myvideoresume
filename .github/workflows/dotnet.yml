@@ -30,7 +30,7 @@ jobs:
       run: dotnet build --no-restore
     - name: Test
       run: dotnet test --no-build --verbosity normal
-  deploy:
+  deploy-web:
     needs: build
     runs-on: windows-latest
     environment: PROD
@@ -66,5 +66,39 @@ jobs:
         FeatureFlags=${{ secrets.FEATUREFLAGS_APIKEY}}
     - name: Publish & Deploy (WEB)
       run: dotnet publish Server/MyVideoResume.Server.csproj /p:PublishProfile=webdeploy.pubxml /p:Password=${{secrets.DEPLOYPASSWORD}}
+  deploy-api:
+    needs: build
+    runs-on: windows-latest
+    environment: PROD
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        submodules: true
+        token: ${{ secrets.GITTOKEN }}    
+    - uses: nuget/setup-nuget@v2
+      with:
+        nuget-version: '5.x'
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 9.0.x
+    - name: Replace values in JSON file
+      uses: tnikFi/json-file-transform@v1
+      with:
+       files: '**/appsettings.json'
+       key-value-pairs: |
+        ConnectionStrings.Default=${{ secrets.DB_CONNECTION_STRING }}
+        ConnectionStrings.Workers=${{ secrets.DB_CONNECTION_STRING_WORKERS }}
+        Smtp.Host=${{ secrets.EMAIL_HOST }}
+        Smtp.Port=${{ secrets.EMAIL_PORT }}
+        Smtp.Ssl=${{ secrets.EMAIL_SSL }}
+        Smtp.User=${{ secrets.EMAIL_USER }}
+        Smtp.Password=${{ secrets.EMAIL_PASSWORD }}
+        NewRelic.LoggingKey=${{ secrets.NEWRELIC_LOGGINGKEY }}
+        AI.SLMModelFilePath=${{ secrets.AI_MODEL_PATH }}
+        AI.OpenAIKey=${{ secrets.AI_OPENAI_APIKEY }}
+        Security.Captcha_SecretKey=${{ secrets.CAPTCHA_SECRETKEY }}
+        Security.Captcha_SiteKey=${{ secrets.CAPTCHA_SITEKEY }}
+        FeatureFlags=${{ secrets.FEATUREFLAGS_APIKEY}}
     - name: Publish & Deploy (API)
       run: dotnet publish MyVideoResume.API/MyVideoResume.API.csproj /p:PublishProfile=webdeploy.pubxml /p:Password=${{secrets.DEPLOYPASSWORD}}
