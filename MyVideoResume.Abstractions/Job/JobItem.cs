@@ -15,6 +15,7 @@ public class JobBase : GISData
     //CreatedByUser
     public string? UserId { get; set; }
     public string? ContactUserId { get; set; }
+    public DisplayPrivacy Privacy_ShowJob { get; set; } = DisplayPrivacy.ToPublic;
 
     public string Title { get; set; }
     public string Description { get; set; }
@@ -60,7 +61,6 @@ public class JobItem : JobBase
 {
     public string? ExternalJobId { get; set; }
     public JobOrigin? Origin { get; set; }
-    public DisplayPrivacy Privacy_ShowJob { get; set; } = DisplayPrivacy.ToPublic;
     public string JobSerialized { get; set; }
     public string? OriginalWebsiteUrl { get; set; }
 

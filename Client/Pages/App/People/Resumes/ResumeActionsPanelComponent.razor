@@ -49,9 +49,9 @@
                     break;
             }
         else
-            await OpenResumeActionPanel(item);
+            await OpenActionPanel(item);
     }
-    protected async Task OpenResumeActionPanel(IResumeItem item)
+    protected async Task OpenActionPanel(IResumeItem item)
     {
         var result = await DialogService.OpenAsync("Actions", ds =>
     @<ResumeActionsPanel Item=@item DisableView=@DisableView Deleted=@Deleted></ResumeActionsPanel>

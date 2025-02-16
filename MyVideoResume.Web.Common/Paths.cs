@@ -58,7 +58,9 @@ public static class Paths
 
 public static class Constants
 {
-
+    public const string Recruiter = "Recruiter";
+    public const string JobSeeker = "JobSeeker";
+    public const string Admin = "Admin";
     public const string HttpClientFactory = "MyVideoResume.Server";
     public const string BaseUriConfigurationProperty = "BaseUri";
     public const string CampaignId = "Cam";

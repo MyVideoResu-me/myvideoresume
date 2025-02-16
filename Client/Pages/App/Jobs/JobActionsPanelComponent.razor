@@ -1,0 +1,57 @@
+﻿@using MyVideoResume.Abstractions.Job
+@inherits JobActionsPanel
+
+<RadzenSplitButton Variant="Variant.Flat" ButtonStyle="ButtonStyle.Primary" Click=@(args => OpenActions(args, Item)) Text="Actions" Icon="cycle">
+    <ChildContent>
+        <RadzenSplitButtonItem Text="View" Value="view" Icon="preview" Visible=@(!DisableView) />
+        <RadzenSplitButtonItem Text="Edit" Value="edit" Icon="edit" Visible=@(DisplayItem(Item) && FeatureFlagService.IsResumeBuilderEnabled) />
+        <RadzenSplitButtonItem Text="Delete" Value="delete" Icon="delete" Visible=@DisplayItem(Item) />
+        <RadzenSplitButtonItem Icon="download" Text="JSON" Value="json" Visible=@DisplayItem(Item) />
+        <RadzenSplitButtonItem Icon="download" Text="Html" Value="html" Visible=@DisplayItem(Item) />
+        <RadzenSplitButtonItem Text="Share" Value="share" Icon="share" />
+        <RadzenSplitButtonItem Text="Job Match Analysis" Value="jobmatch" Icon="join_inner" Visible=@DisplayItem(Item) />
+    </ChildContent>
+</RadzenSplitButton>
+
+
+@code
+{
+    async Task OpenActions(RadzenSplitButtonItem args, JobItemDTO item)
+    {
+        if (args != null)
+            switch (args.Value)
+            {
+                case "json":
+                    await JsonAction(item);
+                    break;
+                case "html":
+                    await HtmlAction(item);
+                    break;
+                case "jobmatch":
+                    await OpenJobMatchAnalysis(item);
+                    break;
+                case "edit":
+                    await EditAction(item);
+                    break;
+                case "view":
+                    await ViewAction(item);
+                    break;
+                case "share":
+                    await ShareAction(item);
+                    break;
+                case "delete":
+                    await DeleteAction(item);
+                    break;
+                default:
+                    break;
+            }
+        else
+            await OpenActionPanel(item);
+    }
+    protected async Task OpenActionPanel(JobItemDTO item)
+    {
+        var result = await DialogService.OpenAsync("Actions", ds =>
+    @<JobActionsPanel Item=@item DisableView=@DisableView Deleted=@Deleted></JobActionsPanel>
+                                                                                                                                                                                          );
+    }
+}

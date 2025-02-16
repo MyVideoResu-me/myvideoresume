@@ -73,18 +73,4 @@ public partial class JobList
         if (result.HasValue())
             Items = await Service.GetJobSummaryItems();
     }
-    async Task OpenAITools(RadzenSplitButtonItem args, JobItemDTO item)
-    {
-        if (args != null)
-            switch (args.Value)
-            {
-                case "jobmatch":
-                default:
-                    await OpenJobMatchAnalysis(item);
-                    break;
-            }
-        else
-            await OpenJobMatchAnalysis(item);
-    }
-
 }

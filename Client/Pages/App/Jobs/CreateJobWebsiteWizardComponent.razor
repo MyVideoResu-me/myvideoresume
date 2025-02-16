@@ -81,7 +81,7 @@
                 }
                 else
                 {
-                    JobContent = result.Result.JobSerialized;
+                    JobContent = JsonSerializer.Serialize(result.Result);
                 }
                 ShowUrlError = false;
             }
@@ -99,7 +99,7 @@
         {
             if (JobContent.HasValue() && !MatchContent.HasValue())
             {
-                ProcessJobMatch();
+                await ProcessJobMatch();
             }
         }
     }

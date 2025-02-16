@@ -12,6 +12,7 @@ using MyVideoResume.Data.Models.Account;
 using MyVideoResume.Abstractions.Account.Profiles;
 using MyVideoResume.Client.Pages.Shared.Security.Recaptcha;
 using MyVideoResume.Extensions;
+using System.Data;
 
 namespace MyVideoResume.Client.Services;
 
@@ -73,6 +74,19 @@ public partial class SecurityWebService : BaseWebService
     public bool IsInRole(params string[] roles)
     {
         return Task.Run(async () => await IsInRoleAsync(roles)).Result;
+    }
+
+    public bool IsJobSeeker()
+    {
+        return Task.Run(async () => await IsInRoleAsync(Constants.JobSeeker)).Result;
+    }
+    public bool IsRecruiter()
+    {
+        return Task.Run(async () => await IsInRoleAsync(Constants.Recruiter)).Result;
+    }
+    public bool IsAdmin()
+    {
+        return Task.Run(async () => await IsInRoleAsync(Constants.Admin)).Result;
     }
 
     public async Task<bool> IsInRoleAsync(params string[] roles)

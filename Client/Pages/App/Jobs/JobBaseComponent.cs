@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.JSInterop;
+using MyVideoResume.Abstractions.Job;
 using MyVideoResume.Abstractions.Resume.Formats.JSONResumeFormat;
 using MyVideoResume.Client.Pages.App.Jobs.Template;
 using MyVideoResume.Client.Services;
@@ -17,7 +18,7 @@ public class JobBaseComponent : BaseComponent
 {
     [Inject] protected JobWebService JobWebService { get; set; }
 
-    protected async Task DownloadAsHtml(JobItemEntity item)
+    protected async Task DownloadAsHtml(JobItemDTO item)
     {
         var htmlText = new ComponentRenderer<BasicTemplate>()
         .AddService(JobWebService)
@@ -38,7 +39,7 @@ public class JobBaseComponent : BaseComponent
         await DownloadHtmlFile(htmlText, "HtmlJob");
     }
 
-    protected async Task DownloadAsJson(JobItemEntity item)
+    protected async Task DownloadAsJson(JobItemDTO item)
     {
         var json = JsonSerializer.Serialize(item);
         await DownloadJsonFile(json, "JsonJob");

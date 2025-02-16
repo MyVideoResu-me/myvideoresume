@@ -17,8 +17,8 @@
                         <AuthorizeView>
                             <Authorized>
                                 <RadzenMenuItem Icon="add_circle">
-                                    <RadzenMenuItem Text="Create Job" Path=@Paths.Jobs_View Icon="note_add" Visible="@Security.IsInRole("Recruiter")"></RadzenMenuItem>
-                                    <RadzenMenuItem Text="Create Resume" Path=@Paths.Resume_View Icon="video_call" Visible="@Security.IsInRole("JobSeeker", "Recruiter")"></RadzenMenuItem>
+                                    <RadzenMenuItem Text="Create Job" Path=@Paths.Jobs_View Icon="note_add" Visible="@Security.IsJobSeeker()"></RadzenMenuItem>
+                                    <RadzenMenuItem Text="Create Resume" Path=@Paths.Resume_View Icon="video_call" Visible="@Security.IsInRole(Constants.JobSeeker, Constants.Recruiter)"></RadzenMenuItem>
                                 </RadzenMenuItem>
                             </Authorized>
                             <NotAuthorized>
@@ -32,9 +32,9 @@
                                 <ChildContent>
                                     <RadzenProfileMenuItem Path=@Paths.Profile_Settings Icon="manage_accounts" Text="My Account" title="My Account" />
                                     <RadzenProfileMenuItem Path=@Paths.Dashboard_View Icon="manage_accounts" Text="Dashboard" />
-                                    <RadzenProfileMenuItem Path=@Paths.Admin_BackgroundJobsPortal Icon="smart_toy" Text="Portal" Visible="@Security.IsInRole("Admin")" />
-                                    <RadzenProfileMenuItem Path=@Paths.Admin_ApplicationUsers Icon="person" Text="Users" Visible="@Security.IsInRole("Admin")" />
-                                    <RadzenProfileMenuItem Path=@Paths.Admin_ApplicationRoles Icon="security" Text="Roles" Visible="@Security.IsInRole("Admin")" />
+                                    <RadzenProfileMenuItem Path=@Paths.Admin_BackgroundJobsPortal Icon="smart_toy" Text="Portal" Visible="@Security.IsAdmin()" />
+                                    <RadzenProfileMenuItem Path=@Paths.Admin_ApplicationUsers Icon="person" Text="Users" Visible="@Security.IsAdmin()" />
+                                    <RadzenProfileMenuItem Path=@Paths.Admin_ApplicationRoles Icon="security" Text="Roles" Visible="@Security.IsAdmin()" />
                                     <RadzenProfileMenuItem Text="Logout" Value="Logout" Icon="power_settings_new" />
                                 </ChildContent>
                                 <Template>

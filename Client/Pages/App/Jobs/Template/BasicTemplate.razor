@@ -1,4 +1,5 @@
-﻿@using MyVideoResume.Abstractions.Resume
+﻿@using MyVideoResume.Abstractions.Job
+@using MyVideoResume.Abstractions.Resume
 @using MyVideoResume.Client.Pages.App.Jobs
 @using MyVideoResume.Data.Models.Jobs
 @inherits JobBaseComponent
@@ -11,19 +12,16 @@
             @if (Security.User.Id == Item.UserId)
             {
                 <div style="float: right; padding-right: 35px">
-                    <RadzenMenu Responsive="false">
-                        <RadzenMenuItem Icon="more_horiz">
-                            <RadzenMenuItem Text="Edit" Path=@Paths.Jobs_View Icon="edit" Click=@(()=> Edit()) Visible=@FeatureFlagService.IsJobBuilderEnabled></RadzenMenuItem>
-                            <RadzenMenuItem Text="Json" Icon="download" Click=@(()=> DownloadAsJson(Item))></RadzenMenuItem>
-                            <RadzenMenuItem Text="Html" Icon="download" Click=@(()=> DownloadAsHtml(Item))></RadzenMenuItem>
-                        </RadzenMenuItem>
-                    </RadzenMenu>
+                    <JobActionsPanelComponent DisableView="true" Item=@Item ></JobActionsPanelComponent>
                 </div>
             }
         </RadzenColumn>
     </RadzenRow>
     <RadzenRow>
         <RadzenStack AlignItems="AlignItems.Normal" Orientation="Orientation.Vertical">
+            <div style="float: right; padding-right: 35px">
+                <RadzenButton ButtonStyle="ButtonStyle.Warning" Text="Apply" Disabled=@ApplyDisabled()></RadzenButton>
+            </div>
             <RadzenText Text=@Item.Title TextStyle="Radzen.Blazor.TextStyle.DisplayH2" TagName="Radzen.Blazor.TagName.Auto"></RadzenText>
         </RadzenStack>
     </RadzenRow>
@@ -93,13 +91,10 @@
 @code {
     private const string placeholder = "Placeholder";
     [Parameter]
-    public JobItemEntity Item { get; set; } = new JobItemEntity()
+    public JobItemDTO Item { get; set; } = new JobItemDTO()
         {
             Description = placeholder,
-            Privacy_ShowJob = DisplayPrivacy.ToPublic,
             Title = placeholder,
-            Address = new(),
-            Company = new(),
             Responsibilities = new(),
             Requirements = new()
         };
@@ -109,6 +104,26 @@
         await base.OnInitializedAsync();
     }
 
+    protected bool ApplyDisabled()
+    {
+        var result = true;
+
+        if (Security.IsRecruiter())
+            return result;
+
+        //If we're not a recruiter then we are a job seeker. Have we applied to this position? Are we a good match?
+        //TODO: Send The UserID and JobID to the server to check if the user has applied to this job.
+        //This will return the existing application if it exists.
+        return Security.IsRecruiter();    
+    }
+
+    protected void ApplyToJob()
+    {
+        //Check if existing application exists (from ApplyDisabled))
+
+        //If not, create a new application
+
+    }
 
     protected void Edit()
     {

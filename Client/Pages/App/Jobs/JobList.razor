@@ -11,13 +11,7 @@
         <RadzenCard>
             <AuthorizeView>
                 <Authorized>
-                    @*                     <RadzenSelectBar @bind-Value=@ShowGrid TValue="bool">
-                        <Items>
-                            <RadzenSelectBarItem Icon="table_view" Text="Table" Value="true" />
-                            <RadzenSelectBarItem Icon="grid_view" Text="Tile" Value="false" />
-                        </Items>
-                    </RadzenSelectBar>
- *@                    <RadzenDataGrid Visible=@ShowGrid Responsive=true AllowFiltering="false" AllowColumnResize="true" AllowAlternatingRows="false" FilterMode="FilterMode.Simple" AllowSorting="true" PageSize="5" AllowPaging="true" PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true" Data="@Items" ColumnWidth="300px" LogicalFilterOperator="LogicalFilterOperator.Or" SelectionMode="DataGridSelectionMode.Single" @bind-Value=@SelectedItems>
+                    <RadzenDataGrid Visible=@ShowGrid Responsive=true AllowFiltering="false" AllowColumnResize="true" AllowAlternatingRows="false" FilterMode="FilterMode.Simple" AllowSorting="true" PageSize="5" AllowPaging="true" PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true" Data="@Items" ColumnWidth="300px" LogicalFilterOperator="LogicalFilterOperator.Or" SelectionMode="DataGridSelectionMode.Single" @bind-Value=@SelectedItems>
                         <Columns>
                             <RadzenDataGridColumn Width="50px" Title="#" Filterable="false" Sortable="false" TextAlign="TextAlign.Center">
                                 <Template Context="data">
@@ -30,30 +24,14 @@
                                 </Template>
                             </RadzenDataGridColumn>
                             <RadzenDataGridColumn Width="75px" Property="@nameof(JobItemDTO.CreationDateTimeFormatted)" Title="Date Created" Frozen="false" />
-                            <RadzenDataGridColumn Title="Actions" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Frozen="false">
+                            <RadzenDataGridColumn Width="125px" Title="Actions" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Frozen="false">
                                 <Template Context="data">
-                                    <RadzenCard Style="background-color: white; padding: 0px !important; margin:0px !important; ">
-                                        <RadzenButton ButtonStyle="ButtonStyle.Danger" Variant="Variant.Text" Icon="delete" Text="Delete" Click=@(()=> Delete(data)) Visible=@DisplayItem(data) />
-                                        <RadzenButton ButtonStyle="ButtonStyle.Dark" Variant="Variant.Text" Icon="edit" Text="Edit" Visible=@DisplayItem(data) Click=@(()=> NavigateTo("jobs/builder", data.Id)) />
-                                        <RadzenButton ButtonStyle="ButtonStyle.Dark" Variant="Variant.Text" Icon="preview" Text="View" Click=@(()=> NavigateTo(Paths.Jobs_View, data.Id)) />
-                                    </RadzenCard>
-                                </Template>
-                            </RadzenDataGridColumn>
-                            <RadzenDataGridColumn Width="125px" Title="Tools" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Frozen="false">
-                                <Template Context="data">
-                                    <RadzenSplitButton Variant="Variant.Flat" ButtonStyle="ButtonStyle.Light" Click=@(args => OpenAITools(args, data)) Text="Tools" Icon="tools_ladder">
-                                        <ChildContent>
-                                            <RadzenSplitButtonItem Text="Job Match Analysis" Value="jobmatch" Icon="join_inner" />
-                                        </ChildContent>
-                                    </RadzenSplitButton>
+                                    <JobActionsPanelComponent Item=data Deleted=DeleteCompletedHandler></JobActionsPanelComponent>
                                 </Template>
                             </RadzenDataGridColumn>
                         </Columns>
                     </RadzenDataGrid>
-                    @*                     <RadzenRow Visible=@ShowPreview>
-                        <JobDisplayPreviewComponent Items=@Items DeleteCompleted=@DeleteCompletedHandler></JobDisplayPreviewComponent>
-                    </RadzenRow>
- *@                </Authorized>
+                </Authorized>
                 <NotAuthorized>
                     <UnAuthorizedComponent Path=@Paths.Jobs_View></UnAuthorizedComponent>
                 </NotAuthorized>
@@ -63,10 +41,4 @@
 </RadzenRow>
 
 @code{
-    protected async Task OpenJobMatchAnalysis(JobItemDTO item)
-    {
-        var result = await DialogService.OpenAsync("Job Match Analysis", ds =>
-            @<JobResumeMatchWizardComponent Item=@item></JobResumeMatchWizardComponent>
-        );
-    }
 }

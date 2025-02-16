@@ -1,5 +1,6 @@
 ﻿@using BlazorTemplater
 @using Markdig
+@using MyVideoResume.Abstractions.Job
 @using MyVideoResume.Abstractions.Resume
 @using MyVideoResume.Client.Services.FeatureFlag
 @using System.Text.Json
@@ -77,7 +78,7 @@
     public string MatchContent { get; set; }
     public float MatchScore { get; set; }
     public bool FailToLoadJob { get; set; } = false;
-    public JobItemEntity ExtractedJob { get; set; }
+    public JobItemDTO ExtractedJob { get; set; }
     public RadzenHtmlEditor Editor { get; set; }
     public RadzenSteps Steps { get; set; }
     public bool Busy { get; set; }
@@ -98,7 +99,7 @@
                 }
                 else
                 {
-                    ExtractedJob = JsonSerializer.Deserialize<JobItemEntity>(result.Result.JobSerialized, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                    ExtractedJob = result.Result;
 
                     var htmlText = new ComponentRenderer<MyVideoResume.Client.Pages.App.Jobs.Template.BasicTemplate>()
                     .AddService<JobWebService>(JobWebService)
@@ -147,7 +148,7 @@
         {
             var content = JobContent;
             if (ExtractedJob != null)
-                content = ExtractedJob.JobSerialized;
+                content = JsonSerializer.Serialize(ExtractedJob);
 
             var result = await MatchService.MatchByJobContentResumeId(content, ResumeSummaryItem.Id);
             if (result.ErrorMessage.HasValue())

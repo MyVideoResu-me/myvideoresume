@@ -55,14 +55,14 @@ public partial class JobWebService : BaseWebService
     }
 
 
-    public async Task<JobItemEntity> GetJob(string id)
+    public async Task<JobItemDTO> GetJob(string id)
     {
-        var result = new JobItemEntity();
+        var result = new JobItemDTO();
         try
         {
             var uri = new Uri($"{_navigationManager.BaseUri}api/job/{id}");
             var response = await _httpClient.GetAsync(uri);
-            result = await response.ReadAsync<JobItemEntity>();
+            result = await response.ReadAsync<JobItemDTO>();
         }
         catch (Exception ex)
         {
@@ -111,11 +111,11 @@ public partial class JobWebService : BaseWebService
         return r;
     }
 
-    public async Task<ResponseResult<JobItemEntity>> Extract(string url)
+    public async Task<ResponseResult<JobItemDTO>> Extract(string url)
     {
         var uri = new Uri($"{_navigationManager.BaseUri}{Paths.Jobs_API_Extract}");
         var response = await _httpClient.PostAsJsonAsync<string>(uri, url);
-        var r = await response.ReadAsync<ResponseResult<JobItemEntity>>();
+        var r = await response.ReadAsync<ResponseResult<JobItemDTO>>();
         return r;
     }
 }

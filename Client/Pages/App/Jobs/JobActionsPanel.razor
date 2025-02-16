@@ -1,0 +1,87 @@
+﻿@using MyVideoResume.Abstractions.Job
+@inherits JobBaseComponent
+<RadzenPanel>
+    <RadzenButton style="margin: 5px" Text="View" Icon="preview" Visible=@(!DisableView) Click=@(()=>ViewAction(Item)) />
+    <RadzenButton style="margin: 5px" Text="Edit" Icon="edit" Visible=@(DisplayItem(Item) && FeatureFlagService.IsResumeBuilderEnabled) Click=@(()=>EditAction(Item)) />
+    <RadzenButton style="margin: 5px" Text="Delete" Icon="delete" Visible=@DisplayItem(Item) Click=@(()=>DeleteAction(Item)) />
+    <RadzenButton style="margin: 5px" Icon="download" Text="JSON" Visible=@DisplayItem(Item) Click=@(()=>JsonAction(Item)) />
+    <RadzenButton style="margin: 5px" Icon="download" Text="Html" Visible=@DisplayItem(Item) Click=@(()=>HtmlAction(Item)) />
+    <RadzenButton style="margin: 5px" Text="Share" Icon="share" Click=@(()=>ShareAction(Item)) />
+    <RadzenButton style="margin: 5px" Text="Job Match" Icon="join_inner" Visible=@DisplayItem(Item) Click=@(()=>OpenJobMatchAnalysis(Item)) />
+</RadzenPanel>
+@code
+{
+    [Parameter] public JobItemDTO Item { get; set; }
+    [Parameter] public bool DisableView { get; set; } = false;
+    [Parameter] public EventCallback<ResponseResult> Deleted { get; set; }
+
+    public bool DisplayItem(JobItemDTO item)
+    {
+        var result = false;
+        result = item.UserId == Security.User.Id;
+        return result;
+    }
+
+    protected async Task JsonAction(JobItemDTO item)
+    {
+
+        //Call Web Service and Get the RESUME JSON
+        ShowInformationNotification("Processing", "Request Queued to be processed");
+        _ = DownloadAsJson(item);
+        ShowSuccessNotification("Processed", "Check downloads");
+
+    }
+
+    protected async Task ShareAction(JobItemDTO item)
+    {
+        var url = $"{NavigationManager.BaseUri}jobs/{item.Id}";
+        var result = await ShowShareOptions(url, "job, myvideoresume", "MyVideoResu.ME");
+    }
+
+    protected async Task ViewAction(JobItemDTO item)
+    {
+        NavigateTo("jobs", item.Id);
+    }
+
+    protected async Task EditAction(JobItemDTO item)
+    {
+        NavigateTo("job/builder", item.Id);
+    }
+
+    protected async Task HtmlAction(JobItemDTO item)
+    {
+        //Call Web Service and Get the RESUME JSON
+        ShowInformationNotification("Processing", "Request Queued to be processed");
+        _ = DownloadAsHtml(item);
+        ShowSuccessNotification("Processed", "Check downloads");
+    }
+
+    protected async Task DeleteAction(JobItemDTO item)
+    {
+        //Confirm Dialogue and if true then Delete...
+        var confirm = await DialogService.Confirm("Are you sure?", "Delete", new ConfirmOptions() { OkButtonText = "Yes", CancelButtonText = "No" });
+        if (confirm.HasValue && confirm.Value)
+        {
+            var result = new ResponseResult();
+            result = await JobWebService.Delete(item.Id);
+            if (result.ErrorMessage.HasValue())
+            {
+                ShowErrorNotification("Failed to Delete", string.Empty);
+            }
+            else
+            {
+                ShowSuccessNotification("Resume Deleted", string.Empty);
+                if (Deleted.HasDelegate)
+                    await Deleted.InvokeAsync(result);
+            }
+        }
+        DialogService.Close();
+    }
+
+    protected async Task OpenJobMatchAnalysis(JobItemDTO item)
+    {
+        var result = await DialogService.OpenAsync("Job Match", ds =>
+    @<JobResumeMatchWizardComponent Item=@item></JobResumeMatchWizardComponent>
+                                                                                                                                                                  );
+    }
+}

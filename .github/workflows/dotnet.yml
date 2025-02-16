@@ -64,5 +64,7 @@ jobs:
         Security.Captcha_SecretKey=${{ secrets.CAPTCHA_SECRETKEY }}
         Security.Captcha_SiteKey=${{ secrets.CAPTCHA_SITEKEY }}
         FeatureFlags=${{ secrets.FEATUREFLAGS_APIKEY}}
-    - name: Publish & Deploy
+    - name: Publish & Deploy (WEB)
       run: dotnet publish Server/MyVideoResume.Server.csproj /p:PublishProfile=webdeploy.pubxml /p:Password=${{secrets.DEPLOYPASSWORD}}
+    - name: Publish & Deploy (API)
+      run: dotnet publish MyVideoResume.API/MyVideoResume.API.csproj /p:PublishProfile=webdeploy.pubxml /p:Password=${{secrets.DEPLOYPASSWORD}}
