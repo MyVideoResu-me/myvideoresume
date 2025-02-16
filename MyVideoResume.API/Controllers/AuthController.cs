@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace MyVideoResume.API.Controllers;
 
-[Route("api/[controller]")]
+[Route("[controller]")]
 [ApiController]
 public class AuthController : ControllerBase
 {

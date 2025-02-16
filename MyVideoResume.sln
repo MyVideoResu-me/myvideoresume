@@ -41,6 +41,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyVideoResume.Web.Common", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyVideoResume.API", "MyVideoResume.API\MyVideoResume.API.csproj", "{FEC0D5D3-6091-6783-A306-C39B047E0AC7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyVideoResume.Tests", "MyVideoResume.Tests\MyVideoResume.Tests.csproj", "{DCEABD5C-786E-49E1-BDDC-ADB83D7C61D7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -99,6 +101,10 @@ Global
 		{FEC0D5D3-6091-6783-A306-C39B047E0AC7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FEC0D5D3-6091-6783-A306-C39B047E0AC7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FEC0D5D3-6091-6783-A306-C39B047E0AC7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DCEABD5C-786E-49E1-BDDC-ADB83D7C61D7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DCEABD5C-786E-49E1-BDDC-ADB83D7C61D7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DCEABD5C-786E-49E1-BDDC-ADB83D7C61D7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DCEABD5C-786E-49E1-BDDC-ADB83D7C61D7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
