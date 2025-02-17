@@ -64,9 +64,6 @@ jobs:
         Security.Captcha_SecretKey=${{ secrets.CAPTCHA_SECRETKEY }}
         Security.Captcha_SiteKey=${{ secrets.CAPTCHA_SITEKEY }}
         FeatureFlags=${{ secrets.FEATUREFLAGS_APIKEY}}
-        Jwt.Key=${{ secrets.JWT_KEY }}
-        Jwt.Issuer=${{ secrets.JWT_ISSUER }}
-        Jwt.Audience=${{ secrets.JWT_AUDIENCE }}
     - name: Publish & Deploy (WEB)
       run: dotnet publish Server/MyVideoResume.Server.csproj /p:PublishProfile=webdeploy.pubxml /p:Password=${{secrets.DEPLOYPASSWORD}}
   deploy-api:
@@ -103,5 +100,8 @@ jobs:
         Security.Captcha_SecretKey=${{ secrets.CAPTCHA_SECRETKEY }}
         Security.Captcha_SiteKey=${{ secrets.CAPTCHA_SITEKEY }}
         FeatureFlags=${{ secrets.FEATUREFLAGS_APIKEY}}
+        Jwt.Key=${{ secrets.JWT_KEY }}
+        Jwt.Issuer=${{ secrets.JWT_ISSUER }}
+        Jwt.Audience=${{ secrets.JWT_AUDIENCE }}
     - name: Publish & Deploy (API)
       run: dotnet publish MyVideoResume.API/MyVideoResume.API.csproj /p:PublishProfile=webdeploy.pubxml /p:Password=${{secrets.DEPLOYPASSWORD}}
