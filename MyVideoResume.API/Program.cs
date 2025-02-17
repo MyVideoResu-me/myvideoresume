@@ -32,7 +32,7 @@ var loggerConfiguration = new LoggerConfiguration()
 .Enrich.FromLogContext()
 
 #if RELEASE
-.WriteTo.NewRelicLogs(endpointUrl: "https://log-api.newrelic.com/log/v1", applicationName: "MyVideoResu.ME", licenseKey: newRelicKey)
+.WriteTo.NewRelicLogs(endpointUrl: "https://log-api.newrelic.com/log/v1", applicationName: "MyVideoResu.ME-API", licenseKey: newRelicKey)
 #else
 .WriteTo.Async(c => c.Console())
 .WriteTo.Async(c => c.File($"Logs/logs{DateTime.Now.ToEpochTime()}.txt"))
