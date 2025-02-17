@@ -24,19 +24,17 @@ public class ResumeService
     private readonly DataContext _dataContext;
     private readonly IConfiguration _configuration;
     private readonly AccountService _accountService;
-    private readonly NavigationManager _navigationManager;
     private readonly HttpClient _httpClient;
     private readonly string _baseUri;
     private readonly IServiceScopeFactory _serviceScopeFactory;
 
-    public ResumeService(ILogger<ResumeService> logger, IConfiguration configuration, DataContext context, AccountService accountService, NavigationManager navigationManager, IHttpClientFactory httpClientFactory, IServiceScopeFactory serviceScopeFactory)
+    public ResumeService(ILogger<ResumeService> logger, IConfiguration configuration, DataContext context, AccountService accountService, IHttpClientFactory httpClientFactory, IServiceScopeFactory serviceScopeFactory)
     {
         _baseUri = configuration.GetValue<string>(Constants.BaseUriConfigurationProperty);
         _dataContext = context;
         _logger = logger;
         _configuration = configuration;
         _accountService = accountService;
-        _navigationManager = navigationManager;
         _httpClient = httpClientFactory.CreateClient(Constants.HttpClientFactory);
         _serviceScopeFactory = serviceScopeFactory;
     }

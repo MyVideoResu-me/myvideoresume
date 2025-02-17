@@ -81,7 +81,6 @@ builder.Services.AddRadzenCookieThemeService(options =>
     options.Duration = TimeSpan.FromDays(365);
 });
 
-builder.Services.AddHttpClient();
 builder.Services.AddScoped<DataContextService>();
 builder.Services.AddDbContext<MyVideoResume.Data.DataContext>(options =>
 {
@@ -119,7 +118,7 @@ builder.Services.AddScoped<DashboardWebService>();
 builder.Services.AddScoped<TaskWebService>();
 builder.Services.AddScoped<MatchWebService>();
 builder.Services.AddScoped<InboxWebService>();
-builder.Services.AddHttpClient("MyVideoResume.Server").ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler { UseCookies = true }).AddHeaderPropagation(o => o.Headers.Add("Cookie"));
+builder.Services.AddHttpClient("MyVideoResume").ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler { UseCookies = true }).AddHeaderPropagation(o => o.Headers.Add("Cookie"));
 builder.Services.AddHeaderPropagation(o => o.Headers.Add("Cookie"));
 builder.Services.AddAuthentication();
 builder.Services.AddAuthenticationStateDeserialization();

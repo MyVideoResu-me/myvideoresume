@@ -30,7 +30,7 @@ public class ApplicationAuthenticationStateProvider : AuthenticationStateProvide
 
             if (state.IsAuthenticated)
             {
-                identity = new ClaimsIdentity(state.Claims.Select(c => new Claim(c.Type, c.Value)), "MyVideoResume.Server");
+                identity = new ClaimsIdentity(state.Claims.Select(c => new Claim(c.Type, c.Value)), "MyVideoResume");
             }
         }
         catch (HttpRequestException ex)

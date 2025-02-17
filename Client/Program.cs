@@ -25,7 +25,7 @@ builder.Services.AddSingleton<RecaptchaService>();
 builder.Services.AddAuthorizationCore();
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddAuthenticationStateDeserialization();
-builder.Services.AddHttpClient("MyVideoResume.Server", client => client.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress));
+builder.Services.AddHttpClient("MyVideoResume", client => client.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress));
 //builder.Services.AddHeaderPropagation(options => options.Headers.Add("Authorization"));
 //builder.Services.AddRefitClient<IMyVideoResumeApi>()
 //                .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler() { AllowAutoRedirect = false })

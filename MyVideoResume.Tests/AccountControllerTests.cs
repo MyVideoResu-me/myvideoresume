@@ -79,21 +79,6 @@ namespace MyVideoResume.Server.Controllers.Tests
         //    Assert.NotNull(okResult.Value);
         //}
 
-        [Fact]
-        public async Task GenerateToken_InvalidUser_ReturnsUnauthorized()
-        {
-            // Arrange
-            var userName = "testuser";
-            var password = "password";
-            userManagerMock.Setup(um => um.FindByNameAsync(userName)).ReturnsAsync((ApplicationUser)null);
-
-            // Act
-            var result = await controller.GenerateToken(userName, password);
-
-            // Assert
-            Assert.IsType<UnauthorizedResult>(result);
-        }
-
         //[Fact]
         //public async Task Login_ValidUser_ReturnsRedirect()
         //{

@@ -50,7 +50,7 @@ public class ResumeInformation : GISData
 
     public string? Description { get; set; }
 
-    public bool IsPrimaryDefault { get; set; } // Can only have 1 default or Primary
+    public bool? IsPrimaryDefault { get; set; } // Can only have 1 default or Primary
 
     public DisplayPrivacy Privacy_ShowResume { get; set; } = DisplayPrivacy.ToPublic;
 
