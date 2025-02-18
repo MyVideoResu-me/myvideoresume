@@ -90,8 +90,10 @@ public static class ResumeExtensions
             {
                 sb.AppendLine($"### {education.Institution}");
                 sb.AppendLine($"{education.StartDate} - {education.EndDate}");
-                sb.AppendLine($"{education.StudyType} in {education.Area}");
-                sb.AppendLine($"Score: {education.Score}");
+                if (!string.IsNullOrEmpty(education.StudyType))
+                    sb.AppendLine($"{education.StudyType} in {education.Area}");
+                if (!string.IsNullOrEmpty(education.Score))
+                    sb.AppendLine($"Score: {education.Score}");
                 if (education.Courses != null && education.Courses.Any())
                 {
                     sb.AppendLine("#### Courses");

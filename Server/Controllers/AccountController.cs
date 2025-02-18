@@ -31,12 +31,12 @@ public partial class AccountController : Controller
     private readonly RoleManager<ApplicationRole> roleManager;
     private readonly IWebHostEnvironment env;
     private readonly ILogger<AccountController> logger;
-    private readonly EmailService emailService;
+    private readonly IEmailService emailService;
     private readonly IConfiguration configuration;
     private readonly AccountService accountService;
 
     public AccountController(IWebHostEnvironment env, SignInManager<ApplicationUser> signInManager, UserManager<ApplicationUser> userManager,
-        RoleManager<ApplicationRole> roleManager, ILogger<AccountController> logger, EmailService emailService, DataContextService dataContext, IConfiguration configuration, AccountService accountService)
+        RoleManager<ApplicationRole> roleManager, ILogger<AccountController> logger, IEmailService emailService, DataContextService dataContext, IConfiguration configuration, AccountService accountService)
     {
         this.signInManager = signInManager;
         this.userManager = userManager;

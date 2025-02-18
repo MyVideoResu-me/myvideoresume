@@ -28,7 +28,7 @@ public class MatchService : OpenAIPromptEngine
     private readonly string jsonFormat = @"
     {
         ""SummaryRecommendations"": ""Summary Recommendations as Markdown"",
-        ""Score"": ""float""
+        ""Score"": ""0-100""
     }";
 
     private readonly string jsonResumeRecommendationFormat = @"
@@ -196,7 +196,7 @@ public class MatchService : OpenAIPromptEngine
         var r = new ResponseResult<JobResumeMatchResponse>();
         try
         {
-            var prompt = "You are an AI Assistant that helps people match their Resume to a Job Description. I need you to score how strong of a match from 0 to 100. 100 being a perfect match. Include a summary that provides examples of the relevant skills, work experience, projects of the resume that match the job description. If the score is below 80, include feedback, recommendations and next steps for the candidate to improve. Bold the headings. Return the score and summary in the given Json structure. Respond with no formatting for the JSON. The summary should be in Markdown.";
+            var prompt = "You are an AI Assistant that helps people match their Resume to a Job Description. I need you to score how strong of a match from 0 to 100. 100 being a perfect match. Include a summary that provides examples of the relevant skills, work experience, projects of the resume that match the job description. If the score is below 80, include feedback, recommendations and next steps for the candidate to improve. Bold the headings. Return the Score and Summary in the given JSON structure. Respond with no formatting for the JSON. The summary should be in Markdown.";
             var userResumeInput = $"Resume: {request.ResumeContent}";
             var userJobInput = $"Job Description: {request.JobContent}";
             var jsonFormatInput = $"JSON: {jsonFormat}";

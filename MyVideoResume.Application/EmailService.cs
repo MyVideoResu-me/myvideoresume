@@ -9,7 +9,13 @@ using System.Threading.Tasks;
 
 namespace MyVideoResume.Application;
 
-public class EmailService
+public interface IEmailService
+{
+    Task SendEmailAsync(string to, string subject, string body);
+
+}
+
+public class EmailService : IEmailService
 {
     private readonly IConfiguration _configuration;
     private readonly ILogger<EmailService> _logger;

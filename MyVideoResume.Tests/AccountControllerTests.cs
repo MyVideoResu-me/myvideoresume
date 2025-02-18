@@ -26,7 +26,7 @@ namespace MyVideoResume.Server.Controllers.Tests
         private readonly Mock<RoleManager<ApplicationRole>> roleManagerMock;
         private readonly Mock<IWebHostEnvironment> envMock;
         private readonly Mock<ILogger<AccountController>> loggerMock;
-        private readonly Mock<EmailService> emailServiceMock;
+        private readonly Mock<IEmailService> emailServiceMock;
         private readonly Mock<IConfiguration> configurationMock;
         private readonly Mock<AccountService> accountServiceMock;
         private readonly AccountController controller;
@@ -51,7 +51,7 @@ namespace MyVideoResume.Server.Controllers.Tests
 
             envMock = new Mock<IWebHostEnvironment>();
             loggerMock = new Mock<ILogger<AccountController>>();
-            emailServiceMock = new Mock<EmailService>(new Mock<IConfiguration>().Object, new Mock<ILogger<EmailService>>().Object);
+            emailServiceMock = new Mock<IEmailService>(new Mock<IConfiguration>().Object, new Mock<ILogger<IEmailService>>().Object);
             configurationMock = new Mock<IConfiguration>();
             accountServiceMock = new Mock<AccountService>(new Mock<DataContext>().Object, new Mock<ILogger<AccountService>>().Object, new Mock<IMapper>().Object, userManagerMock.Object, roleManagerMock.Object, new Mock<TaskService>(new Mock<DataContext>().Object, new Mock<ILogger<AccountService>>().Object, new Mock<IMapper>().Object).Object);
 

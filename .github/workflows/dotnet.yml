@@ -58,6 +58,7 @@ jobs:
         Smtp.Ssl=${{ secrets.EMAIL_SSL }}
         Smtp.User=${{ secrets.EMAIL_USER }}
         Smtp.Password=${{ secrets.EMAIL_PASSWORD }}
+        Smtp.Key=${{ secrets.EMAIL_KEY }}
         NewRelic.LoggingKey=${{ secrets.NEWRELIC_LOGGINGKEY }}
         AI.SLMModelFilePath=${{ secrets.AI_MODEL_PATH }}
         AI.OpenAIKey=${{ secrets.AI_OPENAI_APIKEY }}
@@ -94,6 +95,7 @@ jobs:
         Smtp.Ssl=${{ secrets.EMAIL_SSL }}
         Smtp.User=${{ secrets.EMAIL_USER }}
         Smtp.Password=${{ secrets.EMAIL_PASSWORD }}
+        Smtp.Key=${{ secrets.EMAIL_KEY }}
         NewRelic.LoggingKey=${{ secrets.NEWRELIC_LOGGINGKEY }}
         AI.SLMModelFilePath=${{ secrets.AI_MODEL_PATH }}
         AI.OpenAIKey=${{ secrets.AI_OPENAI_APIKEY }}
