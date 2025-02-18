@@ -218,7 +218,7 @@ public class MatchService : OpenAIPromptEngine
         try
         {
             var prompt = "Given a person's Resume and Job Description, create a new resume that contains all the details of the job description. Keep all employment positions.  For positions in the resume that match the job description, update the resume's existing positions to include more content from the job description like keywords, required experience, and other required job duties. Extract skills and technical expertise from the Job Description and add to the resume profile summary and job positions. Update the resume's summary, job experience, skills, etc to include all your recommendations.  Return the new resume in the same JSON format. Make sure the resume is ATS-friendly. Update resume with all of your recommendations. Lastly, I need you to score the OLD resume and the new resume against the job description. The score is from 0 to 100. 100 being a perfect match. Try to get a perfect match for the new resume. Include a recommendation summary that provides details about the new resume. Return the result in the Json structure. Respond with no formatting for the JSON. The recommendations should be in Markdown.";
-            var userResumeInput = $"Resume: {request.ResumeContent}";
+            var userResumeInput = $"Original Resume: {request.ResumeContent}";
             var userJobInput = $"Job Description: {request.JobContent}";
             var jsonFormatInput = $"JSON: {jsonResumeRecommendationFormat}";
             var result = await this.Process(prompt, new[] { userResumeInput, userJobInput, jsonFormatInput });

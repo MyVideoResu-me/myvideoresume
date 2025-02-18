@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.HeaderPropagation;
+﻿using Azure;
+using Microsoft.AspNetCore.HeaderPropagation;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -119,6 +120,21 @@ public partial class JobService
         return result;
     }
 
+    public async Task<ResponseResult<JobItemEntity>> ExtractJob(string htmlContent)
+    {
+        var result = new ResponseResult<JobItemEntity>();
+        try
+        {
+            result = await _engine.ExtractJob(htmlContent);
+        }
+        catch (Exception ex)
+        {
+            result.ErrorMessage = ex.Message;
+            result.ErrorCode = ErrorCodes.SystemError;
+        }
+
+        return result;
+    }
     public async Task<ResponseResult<JobItemEntity>> SaveJobByUrl(string url)
     {
         var result = new ResponseResult<JobItemEntity>();

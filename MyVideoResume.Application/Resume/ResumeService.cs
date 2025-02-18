@@ -109,11 +109,21 @@ public class ResumeService
 
     private IQueryable<ResumeInformationEntity> GetReadonlyResume()
     {
-
-        return GetResume().AsNoTracking();
+        return GetAllResumeEntityDetails().AsNoTracking();
     }
 
-    private IQueryable<ResumeInformationEntity> GetResume()
+
+    private IQueryable<ResumeInformationEntity> GetPartialResumeEntityDetails()
+    {
+        var items = _dataContext.ResumeInformation
+            .Include(x => x.UserProfile)
+            .AsNoTracking()
+            .AsSingleQuery();
+        return items;
+    }
+
+
+    private IQueryable<ResumeInformationEntity> GetAllResumeEntityDetails()
     {
         var items = _dataContext.ResumeInformation
             .Include(x => x.MetaResume)
@@ -187,6 +197,25 @@ public class ResumeService
         }
         return result;
     }
+
+    public async Task<ResumeInformationEntity> GetDefaultResume(string userId)
+    {
+        var result = new ResumeInformationEntity();
+        try
+        {
+            var resumes = GetPartialResumeEntityDetails().Where(x => x.UserId == userId).ToList();
+            if (resumes.Count != 0)
+                result = resumes.FirstOrDefault(x => x.IsPrimaryDefault == true);
+            if (result == null)
+                result = resumes.OrderByDescending(x => x.SentimentScore).FirstOrDefault();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.Message, ex);
+        }
+        return result;
+    }
+
 
     public async Task<ResponseResult> DeleteResume(string userId, string resumeId)
     {

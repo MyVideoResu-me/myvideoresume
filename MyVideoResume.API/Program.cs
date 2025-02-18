@@ -16,6 +16,7 @@ using AutoMapper;
 using MyVideoResume.Mapper;
 using MyVideoResume.Application.Business;
 using MyVideoResume.Application.Resume;
+using MyVideoResume.Application;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -88,6 +89,7 @@ builder.Services.AddScoped<AccountService>();
 builder.Services.AddScoped<DocumentProcessor>();
 builder.Services.AddScoped<IJobPromptEngine, JobPromptEngine>();
 builder.Services.AddScoped<JobService>();
+builder.Services.AddScoped<Processor>();
 builder.Services.AddHttpClient("MyVideoResume").ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler { UseCookies = true }).AddHeaderPropagation(o => o.Headers.Add("Cookie"));
 var mapperConfiguration = new MapperConfiguration(configuration =>
 {

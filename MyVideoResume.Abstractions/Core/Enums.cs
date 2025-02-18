@@ -335,7 +335,8 @@ public enum FeeType
     Hourly
 }
 
-public enum RejectionStatus {
+public enum RejectionStatus
+{
     [Description("Underqualified")]
     Underqualified,
     [Description("Overqualified")]
@@ -489,13 +490,15 @@ public enum MetaType
     HtmlContent = 15,
 }
 
-public enum ProfileStatus { 
+public enum ProfileStatus
+{
     NoStatus,
     OpenToWork,
     Hiring,
 }
 
-public enum DataCollectionTypes { 
+public enum DataCollectionTypes
+{
     Resume,
     ResumeEmbedded,
     UserProfile,
@@ -506,4 +509,10 @@ public enum DataCollectionTypes {
     CompanyJobPageEmbedded,
     Job,
     JobEmbedded
+}
+
+public enum ErrorCodes
+{
+    SystemError,
+    NoResume,
 }
