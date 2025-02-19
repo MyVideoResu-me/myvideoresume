@@ -1,8 +1,0 @@
-modules = ["dotnet-7.0", "web", "nodejs-20"]
-run = "dotnet run"
-
-[nix]
-channel = "stable-24_05"
-
-[deployment]
-run = ["sh", "-c", "dotnet run"]
