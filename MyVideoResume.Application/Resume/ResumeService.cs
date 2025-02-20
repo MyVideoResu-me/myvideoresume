@@ -110,15 +110,20 @@ public class ResumeService
                 Description = x.MetaResume.Basics.Summary,
                 Slug = x.Slug,
                 Name = x.MetaResume.Basics.Name,
+                IsPrimaryDefault = x.IsPrimaryDefault,
                 IsWatched = false
             }).ToList();
 
             if (!string.IsNullOrEmpty(userId))
             {
-                var watchedResumes = _dataContext.WatchedResumes
+                // Check if the user exists
+                var userProfile = _dataContext.UserProfiles.FirstOrDefault(x => x.UserId == userId);
+                if (userProfile != null)
+                {
+                    var watchedResumes = _dataContext.WatchedResumes
                     .Include(x => x.ResumeInformation).ThenInclude(x => x.MetaResume).ThenInclude(y => y.Basics)
                     .Include(x => x.ResumeInformation).ThenInclude(x => x.ResumeTemplate)
-                    .Where(x => x.UserId.ToString() == userId)
+                    .Where(x => x.UserProfileId == userProfile.Id)
                     .Select(x => new ResumeInformationSummaryDTO()
                     {
                         SentimentScore = x.ResumeInformation.SentimentScore,
@@ -131,10 +136,12 @@ public class ResumeService
                         Description = x.ResumeInformation.MetaResume.Basics.Summary,
                         Slug = x.ResumeInformation.Slug,
                         Name = x.ResumeInformation.MetaResume.Basics.Name,
+                        IsPrimaryDefault = x.ResumeInformation.IsPrimaryDefault,
                         IsWatched = true
                     }).ToList();
 
-                resumeSummaryItems.AddRange(watchedResumes);
+                    resumeSummaryItems.AddRange(watchedResumes);
+                }
             }
 
             result = resumeSummaryItems;
@@ -254,7 +261,6 @@ public class ResumeService
         return result;
     }
 
-
     public async Task<ResponseResult> DeleteResume(string userId, string resumeId)
     {
 
@@ -294,6 +300,122 @@ public class ResumeService
             _logger.LogError(ex.Message, ex);
             result.ErrorMessage = ex.Message;
         }
+        return result;
+    }
+
+    public async Task<ResponseResult<bool>> SetDefaultResume(string userId, string resumeId)
+    {
+        var result = new ResponseResult<bool>();
+        result.Result = false;
+        result.ErrorMessage = "Failed to set default resume";
+
+        try
+        {
+            // Get all the user's resumes
+            var userResumes = _dataContext.ResumeInformation
+                .Where(x => x.UserId == userId && x.DeletedDateTime == null)
+                .ToList();
+
+            if (userResumes != null && userResumes.Count > 0)
+            {
+                // Set all resumes to not be the default
+                foreach (var resume in userResumes)
+                {
+                    resume.IsPrimaryDefault = false;
+                }
+
+                // Find the specific resume and set it to default
+                var defaultResume = userResumes.FirstOrDefault(x => x.Id == Guid.Parse(resumeId));
+                if (defaultResume != null)
+                {
+                    defaultResume.IsPrimaryDefault = true;
+                    await _dataContext.SaveChangesAsync();
+                    result.Result = true;
+                    result.ErrorMessage = string.Empty;
+                }
+                else
+                {
+                    result.ErrorMessage = "Resume not found";
+                }
+            }
+            else
+            {
+                result.ErrorMessage = "No resumes found for the user";
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.Message, ex);
+            result.ErrorMessage = ex.Message;
+        }
+
+        return result;
+    }
+
+    public async Task<ResponseResult<bool>> WatchResume(string authUserId, string resumeId, bool watching)
+    {
+        var result = new ResponseResult<bool>();
+        result.Result = false;
+        result.ErrorMessage = "Failed to update watch status";
+
+        try
+        {
+            var resumeGuid = Guid.Parse(resumeId);
+
+            // Check if the user exists
+            var userProfile = _dataContext.UserProfiles.FirstOrDefault(x => x.UserId == authUserId);
+            if (userProfile != null)
+            {
+
+                if (!watching)
+                {
+                    // Get the watch and remove it
+                    var resumeBeingWatched = _dataContext.WatchedResumes
+                        .FirstOrDefault(x => x.UserProfileId == userProfile.Id && x.ResumeId == resumeGuid);
+                    if (resumeBeingWatched != null)
+                    {
+                        _dataContext.WatchedResumes.Remove(resumeBeingWatched);
+                        await _dataContext.SaveChangesAsync();
+                        result.Result = true;
+                        result.ErrorMessage = string.Empty;
+                    }
+                    else
+                    {
+                        result.ErrorMessage = "Watch not found";
+                    }
+                }
+                else
+                {
+                    // Check if the watch already exists
+                    var existingWatch = _dataContext.WatchedResumes
+                        .FirstOrDefault(x => x.UserProfileId == userProfile.Id && x.ResumeId == resumeGuid);
+                    if (existingWatch == null)
+                    {
+                        // Create the watch
+                        var watchedResume = new WatchedResumeEntity
+                        {
+                            UserProfileId = userProfile.Id,
+                            ResumeId = resumeGuid,
+                            WatchedDateTime = DateTime.UtcNow
+                        };
+                        _dataContext.WatchedResumes.Add(watchedResume);
+                        await _dataContext.SaveChangesAsync();
+                        result.Result = true;
+                        result.ErrorMessage = string.Empty;
+                    }
+                    else
+                    {
+                        result.ErrorMessage = "Watch already exists";
+                    }
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.Message, ex);
+            result.ErrorMessage = ex.Message;
+        }
+
         return result;
     }
 

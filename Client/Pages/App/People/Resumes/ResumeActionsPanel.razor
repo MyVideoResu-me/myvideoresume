@@ -3,6 +3,8 @@
     <RadzenButton style="margin: 5px" Text="View" Icon="preview" Visible=@(!DisableView) Click=@(()=>ViewAction(Item)) />
     <RadzenButton style="margin: 5px" Text="Edit" Icon="edit" Visible=@(DisplayItem(Item) && FeatureFlagService.IsResumeBuilderEnabled) Click=@(()=>EditAction(Item)) />
     <RadzenButton style="margin: 5px" Text="Delete" Icon="delete" Visible=@DisplayItem(Item) Click=@(()=>DeleteAction(Item)) />
+    <RadzenButton style="margin: 5px" Text="Set Default" Icon="check_box" Visible=@DisplayItem(Item) Click=@(()=>SetDefaultAction(Item)) />
+    <RadzenButton style="margin: 5px" Text="Watch/Track" Icon="eye_tracking" Visible=@(IsWatchEnabled()) Click=@(()=>WatchAction(Item)) />
     <RadzenButton style="margin: 5px" Icon="download" Text="JSON" Visible=@DisplayItem(Item) Click=@(()=>JsonAction(Item)) />
     <RadzenButton style="margin: 5px" Icon="download" Text="Html" Visible=@DisplayItem(Item) Click=@(()=>HtmlAction(Item)) />
     <RadzenButton style="margin: 5px" Text="Share" Icon="share" Click=@(()=>ShareAction(Item)) />
@@ -13,7 +15,10 @@
 {
     [Parameter] public IResumeItem Item { get; set; }
     [Parameter] public bool DisableView { get; set; } = false;
+    [Parameter] public bool DisableWatch { get; set; } = false;
     [Parameter] public EventCallback<ResponseResult> Deleted { get; set; }
+    [Parameter] public EventCallback<ResponseResult<bool>> DefaultChanged { get; set; }
+    [Parameter] public EventCallback<ResponseResult<bool>> WatchChanged { get; set; }
 
     public bool DisplayItem(IResumeItem item)
     {
@@ -21,6 +26,17 @@
         result = item.UserId == Security.User.Id;
         return result;
     }
+
+    public bool IsWatchEnabled()
+    {
+        var result = false;
+
+        if (!DisableWatch && Security.IsAuthenticated()) //TODO: should this only be limited to Recruiters...
+            result = true;
+
+        return result;
+    }
+
 
     protected async Task JsonAction(IResumeItem item)
     {
@@ -34,6 +50,62 @@
         }
         ShowSuccessNotification("Processed", "Check downloads");
 
+    }
+
+    protected async Task WatchAction(IResumeItem item)
+    {
+        DialogService.Close();
+
+        //Confirm Dialogue and if true then Delete...
+        var confirm = await DialogService.Confirm("Are you sure?", "Watch/Track Item", new ConfirmOptions() { OkButtonText = "Yes", CancelButtonText = "No" });
+        if (confirm.HasValue && confirm.Value)
+        {
+            var result = new ResponseResult<bool>();
+
+            if (item.IsWatched.HasValue && item.IsWatched.Value)
+            {
+                result = await ResumeWebService.UnwatchResume(item.Id);
+            }
+            else
+            {
+                result = await ResumeWebService.WatchResume(item.Id);
+            }
+
+            if (result.ErrorMessage.HasValue() || !result.Result)
+            {
+                ShowErrorNotification("Error", "Failed to update Watch status");
+            }
+            else if (result.Result)
+                ShowSuccessNotification("Success", "Watch Status Updated");
+
+            if (WatchChanged.HasDelegate)
+            {
+                await WatchChanged.InvokeAsync(result);
+            }
+        }
+    }
+
+
+    protected async Task SetDefaultAction(IResumeItem item)
+    {
+        //Confirm Dialogue and if true then Delete...
+        var confirm = await DialogService.Confirm("Are you sure?", "Set item as Default", new ConfirmOptions() { OkButtonText = "Yes", CancelButtonText = "No" });
+        if (confirm.HasValue && confirm.Value)
+        {
+            var result = await ResumeWebService.SetDefaultResume(item.Id);
+            if (result.ErrorMessage.HasValue() || !result.Result)
+            {
+                ShowErrorNotification("Error", "Failed setting default");
+            }
+            else if (result.Result)
+                ShowSuccessNotification("Success", "Default Set");
+
+            if (DefaultChanged.HasDelegate)
+            {
+                await DefaultChanged.InvokeAsync(result);
+            }
+        }
+        DialogService.Close();
     }
 
     protected async Task ShareAction(IResumeItem item)
@@ -91,6 +163,6 @@
     {
         var result = await DialogService.OpenAsync("Job Match", ds =>
     @<ResumeJobMatchWizardComponent ResumeSummaryItem=@item></ResumeJobMatchWizardComponent>
-                                                                                                                                                                                          );
+                                                                                                                                  );
     }
 }

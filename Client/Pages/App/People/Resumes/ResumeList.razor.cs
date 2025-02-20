@@ -32,6 +32,23 @@ public partial class ResumeList
         }
     }
 
+    async Task DefaultChangedHandler(ResponseResult<bool> result)
+    {
+        if (result.Result)
+        {
+            ResumeItems = await ResumeWebService.GetResumesOwnedbyAuthUser();
+        }
+    }
+
+
+    async Task WatchChangedHandler(ResponseResult<bool> result)
+    {
+        if (result.Result)
+        {
+            ResumeItems = await ResumeWebService.GetResumesOwnedbyAuthUser();
+        }
+    }
+
 
     protected override async Task OnInitializedAsync()
     {

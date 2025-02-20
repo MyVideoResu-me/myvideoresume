@@ -20,6 +20,9 @@ public class ResumeInformationBase : GISData
     public bool? IsPrimaryDefault { get; set; } // Can only have 1 default or Primary
 
     public float? SentimentScore { get; set; }
+
+    public bool? IsWatched { get; set; }
+
 }
 
 public class ResumeInformation : ResumeInformationBase

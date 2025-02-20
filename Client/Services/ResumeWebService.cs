@@ -124,6 +124,66 @@ public partial class ResumeWebService : BaseWebService
         return result;
     }
 
+    public async Task<ResponseResult<bool>> SetDefaultResume(string resumeId)
+    {
+        var result = new ResponseResult<bool>();
+        try
+        {
+            var uri = new Uri($"{_navigationManager.BaseUri}api/resume/default/{resumeId}");
+            var content = new FormUrlEncodedContent(new Dictionary<string, string> { { "resumeId", resumeId } });
+            var response = await _httpClient.PostAsync(uri, content);
+            result = await response.ReadAsync<ResponseResult<bool>>();
+            var cachekeyUserOwnedResumes = $"{CacheKeys.UserResumes}{_securityService.User.Id}";
+            await _cache.RemoveAsync(cachekeyUserOwnedResumes);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.Message, ex);
+            result.ErrorMessage = "Error Setting Default.";
+        }
+        return result;
+    }
+
+    public async Task<ResponseResult<bool>> WatchResume(string resumeId)
+    {
+        var result = new ResponseResult<bool>();
+        try
+        {
+            var uri = new Uri($"{_navigationManager.BaseUri}api/resume/watch/{resumeId}");
+            var content = new FormUrlEncodedContent(new Dictionary<string, string> { { "resumeId", resumeId } });
+            var response = await _httpClient.PostAsync(uri, content);
+            result = await response.ReadAsync<ResponseResult<bool>>();
+            var cachekeyUserOwnedResumes = $"{CacheKeys.UserResumes}{_securityService.User.Id}";
+            await _cache.RemoveAsync(cachekeyUserOwnedResumes);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.Message, ex);
+            result.ErrorMessage = "Error Watching.";
+        }
+        return result;
+    }
+
+    public async Task<ResponseResult<bool>> UnwatchResume(string resumeId)
+    {
+        var result = new ResponseResult<bool>();
+        try
+        {
+            var uri = new Uri($"{_navigationManager.BaseUri}api/resume/unwatch/{resumeId}");
+            var content = new FormUrlEncodedContent(new Dictionary<string, string> { { "resumeId", resumeId } });
+            var response = await _httpClient.PostAsync(uri, content);
+            result = await response.ReadAsync<ResponseResult<bool>>();
+            var cachekeyUserOwnedResumes = $"{CacheKeys.UserResumes}{_securityService.User.Id}";
+            await _cache.RemoveAsync(cachekeyUserOwnedResumes);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.Message, ex);
+            result.ErrorMessage = "Error Watching.";
+        }
+        return result;
+    }
+
     public async Task<ResumeInformationDTO> GetResume(string resumeId)
     {
         var result = new ResumeInformationDTO();

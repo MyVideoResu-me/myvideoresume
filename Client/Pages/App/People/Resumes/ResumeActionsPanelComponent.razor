@@ -5,6 +5,8 @@
         <RadzenSplitButtonItem Text="View" Value="view" Icon="preview" Visible=@(!DisableView) />
         <RadzenSplitButtonItem Text="Edit" Value="edit" Icon="edit" Visible=@(DisplayItem(Item) && FeatureFlagService.IsResumeBuilderEnabled) />
         <RadzenSplitButtonItem Text="Delete" Value="delete" Icon="delete" Visible=@DisplayItem(Item) />
+        <RadzenSplitButtonItem Text="Set Default" Value="default" Icon="check_box" Visible=@DisplayItem(Item) />
+        <RadzenSplitButtonItem Text="Watch/Track" Value="watch" Icon="eye_tracking" Visible=@(IsWatchEnabled()) />
         <RadzenSplitButtonItem Icon="download" Text="JSON" Value="json" Visible=@DisplayItem(Item) />
         <RadzenSplitButtonItem Icon="download" Text="Html" Value="html" Visible=@DisplayItem(Item) />
         <RadzenSplitButtonItem Text="Share" Value="share" Icon="share" />
@@ -36,6 +38,12 @@
                 case "edit":
                     await EditAction(item);
                     break;
+                case "default":
+                    await SetDefaultAction(item);
+                    break;
+                case "watch":
+                    await WatchAction(item);
+                    break;
                 case "view":
                     await ViewAction(item);
                     break;
@@ -54,7 +62,7 @@
     protected async Task OpenActionPanel(IResumeItem item)
     {
         var result = await DialogService.OpenAsync("Actions", ds =>
-    @<ResumeActionsPanel Item=@item DisableView=@DisableView Deleted=@Deleted></ResumeActionsPanel>
+    @<ResumeActionsPanel Item=@item DisableView=@DisableView Deleted=@Deleted DefaultChanged=DefaultChanged WatchChanged=WatchChanged></ResumeActionsPanel>
                                                                                                                                                                                           );
     }
 

@@ -97,7 +97,13 @@ builder.Services.AddScoped<Account.AccountService>();
 builder.Services.AddScoped<MenuService>();
 builder.Services.AddSingleton<DocumentProcessor>();
 builder.Services.AddSingleton<RecaptchaService>();
+
+#if DEBUG
+builder.Services.AddSingleton<IEmailService, EmailService>();
+#else
 builder.Services.AddSingleton<IEmailService, ZohoEmailService>();
+#endif
+
 builder.Services.AddScoped<JobWebService>();
 builder.Services.AddSingleton<IJobPromptEngine, JobPromptEngine>();
 builder.Services.AddScoped<JobService>();

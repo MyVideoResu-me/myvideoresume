@@ -14,7 +14,7 @@
     <RadzenRow>
         <RadzenColumn Style="max-width: 100%">
             <div style="float: right; padding-right: 35px">
-                <ResumeActionsPanelComponent DisableView="true" Deleted=DeleteCompletedHandler Item=@Resume></ResumeActionsPanelComponent>
+                <ResumeActionsPanelComponent DisableView="true" Deleted=DeleteCompletedHandler Item=@Resume DisableWatch=@IsOwner WatchChanged=@WatchHandler></ResumeActionsPanelComponent>
             </div>
             <RadzenText Text=@Title() TextStyle="Radzen.Blazor.TextStyle.DisplayH2" TagName="Radzen.Blazor.TagName.Auto"></RadzenText>
             <RadzenStack AlignItems="AlignItems.Normal" Orientation="Orientation.Horizontal">
@@ -444,24 +444,6 @@
     }
 
 
-    protected async Task Actions(RadzenSplitButtonItem args)
-    {
-        if (args != null)
-        {
-            switch (args.Value)
-            {
-                case "edit":
-                    Edit();
-                    break;
-                case "share":
-                    var result = await ShowShareOptions($"{NavigationManager.Uri}", "#resume, #myvideoresume", "MyVideoResu.ME");
-                    break;
-                default:
-                    break;
-            }
-        }
-    }
-
     protected bool DisplayMetaData(string id)
     {
         var display = false;
@@ -484,6 +466,14 @@
             var result = await DialogService.OpenAsync<MetaContentPlayer>(string.Empty, param);
         }
     }
+
+    async Task WatchHandler(ResponseResult<bool> result)
+    {
+        if (!result.ErrorMessage.HasValue())
+            NavigateTo(Paths.Resume_View);
+    }
+
+
     async Task DeleteCompletedHandler(ResponseResult result)
     {
         if (!result.ErrorMessage.HasValue())

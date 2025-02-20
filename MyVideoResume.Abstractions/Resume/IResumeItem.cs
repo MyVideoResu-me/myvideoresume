@@ -11,6 +11,7 @@ public interface IResumeItem {
     string Id { get; set; }
     string UserId { get; set; }
     float? SentimentScore { get; set; }
+    bool? IsWatched { get; set; }
 }
 
 

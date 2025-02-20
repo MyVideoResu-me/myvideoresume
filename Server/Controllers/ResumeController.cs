@@ -138,6 +138,61 @@ public partial class ResumeController : ControllerBase
         return result;
     }
 
+    [Authorize]
+    [HttpPost("default/{resumeId}")]
+    public async Task<ActionResult<ResponseResult<bool>>> SetDefaultResume(string resumeId)
+    {
+        var result = new ResponseResult<bool>();
+        try
+        {
+            var id = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            result = await _resumeService.SetDefaultResume(id, resumeId);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.Message, ex);
+            result.ErrorMessage = ex.Message;
+        }
+        return result;
+    }
+
+    [Authorize]
+    [HttpPost("watch/{resumeId}")]
+    public async Task<ActionResult<ResponseResult<bool>>> WatchResume(string resumeId)
+    {
+        var result = new ResponseResult<bool>();
+        try
+        {
+            var id = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            result = await _resumeService.WatchResume(id, resumeId, true);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.Message, ex);
+            result.ErrorMessage = ex.Message;
+        }
+        return result;
+    }
+
+    [Authorize]
+    [HttpPost("unwatch/{resumeId}")]
+    public async Task<ActionResult<ResponseResult<bool>>> UnwatchResume(string resumeId)
+    {
+        var result = new ResponseResult<bool>();
+        try
+        {
+            var id = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            result = await _resumeService.WatchResume(id, resumeId, false);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.Message, ex);
+            result.ErrorMessage = ex.Message;
+        }
+        return result;
+    }
+
+
     [HttpPost("SentimentPrediction")]
     public async Task<ActionResult<ResponseResult<float>>> SentimentPrediction([FromBody] string id)
     {

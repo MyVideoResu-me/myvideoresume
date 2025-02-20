@@ -14,9 +14,9 @@ public class WatchedResumeEntity : CommonBase
     public Guid Id { get; set; }
 
     [Required]
-    public Guid UserId { get; set; }
+    public Guid UserProfileId { get; set; }
 
-    [ForeignKey("UserId")]
+    [ForeignKey("UserProfileId")]
     public UserProfileEntity UserProfile { get; set; }
 
     [Required]

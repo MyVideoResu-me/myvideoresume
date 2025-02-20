@@ -91,28 +91,36 @@ public partial class SecurityWebService : BaseWebService
 
     public async Task<bool> IsInRoleAsync(params string[] roles)
     {
-#if DEBUG
-        if (User?.Name == "admin")
+        var result = false;
+        try
         {
-            return true;
-        }
+#if DEBUG
+            if (User?.Name == "admin")
+            {
+                return true;
+            }
 #endif
 
-        if (IsNotAuthenticated())
-        {
-            return false;
+            if (IsNotAuthenticated())
+            {
+                return false;
+            }
+
+            var rolesFound = await _cache.GetOrCreateAsync(CacheKeys.UserRoles, async (x) =>
+            {
+                var uri = new Uri($"{_navigationManager.BaseUri}api/account/userroles");
+                var response = await _httpClient.GetAsync(uri);
+                var roles = await response.ReadAsync<List<string>>();
+
+                return roles.ToHashSet();
+            });
+
+            result = roles.Any(role => rolesFound.Contains(role));
         }
-
-        var rolesFound = await _cache.GetOrCreateAsync(CacheKeys.UserRoles, async (x) =>
+        catch (Exception ex)
         {
-            var uri = new Uri($"{_navigationManager.BaseUri}api/account/userroles");
-            var response = await _httpClient.GetAsync(uri);
-            var roles = await response.ReadAsync<List<string>>();
-
-            return roles.ToHashSet();
-        });
-
-        var result = roles.Any(role => rolesFound.Contains(role));
+            _logger.LogError(ex.Message, ex);
+        }
 
         return result;
     }
