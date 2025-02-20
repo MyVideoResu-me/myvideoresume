@@ -7,8 +7,21 @@ using MyVideoResume.Application;
 using MyVideoResume.Services;
 using DocumentFormat.OpenXml.EMMA;
 using DocumentFormat.OpenXml.Spreadsheet;
+using MyVideoResume.Data.Models.Account;
+using MyVideoResume.Application.Account;
+using MyVideoResume.Abstractions.Core;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Text;
 
 namespace MyVideoResume.Server.Controllers;
+
+public enum ErrorCodes
+{
+    InValidUser = 0,
+    AccountUnconfirmed = 1,
+    InValidSecurityCode = 3
+}
 
 [Route("Account/[action]")]
 public partial class AccountController : Controller
@@ -18,12 +31,12 @@ public partial class AccountController : Controller
     private readonly RoleManager<ApplicationRole> roleManager;
     private readonly IWebHostEnvironment env;
     private readonly ILogger<AccountController> logger;
-    private readonly EmailService emailService;
+    private readonly IEmailService emailService;
     private readonly IConfiguration configuration;
     private readonly AccountService accountService;
 
     public AccountController(IWebHostEnvironment env, SignInManager<ApplicationUser> signInManager, UserManager<ApplicationUser> userManager,
-        RoleManager<ApplicationRole> roleManager, ILogger<AccountController> logger, EmailService emailService, DataContextService dataContext, IConfiguration configuration, AccountService accountService)
+        RoleManager<ApplicationRole> roleManager, ILogger<AccountController> logger, IEmailService emailService, DataContextService dataContext, IConfiguration configuration, AccountService accountService)
     {
         this.signInManager = signInManager;
         this.userManager = userManager;
@@ -36,15 +49,15 @@ public partial class AccountController : Controller
     }
 
     #region Security
-    private IActionResult RedirectWithError(string error, string redirectUrl = null)
+    private IActionResult RedirectWithError(string error, ErrorCodes errorCode, string redirectUrl = null)
     {
         if (!string.IsNullOrEmpty(redirectUrl))
         {
-            return Redirect($"~/Login?error={error}&redirectUrl={Uri.EscapeDataString(redirectUrl.Replace("~", ""))}");
+            return Redirect($"~/Login?error={error}&ec={errorCode}&redirectUrl={Uri.EscapeDataString(redirectUrl.Replace("~", ""))}");
         }
         else
         {
-            return Redirect($"~/Login?error={error}");
+            return Redirect($"~/Login?error={error}&ec={errorCode}");
         }
     }
 
@@ -87,13 +100,13 @@ public partial class AccountController : Controller
 
             if (user == null)
             {
-                return RedirectWithError("Invalid user or password", redirectUrl);
+                return RedirectWithError("Invalid user or password", ErrorCodes.InValidUser, redirectUrl);
             }
 
             if (!user.EmailConfirmed)
             {
                 await SendConfirmationEmail(user);
-                return RedirectWithError("User email not confirmed", redirectUrl);
+                return RedirectWithError("User email not confirmed", ErrorCodes.AccountUnconfirmed, redirectUrl);
             }
 
             var isTenantsAdmin = userName == "tenantsadmin";
@@ -133,7 +146,7 @@ If you didn't request this code, you can safely ignore this email. Someone else 
             }
         }
 
-        return RedirectWithError("Invalid user or password", redirectUrl);
+        return RedirectWithError("Invalid user or password", ErrorCodes.InValidUser, redirectUrl);
     }
 
     [HttpPost]
@@ -143,7 +156,7 @@ If you didn't request this code, you can safely ignore this email. Someone else 
 
         if (!result.Succeeded)
         {
-            return RedirectWithError("Invalid security code");
+            return RedirectWithError("Invalid security code", ErrorCodes.InValidSecurityCode);
         }
         else
         {
@@ -151,12 +164,7 @@ If you didn't request this code, you can safely ignore this email. Someone else 
             //Lots of users (bots) can create accounts; When a user get's to this point they have a valid token and thus a real user.
             //Verify they have a User Profile
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            //Create the User's Profile
-            var userProfile = await accountService.CreateUserProfile(userId);
-
-            //Create a Company Profile and Associate it with the userProfile
-            await accountService.CreateCompanyProfile(userId, userProfile);
+            await accountService.CreateAccount(userId);
         }
 
         if (!string.IsNullOrWhiteSpace(redirectUrl))
@@ -189,13 +197,21 @@ If you didn't request this code, you can safely ignore this email. Someone else 
     }
 
     [HttpPost]
-    public ApplicationAuthenticationState CurrentUser()
+    public async Task<ApplicationAuthenticationState> CurrentUser()
     {
+        var id = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var user = await userManager.FindByIdAsync(id);
+        var roles = string.Empty;
+        if (user != null)
+            if (user.Roles != null)
+                roles = string.Join(",", user.Roles);
+
         return new ApplicationAuthenticationState
         {
             IsAuthenticated = User.Identity.IsAuthenticated,
             Name = User.Identity.Name,
-            Claims = User.Claims.Select(c => new ApplicationClaim { Type = c.Type, Value = c.Value })
+            Claims = User.Claims.Select(c => new ApplicationClaim { Type = c.Type, Value = c.Value }),
+            Roles = roles
         };
     }
 
@@ -269,7 +285,7 @@ If you didn't request this registration, you can safely ignore this email. Someo
             return Redirect("~/Login?info=Your registration has been confirmed");
         }
 
-        return RedirectWithError("Invalid user or confirmation code");
+        return RedirectWithError("Invalid user or confirmation code", ErrorCodes.InValidUser);
     }
 
     public async Task<IActionResult> ResetPassword(string userName)
@@ -373,8 +389,6 @@ If you didn't request this registration, you can safely ignore this email. Someo
 
         return new string(chars.ToArray());
     }
-
-
     #endregion
 
 }

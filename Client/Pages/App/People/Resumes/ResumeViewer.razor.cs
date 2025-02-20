@@ -7,8 +7,10 @@ using Microsoft.AspNetCore.Components.Routing;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.Web.Virtualization;
 using Microsoft.JSInterop;
+using MyVideoResume.Abstractions.Resume;
 using MyVideoResume.Client.Services;
 using MyVideoResume.Data.Models.Resume;
+using MyVideoResume.Web.Common;
 using Radzen;
 using Radzen.Blazor;
 
@@ -22,7 +24,7 @@ public partial class ResumeViewer
 
     [Inject] ILogger<ResumeViewer> Logger { get; set; }
 
-    public ResumeInformationEntity Resume { get; set; } = new ResumeInformationEntity();
+    public ResumeInformationDTO Resume { get; set; } = new ResumeInformationDTO();
 
     public bool IsResumeDeleted { get; set; }
 
@@ -32,7 +34,14 @@ public partial class ResumeViewer
 
     [Inject] protected ResumeWebService Service { get; set; }
 
-
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        //if Not authenticated show login
+        if (Security.IsNotAuthenticated())
+        {
+            await ShowUnAuthorizedNoClose($"{Paths.Resume_View}/{Slug}");
+        }
+    }
 
     protected override async Task OnInitializedAsync()
     {
@@ -41,7 +50,7 @@ public partial class ResumeViewer
         {
             var tempTitlePart = "View";
             Resume = await Service.GetResume(Slug);
-            
+
             if (Resume == null || Resume.DeletedDateTime.HasValue)
                 IsResumeDeleted = true;
 
@@ -63,7 +72,6 @@ public partial class ResumeViewer
 
             ResumePageTitle = $"MyVideoResu.ME - Resume - {tempTitlePart}";
             StateHasChanged();
-
         }
         catch (Exception ex)
         {

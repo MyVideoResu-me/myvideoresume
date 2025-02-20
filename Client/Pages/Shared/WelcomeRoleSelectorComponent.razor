@@ -1,0 +1,32 @@
+﻿@using MyVideoResume.Abstractions.Account.Profiles
+@inherits BaseComponent
+<RadzenRow>
+    <RadzenColumn Size="12">
+        <RadzenRow>
+            <p>Please select the role that best aligns with your needs. This helps us create a tailored experience.</p>
+        </RadzenRow>
+        <RadzenRow AlignItems="AlignItems.Center">
+            <RadzenButton ButtonStyle="ButtonStyle.Info" Size="ButtonSize.Large" Icon="search" Text="Job Seeker" Click="@(args => UpdateProfileSelection(MyVideoResumeRoles.JobSeeker))"></RadzenButton>
+            <RadzenButton ButtonStyle="ButtonStyle.Info" Size="ButtonSize.Large" Icon="apartment" Text="Recruiter / Company" Click="@(args => UpdateProfileSelection(MyVideoResumeRoles.Recruiter))"></RadzenButton>
+            <RadzenText TextStyle="TextStyle.Overline" class="rz-m-0"><i>You can always change your selection by visiting <RadzenLink Path="@Paths.Profile_Settings">Your Settings</RadzenLink>.</i></RadzenText>
+        </RadzenRow>
+    </RadzenColumn>
+</RadzenRow>
+@code {
+    [Parameter]
+    public UserProfileDTO Profile { get; set; }
+
+    protected async Task UpdateProfileSelection(MyVideoResumeRoles role)
+    {
+        var result = await Security.UpdateUserProfileRole(Profile, role);
+        if (result.ErrorMessage.HasValue())
+        {
+            ShowErrorNotification("Error", "Failed To Update Role");
+        }
+        else
+        {
+            DialogService.Close();
+            ShowSuccessNotification("Success", "Profile Updated with Selection");
+        }
+    }
+}

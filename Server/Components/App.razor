@@ -19,15 +19,16 @@
     <base href="@NavigationManager.BaseUri" />
     <RadzenTheme @rendermode="@InteractiveServer" Theme="standard-dark" />
     <link href="_content/Blazor.Bootstrap/blazor.bootstrap.css" rel="stylesheet" />
-    <link rel="stylesheet" href="css/site.css" />
+    <link rel="stylesheet" href="css/site.css?v=2.2.1.2" />
     <ImportMap />
     <link rel="icon" href="favicon.ico" />
     <link href="manifest.json" rel="manifest" />
     <link rel="apple-touch-icon" sizes="512x512" href="icon-512.png" />
+    <link href="https://vjs.zencdn.net/7.10.2/video-js.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/driver.js@latest/dist/driver.css" />
     <HeadOutlet @rendermode="@InteractiveServer" />
-    <script type="text/javascript" src="3rdparty.js">
+    <script type="text/javascript" src="3rdparty.js?v=2.2.1.0">
     </script>
-    <script src="https://platform.illow.io/banner.js?siteId=1708f942-dae8-437d-8c4d-ffa6549437cb"></script>
 </head>
 
 <body>
@@ -48,6 +49,24 @@
     <script src="_content/Radzen.Blazor/Radzen.Blazor.js?v=@(typeof(Radzen.Colors).Assembly.GetName().Version)"></script>
     <script>navigator.serviceWorker.register('service-worker.js');</script>
     <script src="_content/Blazor.Bootstrap/blazor.bootstrap.js"></script>
+    <script src="https://vjs.zencdn.net/7.10.2/video.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/videojs-youtube/2.6.1/Youtube.min.js"></script>
+    <script src="player.js?v=2.2.1.0"></script>
+    <script src="resumeActions.js?v=2.2.1.0"></script>
+    <!--Start of Tawk.to Script-->
+    <script type="text/javascript">
+        var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
+        (function(){
+        var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
+        s1.async=true;
+        s1.src='https://embed.tawk.to/5e4a2d73298c395d1ce8441e/default';
+        s1.charset='UTF-8';
+        s1.setAttribute('crossorigin','*');
+        s0.parentNode.insertBefore(s1,s0);
+        })();
+    </script>
+    <!--End of Tawk.to Script-->
+    <script src="https://cdn.jsdelivr.net/npm/driver.js@latest/dist/driver.js.iife.js"></script>
 </body>
 
 </html>

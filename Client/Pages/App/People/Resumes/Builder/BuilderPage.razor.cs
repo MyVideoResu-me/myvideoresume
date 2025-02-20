@@ -15,8 +15,8 @@ using MyVideoResume.Abstractions.Resume;
 using MyVideoResume.Abstractions.Resume.Formats.JSONResumeFormat;
 using MyVideoResume.Client.Pages.App.People.Resumes.Templates;
 using MyVideoResume.Client.Services;
-using MyVideoResume.Client.Shared;
 using MyVideoResume.Data.Models.Resume;
+using MyVideoResume.Extensions;
 using MyVideoResume.Web.Common;
 using Radzen;
 using Radzen.Blazor;
@@ -179,7 +179,7 @@ public partial class BuilderPage
                     if (Resume.ResumeTemplate != null)
                     {
                         ComponentType = ResolveComponent(Resume.ResumeTemplate.TransformerComponentName, Resume.ResumeTemplate.Namespace);
-                        ComponentParameters = new Dictionary<string, object>() { { "resume", Resume }, { "mode", StandardTemplate.DisplayMode.Edit } };
+                        ComponentParameters = new Dictionary<string, object>() { { "resume", Resume }, { "mode", DisplayMode.Edit } };
                     }
                 }
             }

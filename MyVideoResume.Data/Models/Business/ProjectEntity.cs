@@ -8,6 +8,8 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using MyVideoResume.Abstractions.Core;
+using MyVideoResume.Data.Models.Account.Profiles;
+using MyVideoResume.Data.Models.Business.Tasks;
 
 namespace MyVideoResume.Data.Models.Business;
 
@@ -24,5 +26,5 @@ public class ProjectEntity: Project
     [DeleteBehavior(DeleteBehavior.NoAction)]
     public CompanyProfileEntity? CompanyProfile { get; set; }
 
-    public List<ToDoEntity>? ToDos { get; set; }
+    public List<TaskEntity>? ToDos { get; set; }
 }

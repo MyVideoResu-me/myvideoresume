@@ -14,6 +14,7 @@ using MyVideoResume.Abstractions.Resume;
 using MyVideoResume.Client.Services;
 using MyVideoResume.Data;
 using MyVideoResume.Data.Models.Resume;
+using MyVideoResume.Extensions;
 using MyVideoResume.Web.Common;
 using Radzen;
 using Radzen.Blazor;
@@ -28,7 +29,7 @@ public partial class Dashboard
     [Inject]
     protected ILogger<Dashboard> Console { get; set; }
 
-    List<ResumeSummaryItem> ResumeList { get; set; } = new List<ResumeSummaryItem>();
+    List<ResumeInformationSummaryDTO> ResumeList { get; set; } = new List<ResumeInformationSummaryDTO>();
 
     protected override async Task OnInitializedAsync()
     {
@@ -52,7 +53,7 @@ public partial class Dashboard
         }
     }
 
-    async Task UploadCompletedHandler(ResponseResult<ResumeInformationEntity> result)
+    async Task UploadCompletedHandler(ResponseResult<ResumeInformationDTO> result)
     {
         if (result.ErrorMessage.HasValue())
         {

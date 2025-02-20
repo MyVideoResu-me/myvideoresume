@@ -1,19 +1,6 @@
-﻿using System;
-using System.Net.Http;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Authorization;
-using Microsoft.AspNetCore.Components.Forms;
-using Microsoft.AspNetCore.Components.Routing;
-using Microsoft.AspNetCore.Components.Web;
-using Microsoft.AspNetCore.Components.Web.Virtualization;
-using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
-using Microsoft.JSInterop;
-using MyVideoResume.Client.Pages.App.People.Resumes;
-using MyVideoResume.Client.Shared;
+﻿using Microsoft.AspNetCore.Components;
 using Radzen;
 using Radzen.Blazor;
-using Spire.Doc;
 
 namespace MyVideoResume.Client.Layout;
 

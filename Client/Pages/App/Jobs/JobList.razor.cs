@@ -12,6 +12,7 @@ using MyVideoResume.Abstractions.Job;
 using MyVideoResume.Abstractions.Resume;
 using MyVideoResume.Client.Services;
 using MyVideoResume.Data.Models.Jobs;
+using MyVideoResume.Extensions;
 using MyVideoResume.Web.Common;
 using Radzen;
 using Radzen.Blazor;
@@ -23,17 +24,17 @@ public partial class JobList
     [Inject] JobWebService Service { get; set; }
     public bool ShowGrid { get; set; } = true;
     public bool ShowPreview { get { return !ShowGrid; } }
-    List<JobSummaryItem> Items { get; set; } = new List<JobSummaryItem>();
-    IList<JobSummaryItem> SelectedItems { get; set; } = new List<JobSummaryItem>();
+    List<JobItemDTO> Items { get; set; } = new List<JobItemDTO>();
+    IList<JobItemDTO> SelectedItems { get; set; } = new List<JobItemDTO>();
 
-    public bool DisplayItem(JobSummaryItem item)
+    public bool DisplayItem(JobItemDTO item)
     {
         var result = false;
         result = item.UserId == Security.User.Id;
         return result;
     }
 
-    protected async Task Delete(JobSummaryItem item)
+    protected async Task Delete(JobItemDTO item)
     {
         var result = new ResponseResult();
         result = await Service.Delete(item.Id);
@@ -72,18 +73,4 @@ public partial class JobList
         if (result.HasValue())
             Items = await Service.GetJobSummaryItems();
     }
-    async Task OpenAITools(RadzenSplitButtonItem args, JobSummaryItem item)
-    {
-        if (args != null)
-            switch (args.Value)
-            {
-                case "jobmatch":
-                default:
-                    await OpenJobMatchAnalysis(item);
-                    break;
-            }
-        else
-            await OpenJobMatchAnalysis(item);
-    }
-
 }

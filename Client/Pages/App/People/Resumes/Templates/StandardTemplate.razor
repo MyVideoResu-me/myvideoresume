@@ -1,8 +1,11 @@
 ﻿@using AgeCalculator
 @using AgeCalculator.Extensions
+@using MyVideoResume.Abstractions.MetaContent
 @using MyVideoResume.Abstractions.Resume
 @using MyVideoResume.Abstractions.Resume.Formats.JSONResumeFormat
+@using MyVideoResume.Client.Pages.Shared.MetaContent
 @using MyVideoResume.Client.Services.FeatureFlag
+@using MyVideoResume.Data.Models.MetaContent
 @using MyVideoResume.Data.Models.Resume
 @inherits ResumeComponent
 
@@ -10,18 +13,9 @@
 {
     <RadzenRow>
         <RadzenColumn Style="max-width: 100%">
-            @if (ShowEditOptions())
-            {
-                <div style="float: right; padding-right: 35px">
-                    <RadzenMenu Responsive="false">
-                        <RadzenMenuItem Icon="more_horiz">
-                            <RadzenMenuItem Text="Edit" Path=@Paths.Jobs_View Icon="edit" Click=@(()=> Edit()) Visible=@FeatureFlagService.IsResumeBuilderEnabled></RadzenMenuItem>
-                            <RadzenMenuItem Text="Json" Icon="download" Click=@(()=> DownloadAsJson(Resume))></RadzenMenuItem>
-                            <RadzenMenuItem Text="Html" Icon="download" Click=@(()=> DownloadAsHtml(Resume))></RadzenMenuItem>
-                        </RadzenMenuItem>
-                    </RadzenMenu>
-                </div>
-            }
+            <div style="float: right; padding-right: 35px">
+                <ResumeActionsPanelComponent DisableView="true" Deleted=DeleteCompletedHandler Item=@Resume DisableWatch=@IsOwner WatchChanged=@WatchHandler></ResumeActionsPanelComponent>
+            </div>
             <RadzenText Text=@Title() TextStyle="Radzen.Blazor.TextStyle.DisplayH2" TagName="Radzen.Blazor.TagName.Auto"></RadzenText>
             <RadzenStack AlignItems="AlignItems.Normal" Orientation="Orientation.Horizontal">
                 @if (ShowContactDetails()) //TO DO: check the user's role
@@ -429,12 +423,7 @@
     }
 }
 
-<script src="resumeActions.js"></script>
-<link href="//vjs.zencdn.net/8.21.1/video-js.min.css" rel="stylesheet">
-<script src="//vjs.zencdn.net/8.21.1/video.min.js"></script>
-
 @code {
-    public enum DisplayMode { Edit, View }
     [Parameter] public DisplayMode Mode { get; set; } = DisplayMode.View;
     protected RadzenTimeline Timeline { get; set; }
     protected string ResumeName { get; set; }
@@ -454,10 +443,11 @@
         }
     }
 
+
     protected bool DisplayMetaData(string id)
     {
         var display = false;
-        MetaDataEntity metaItem = null;
+        MetaDataDTO metaItem = null;
         if (Resume.MetaDataLookup.TryGetValue(id, out metaItem))
         {
             display = true;
@@ -467,42 +457,28 @@
 
     protected async Task OpenMetaData(MouseEventArgs args, string id)
     {
-        //To Do (Handle the Different Formats)
-
-        MetaDataEntity metaItem = null;
+        MetaDataDTO metaItem = null;
         if (Resume.MetaDataLookup.TryGetValue(id, out metaItem))
         {
-            var result = await DialogService.OpenAsync("Meta Data", ds =>
-    @<RadzenStack Orientation="Orientation.Vertical">
-        <RadzenCard Variant="Variant.Outlined">
-            @if(metaItem.Url.Contains("youtube.com")){
-            <div><iframe width="100%" height="315" src=@metaItem.Url title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe></div>
-
-        }
-        else
-        {
-            <video id="my-player"
-                   class="video-js"
-                   controls
-                   preload="auto"
-                   poster="//vjs.zencdn.net/v/oceans.png"
-                   data-setup='{}'>
-                <source src=@metaItem.Url />
-                <p class="vjs-no-js">
-                    To view this video please enable JavaScript, and consider upgrading to a
-                    web browser that
-                    <a href="https://videojs.com/html5-video-support/" target="_blank">
-                        supports HTML5 video
-                    </a>
-                </p>
-            </video>
-        }
-        </RadzenCard>
-    </RadzenStack>
-    );
+            //To Do (Handle the Different Formats)
+            var param = new Dictionary<string, object>();
+            param.Add("MetaData", metaItem);
+            var result = await DialogService.OpenAsync<MetaContentPlayer>(string.Empty, param);
         }
     }
 
+    async Task WatchHandler(ResponseResult<bool> result)
+    {
+        if (!result.ErrorMessage.HasValue())
+            NavigateTo(Paths.Resume_View);
+    }
+
+
+    async Task DeleteCompletedHandler(ResponseResult result)
+    {
+        if (!result.ErrorMessage.HasValue())
+            NavigateTo(Paths.Resume_View);
+    }
 
     protected void Edit()
     {

@@ -1,8 +1,10 @@
 using MyVideoResume.Abstractions.Core;
 using MyVideoResume.Abstractions.Resume;
 using MyVideoResume.Data.Models.Resume;
+using MyVideoResume.Extensions;
 using MyVideoResume.Web.Common;
 using Radzen.Blazor;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace MyVideoResume.Client.Pages.App.People.Resumes;
 
@@ -10,32 +12,12 @@ public partial class ResumeList
 {
     public bool ShowGrid { get; set; } = true;
     public bool ShowPreview { get { return !ShowGrid; } }
-    List<ResumeSummaryItem> ResumeItems { get; set; } = new List<ResumeSummaryItem>();
-    IList<ResumeSummaryItem> SelectedResumeItems { get; set; } = new List<ResumeSummaryItem>();
-
-    public bool DisplayItem(ResumeSummaryItem item)
-    {
-        var result = false;
-        result = item.UserId == Security.User.Id;
-        return result;
-    }
+    List<ResumeInformationSummaryDTO> ResumeItems { get; set; } = new List<ResumeInformationSummaryDTO>();
+    IList<ResumeInformationSummaryDTO> SelectedResumeItems { get; set; } = new List<ResumeInformationSummaryDTO>();
 
 
 
-    protected async Task Delete(ResumeSummaryItem item)
-    {
-        var result = new ResponseResult();
-        result = await ResumeWebService.Delete(item.Id);
-        if (result.ErrorMessage.HasValue())
-        {
-            ShowErrorNotification("Failed to Delete", string.Empty);
-        }
-        else
-        {
-            ShowSuccessNotification("Resume Deleted", string.Empty);
-            ResumeItems = await ResumeWebService.GetResumeSummaryItems();
-        }
-    }
+
 
     async Task DeleteCompletedHandler(ResponseResult result)
     {
@@ -46,7 +28,24 @@ public partial class ResumeList
         else
         {
             ShowSuccessNotification("Resume Deleted", string.Empty);
-            ResumeItems = await ResumeWebService.GetResumeSummaryItems();
+            ResumeItems = await ResumeWebService.GetResumesOwnedbyAuthUser();
+        }
+    }
+
+    async Task DefaultChangedHandler(ResponseResult<bool> result)
+    {
+        if (result.Result)
+        {
+            ResumeItems = await ResumeWebService.GetResumesOwnedbyAuthUser();
+        }
+    }
+
+
+    async Task WatchChangedHandler(ResponseResult<bool> result)
+    {
+        if (result.Result)
+        {
+            ResumeItems = await ResumeWebService.GetResumesOwnedbyAuthUser();
         }
     }
 
@@ -56,31 +55,14 @@ public partial class ResumeList
         await base.OnInitializedAsync();
 
         if (Security.IsAuthenticated())
-            ResumeItems = await ResumeWebService.GetResumeSummaryItems();
+            ResumeItems = await ResumeWebService.GetResumesOwnedbyAuthUser();
     }
 
-    protected async Task ResumeCreated(ResponseResult<ResumeInformationEntity> result)
+    protected async Task ResumeCreated(ResponseResult<ResumeInformationDTO> result)
     {
         if (!result.ErrorMessage.HasValue())
-            ResumeItems = await ResumeWebService.GetResumeSummaryItems();
+            ResumeItems = await ResumeWebService.GetResumesOwnedbyAuthUser();
     }
 
-    async Task OpenAITools(RadzenSplitButtonItem args, ResumeSummaryItem item)
-    {
-        if (args != null)
-            switch (args.Value)
-            {
-                case "sentiment":
-                    await OpenSentimentAnalysis(item);
-                    break;
-                case "jobmatch":
-                    await OpenJobMatchAnalysis(item);
-                    break;
-                default:
-                    break;
-            }
-        else
-            await OpenSentimentAnalysis(item);
-    }
 
 }

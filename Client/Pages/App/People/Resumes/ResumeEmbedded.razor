@@ -1,6 +1,8 @@
-@page "/embedded/{slug}"
+@page "/embedded/{slug}" 
+@page "/embedded/resume/{slug}"
+@page "/embedded/resumes/{slug}"
 @using MyVideoResume.Client.Pages.App.People.Resumes.Templates
-@inherits ResumeComponent
+@inherits BaseComponent
 @layout EmbeddedLayout
 
 
@@ -33,17 +35,3 @@ else
         </RadzenColumn>
     </RadzenRow>
 }
-
-<script>
-    function sendHeightToParent() {
-      const height = document.documentElement.scrollHeight;
-      window.parent.postMessage({ height: height });
-    }
-
-    // Call sendHeightToParent when the content loads and when it changes (e.g., on window resize)
-    window.addEventListener('load', sendHeightToParent);
-    window.addEventListener('resize', sendHeightToParent);
-
-    // Optionally, you can also send height updates periodically using setInterval
-    // setInterval(sendHeightToParent, 500); // Send height every 500ms
-</script>

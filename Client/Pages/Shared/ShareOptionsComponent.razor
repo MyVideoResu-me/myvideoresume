@@ -1,0 +1,40 @@
+﻿@inherits BaseComponent
+<RadzenRow>
+    <RadzenColumn Size="12">
+        <RadzenRow>
+            <p>Please share by using an option below.</p>
+        </RadzenRow>
+        <RadzenCard>
+            <RadzenRow>
+                <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Start" Wrap="FlexWrap.Wrap">
+                    <RadzenTextBox Value=@UrlToShare class="rz-border" Style="width: 275px" Disabled=true></RadzenTextBox><RadzenButton Icon="content_copy" Click=@(()=>Copy())></RadzenButton>
+                </RadzenStack>
+            </RadzenRow>
+        </RadzenCard>
+        <RadzenCard Style="margin-top:9px">
+            <RadzenRow AlignItems="AlignItems.Center" Style="padding:5px">
+                <button class="share" data-sharer="twitter" data-title=@Title data-hashtags=@Hashtags data-url=@UrlToShare>Share on Twitter</button>
+                <button class="share" data-sharer="threads" data-title=@Title data-hashtags=@Hashtags data-url=@UrlToShare>Share on Threads</button>
+                <button class="share" data-sharer="facebook" data-title=@Title data-hashtags=@Hashtags data-url=@UrlToShare>Share on Facebook</button>
+                <button class="share" data-sharer="linkedin" data-title=@Title data-hashtags=@Hashtags data-url=@UrlToShare>Share on LinkedIn</button>
+                <button class="share" data-sharer="email" data-title=@Title data-hashtags=@Hashtags data-url=@UrlToShare>Share by Email</button>
+                <button class="share" data-sharer="whatsapp" data-title=@Title data-hashtags=@Hashtags data-url=@UrlToShare>Share on WhatsApp</button>
+                <button class="share" data-sharer="telegram" data-title=@Title data-hashtags=@Hashtags data-url=@UrlToShare>Share on Telegram</button>
+                <button class="share" data-sharer="hackernews" data-title=@Title data-hashtags=@Hashtags data-url=@UrlToShare>Share on Hackernews</button>
+                <button class="share" data-sharer="reddit" data-title=@Title data-hashtags=@Hashtags data-url=@UrlToShare>Share on Reddit</button>
+            </RadzenRow>
+        </RadzenCard>
+    </RadzenColumn>
+</RadzenRow>
+<script src="https://cdn.jsdelivr.net/npm/sharer.js@0.5.2/sharer.min.js"></script>
+
+@code {
+    [Parameter] public string UrlToShare { get; set; }
+    [Parameter] public string Hashtags { get; set; }
+    [Parameter] public string Title { get; set; }
+    protected async Task Copy()
+    {
+        ShowSuccessNotification("Success", "Value Copied");
+        await JSRuntime.InvokeVoidAsync("copyToClipboard", UrlToShare);
+    }
+}

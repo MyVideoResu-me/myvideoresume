@@ -10,7 +10,7 @@ builder.Services.AddTransient(sp => new HttpClient { BaseAddress = new Uri(build
 builder.Services.AddPredictionEnginePool<SampleObservation, SamplePrediction>()
                     .FromFile(builder.Configuration["AI:MLModelFilePath"]);
 builder.Services.AddAuthorizationCore();
-builder.Services.AddHttpClient("MyVideoResume.Server", client => client.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress));
-builder.Services.AddTransient(sp => sp.GetRequiredService<IHttpClientFactory>().CreateClient("MyVideoResume.Server"));
+builder.Services.AddHttpClient("MyVideoResume", client => client.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress));
+builder.Services.AddTransient(sp => sp.GetRequiredService<IHttpClientFactory>().CreateClient("MyVideoResume"));
 var host = builder.Build();
 await host.RunAsync();

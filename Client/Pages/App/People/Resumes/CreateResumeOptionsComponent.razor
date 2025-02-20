@@ -14,7 +14,7 @@
 
 @code {
     [Inject] public FeatureFlagClientService Service { get; set; }
-    [Parameter] public EventCallback<ResponseResult<ResumeInformationEntity>> ResumeCreated { get; set; }
+    [Parameter] public EventCallback<ResponseResult<ResumeInformationDTO>> ResumeCreated { get; set; }
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
@@ -24,9 +24,7 @@
     {
         if (Security.IsNotAuthenticated())
         {
-            var param = new Dictionary<string, object>();
-            param.Add("Path", Paths.Resume_View);
-            var result = await DialogService.OpenAsync<UnAuthorizedComponent>("Create Account", param);
+            await ShowUnAuthorized(Paths.Resume_View);
         }
         else
         {
@@ -48,7 +46,7 @@
         }
     }
 
-    async Task UploadCompletedHandler(ResponseResult<ResumeInformationEntity> result)
+    async Task UploadCompletedHandler(ResponseResult<ResumeInformationDTO> result)
     {
         if (result.ErrorMessage.HasValue())
         {

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.HeaderPropagation;
+﻿using Azure;
+using Microsoft.AspNetCore.HeaderPropagation;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -8,10 +9,11 @@ using Microsoft.Extensions.Primitives;
 using MyVideoResume.Abstractions.Core;
 using MyVideoResume.Abstractions.Job;
 using MyVideoResume.Abstractions.Resume;
+using MyVideoResume.Application.Account;
 using MyVideoResume.Application.Resume;
 using MyVideoResume.Data;
-using MyVideoResume.Data.Models;
 using MyVideoResume.Data.Models.Jobs;
+using MyVideoResume.Data.Models.Resume;
 using MyVideoResume.Web.Common;
 using PuppeteerSharp;
 
@@ -38,9 +40,9 @@ public partial class JobService
         _serviceScopeFactory = serviceScopeFactory;
     }
 
-    public async Task<JobItemEntity> GetJob(string id, string userId)
+    public async Task<JobItemEntity> GetJob(string id)
     {
-        var item = _dataContext.Jobs.FirstOrDefault(x => x.Id == Guid.Parse(id) && x.UserId == userId);
+        var item = _dataContext.Jobs.FirstOrDefault(x => x.Id == Guid.Parse(id));
 
         return item;
     }
@@ -74,51 +76,109 @@ public partial class JobService
         return result;
     }
 
+    public async Task<ResponseResult<JobItemEntity>> QueueJobToResumeRequest(ResponseResult<JobItemEntity> result)
+    {
+        try
+        {
+            _dataContext.QueueForJobs.Add(new Data.Models.Queues.QueueJobToResumeEntity()
+            {
+                Job = result.Result,
+                CreationDateTime = DateTime.UtcNow,
+                Status = BatchProcessStatus.NotStarted
+            });
+            _dataContext.SaveChanges();
+        }
+        catch (Exception ex)
+        {
+            result.ErrorMessage = ex.Message;
+            _logger.LogError(ex, ex.Message);
+        }
+
+        return result;
+    }
 
     public async Task<JobPreferencesEntity> GetJobPreferences(string userId)
     {
         throw new NotImplementedException();
     }
 
-    public async Task<ResponseResult<JobItemEntity>> CreateJob(string id, JobItemEntity item)
+    public async Task<ResponseResult<JobItemEntity>> CreateJob(string userId, JobItemEntity item)
     {
         var result = new ResponseResult<JobItemEntity>();
-        _dataContext.Jobs.Add(item);
-        item.UserId = id;
-        _dataContext.SaveChanges();
-        result.Result = item;
+
+        var user = await _dataContext.UserCompanyRolesAssociation.Include(x => x.UserProfile).Include(x => x.CompanyProfile).FirstOrDefaultAsync(x => x.UserProfile.UserId == userId);
+
+        if (user != null)
+        {
+            _dataContext.Jobs.Add(item);
+            item.UserId = userId;
+            item.CreatedByUser = user.UserProfile;
+            item.CreationDateTime = DateTime.UtcNow;
+            _dataContext.SaveChanges();
+            result.Result = item;
+        }
         return result;
     }
 
+    public async Task<ResponseResult<JobItemEntity>> ExtractJob(string htmlContent)
+    {
+        var result = new ResponseResult<JobItemEntity>();
+        try
+        {
+            result = await _engine.ExtractJob(htmlContent);
+        }
+        catch (Exception ex)
+        {
+            result.ErrorMessage = ex.Message;
+            result.ErrorCode = ErrorCodes.SystemError;
+        }
+
+        return result;
+    }
     public async Task<ResponseResult<JobItemEntity>> SaveJobByUrl(string url)
     {
         var result = new ResponseResult<JobItemEntity>();
-        var response = string.Empty;
-        // Download the Chromium revision if it does not already exist
-        await new BrowserFetcher().DownloadAsync();
-        using (var browser = await Puppeteer.LaunchAsync(new LaunchOptions { Headless = true, AcceptInsecureCerts = true, Args = new string[] { "--no-sandbox", "--disable-web-security" } }))
-        using (var page = await browser.NewPageAsync())
+        try
         {
-            var res = await page.GoToAsync(url);
-
-            response = await res.TextAsync();
-
-            if (res.Status == System.Net.HttpStatusCode.Forbidden || response.Contains("You have been blocked"))
+            var response = string.Empty;
+            // Download the Chromium revision if it does not already exist
+            await new BrowserFetcher().DownloadAsync();
+            using (var browser = await Puppeteer.LaunchAsync(new LaunchOptions { Headless = true, AcceptInsecureCerts = true, Args = new string[] { "--no-sandbox", "--disable-web-security" } }))
+            using (var page = await browser.NewPageAsync())
             {
-                result.ErrorMessage = "Failed to Load Job.";
+                var res = await page.GoToAsync(url);
+                if (res != null)
+                {
+                    response = await res.TextAsync();
+
+
+                    if (res.Status == System.Net.HttpStatusCode.Forbidden || response.Contains("You have been blocked"))
+                    {
+                        result.ErrorMessage = "Failed to Load Job.";
+                    }
+                    else
+                    {
+                        result = await _engine.ExtractJob(response);
+                    }
+                    //var jsSelectAllAnchors = @"Array.from(document.querySelectorAll('a')).map(a => a.href);";
+                    //var urls = await page.EvaluateExpressionAsync<string[]>(jsSelectAllAnchors);
+                    //foreach (string url in urls)
+                    //{
+                    //    Console.WriteLine($"Url: {url}");
+                    //}
+                    //Console.WriteLine("Press any key to continue...");
+                    //Console.ReadLine();
+                }
+                else
+                {
+                    result.ErrorMessage = "Unable to Process URL";
+                }
             }
-            else
-            {
-                result = await _engine.ExtractJob(response);
-            }
-            //var jsSelectAllAnchors = @"Array.from(document.querySelectorAll('a')).map(a => a.href);";
-            //var urls = await page.EvaluateExpressionAsync<string[]>(jsSelectAllAnchors);
-            //foreach (string url in urls)
-            //{
-            //    Console.WriteLine($"Url: {url}");
-            //}
-            //Console.WriteLine("Press any key to continue...");
-            //Console.ReadLine();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.Message, ex);
+            result.ErrorMessage = ex.Message;
         }
 
         ////call the URL
@@ -135,9 +195,9 @@ public partial class JobService
     }
 
     //Get All Public Resume Summaries
-    public async Task<List<JobSummaryItem>> GetJobSummaryItems(string? userId = null, bool? onlyPublic = null)
+    public async Task<List<JobItemDTO>> GetPublicJobs(string? userId = null, bool? onlyPublic = null)
     {
-        var result = new List<JobSummaryItem>();
+        var result = new List<JobItemDTO>();
         try
         {
             var query = _dataContext.Jobs
@@ -154,7 +214,7 @@ public partial class JobService
                 query = query.Where(x => x.UserId == userId);
             }
 
-            result = query.Select(x => new JobSummaryItem() { JobSerialized = x.JobSerialized, UserId = x.UserId, CreationDateTimeFormatted = x.CreationDateTime.Value.ToString("yyyy-MM-dd"), Id = x.Id.ToString(), Responsibilities = x.Responsibilities, Requirements = x.Requirements, Slug = x.Slug, Title = x.Title, Description = x.Description, ATSApplyUrl = x.ATSApplyUrl, OriginalWebsiteUrl = x.OriginalWebsiteUrl }).ToList();
+            result = query.Select(x => new JobItemDTO() { UserId = x.UserId, CreationDateTimeFormatted = x.CreationDateTime.Value.ToString("yyyy-MM-dd"), Id = x.Id.ToString(), Responsibilities = x.Responsibilities, Requirements = x.Requirements, Slug = x.Slug, Title = x.Title, Description = x.Description, ATSApplyUrl = x.ATSApplyUrl }).ToList();
         }
         catch (Exception ex)
         {

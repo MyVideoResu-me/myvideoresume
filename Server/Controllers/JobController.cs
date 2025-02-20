@@ -5,10 +5,10 @@ using MyVideoResume.Abstractions.Core;
 using MyVideoResume.Abstractions.Job;
 using MyVideoResume.Application.Job;
 using MyVideoResume.Application.Resume;
-using MyVideoResume.Data.Models;
 using MyVideoResume.Data.Models.Jobs;
 using MyVideoResume.Data.Models.Resume;
 using MyVideoResume.Documents;
+using MyVideoResume.Extensions;
 using MyVideoResume.Web.Common;
 using System.Security.Claims;
 
@@ -51,7 +51,7 @@ public partial class JobController : ControllerBase
         try
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            result = await _service.GetJob(id, userId);
+            result = await _service.GetJob(id);
         }
         catch (Exception ex)
         {
@@ -61,12 +61,12 @@ public partial class JobController : ControllerBase
     }
 
     [HttpGet("GetPublicJobs")]
-    public async Task<ActionResult<List<JobSummaryItem>>> GetPublicJobs()
+    public async Task<ActionResult<List<JobItemDTO>>> GetPublicJobs()
     {
-        var result = new List<JobSummaryItem>();
+        var result = new List<JobItemDTO>();
         try
         {
-            result = await _service.GetJobSummaryItems(onlyPublic: true);
+            result = await _service.GetPublicJobs(onlyPublic: true);
         }
         catch (Exception ex)
         {
@@ -77,13 +77,13 @@ public partial class JobController : ControllerBase
 
     [Authorize]
     [HttpGet("GetSummaryItems")]
-    public async Task<ActionResult<List<JobSummaryItem>>> GetSummaryItems()
+    public async Task<ActionResult<List<JobItemDTO>>> GetSummaryItems()
     {
-        var result = new List<JobSummaryItem>();
+        var result = new List<JobItemDTO>();
         try
         {
             var id = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            result = await _service.GetJobSummaryItems(id);
+            result = await _service.GetPublicJobs(id);
         }
         catch (Exception ex)
         {
@@ -172,7 +172,7 @@ public partial class JobController : ControllerBase
             {
                 //Remove the Markdown from the Response
                 var job = temppdfresult.Result;
-                result = await _service.CreateJob("automation", job);
+                result = await _service.CreateJob("automation", job); //TODO: This won't work; Fix
             }
             else
             {

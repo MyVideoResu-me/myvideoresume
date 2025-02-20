@@ -1,0 +1,19 @@
+﻿<RadzenStack AlignItems="AlignItems.Start" Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Start" Gap="0.5rem" class="rz-px-2">
+    
+    <RadzenLink Text=@Copyright TextStyle="Radzen.Blazor.TextStyle.Caption" class="footerLink" Path="https://hirefractionaltalent.com" />  |
+    <RadzenLink Path=@Paths.Site_PrivacyPolicy Text="Privacy Policy" TextStyle="Radzen.Blazor.TextStyle.Caption" class="footerLink"/> |
+    <RadzenLink Path=@Paths.Site_TermsOfUse Text="Terms of Use" TextStyle="Radzen.Blazor.TextStyle.Caption" class="footerLink" /> |
+    <RadzenLink Text="@Version" TextStyle="Radzen.Blazor.TextStyle.Caption" TagName="Radzen.Blazor.TagName.P" class="footerLink" Path=@Paths.Site_ReleaseNotes />
+</RadzenStack>
+
+@code {
+    public string Copyright { get { return $"Copyright Ⓒ {DateTime.Now.Year} - HireFractionalTalent.com"; } }
+    public string Version { get { return $"v.{VersionNumber}"; } }
+    public string VersionNumber
+    {
+        get
+        {
+            return typeof(MainLayout).Assembly.GetName().Version.ToString();
+        }
+    }
+}

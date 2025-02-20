@@ -1,0 +1,25 @@
+@page "/admin/view-user-profile/{Id}"
+@attribute [Authorize(Roles = "Admin")]
+@inherits BaseComponent
+<RadzenRow>
+    <RadzenColumn SizeMD="12">
+        <RadzenStack style="margin-bottom: 1rem;">
+            <RadzenFormField Text="First Name" Variant="Variant.Outlined">
+                <ChildContent>
+                    <RadzenText Text=@userProfile?.FirstName></RadzenText>
+                </ChildContent>
+            </RadzenFormField>
+            <RadzenFormField Text="Sign Up Date" Variant="Variant.Outlined">
+                <ChildContent>
+                    <RadzenText style="padding:5px;" Text=@userProfile?.CreationDateTime.ToString()></RadzenText>
+                </ChildContent>
+            </RadzenFormField>
+            <RadzenFormField Text="Role Selected" Variant="Variant.Outlined">
+                <ChildContent>
+                    <RadzenText style="padding:5px;" Text=@userProfile?.IsRoleSelected.ToString()></RadzenText>
+                    <RadzenText style="padding:5px;" Text=@userProfile?.RoleSelected.ToString()></RadzenText>
+                </ChildContent>
+            </RadzenFormField>
+        </RadzenStack>
+    </RadzenColumn>
+</RadzenRow>

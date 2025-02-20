@@ -3,7 +3,7 @@
 
 <RadzenRow Style="padding-bottom:15px" Visible="@(ResumeList.Count > 0)">
     <RadzenColumn Style="max-width: 100%">
-        <RadzenText Text="Featured Resumes" TextStyle="TextStyle.H3"></RadzenText>
+        <RadzenText class="first_ftw" Text="Featured Resumes" TextStyle="TextStyle.H3"></RadzenText>
         <RadzenCard>
             <div class="searchComponent" style="overflow:auto;">
                 <RadzenStack Orientation="Orientation.Horizontal">
@@ -11,7 +11,7 @@
                     {
 
                         <RadzenColumn Size="4" SizeXS="4" SizeSM="4" SizeMD="4" SizeLG="4" SizeXL="4" SizeXX="4">
-                            <ResumePreviewComponent ResumeItem=@resume Mode="PreviewMode.View"></ResumePreviewComponent>
+                            <ResumePreviewComponent ResumeItem=@resume Mode="Actions.ReadView"></ResumePreviewComponent>
                         </RadzenColumn>
 
                     }
@@ -29,11 +29,11 @@
     [Inject]
     protected ILogger<Index> Console { get; set; }
 
-    List<ResumeSummaryItem> ResumeList { get; set; } = new List<ResumeSummaryItem>();
+    List<ResumeInformationSummaryDTO> ResumeList { get; set; } = new List<ResumeInformationSummaryDTO>();
 
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
-        ResumeList = await Service.GetPublicResumes();
+        ResumeList = await Service.GetResumesPublic();
     }
 }

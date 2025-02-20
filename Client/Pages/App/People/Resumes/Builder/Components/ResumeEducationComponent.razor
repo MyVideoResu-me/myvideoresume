@@ -21,7 +21,7 @@
 </RadzenColumn>
 
 @code {
-    [Parameter] public ResumeInformationEntity Resume { get; set; }
+    [Parameter] public ResumeInformationDTO Resume { get; set; }
     public SortedList<string, string> Privacy { get; set; } = DisplayPrivacy.ToPublic.ToSortedList();
     public string Privacy_ShowContactDetails { get; set; } = DisplayPrivacy.ToPublic.ToString();
     public string Privacy_ShowResume { get; set; } = DisplayPrivacy.ToPublic.ToString();

@@ -1,10 +1,10 @@
 ﻿@inherits BaseComponent
 
-<div style="float:right">
+<div style="float:right" hidden=@Security.IsInRole(MyVideoResumeRoles.JobSeeker.ToString())>
     <RadzenSplitButton Icon="add_circle" Click=@(args => OnClick(args)) Text="Create Job" ButtonStyle="ButtonStyle.Danger">
         <ChildContent>
-            <RadzenSplitButtonItem Icon="public" Text="From Website" Value="url" />
-            <RadzenSplitButtonItem Icon="picture_as_pdf" Text="Upload PDF" Value="pdf" />
+@*             <RadzenSplitButtonItem Icon="public" Text="From Website" Value="url" />
+ *@            <RadzenSplitButtonItem Icon="picture_as_pdf" Text="Upload PDF" Value="pdf" />
             <RadzenSplitButtonItem Icon="note_add" Text="Upload MS Word" Value="word" />
             <RadzenSplitButtonItem Icon="construction" Text="Job Builder" Value="builder" Visible=@Service.IsJobBuilderEnabled />
         </ChildContent>
@@ -35,16 +35,16 @@
             }
             else
             {
-    //             if (args == null || args?.Value == "url")
-                
-    //             {
-    //                 var result = await DialogService.OpenAsync("Create Job from Website URL", ds =>
-    // @<RadzenCard Variant="Variant.Outlined">
-    //     <CreateJobWebsiteWizard ></CreateJobWebsiteWizard>
-    // </RadzenCard>
-    //         );
+                //             if (args == null || args?.Value == "url")
 
-    //             }
+                //             {
+                //                 var result = await DialogService.OpenAsync("Create Job from Website URL", ds =>
+                // @<RadzenCard Variant="Variant.Outlined">
+                //     <CreateJobWebsiteWizard ></CreateJobWebsiteWizard>
+                // </RadzenCard>
+                //         );
+
+                //             }
 
                 if (args?.Value == "pdf" || args?.Value == "word")
                 {

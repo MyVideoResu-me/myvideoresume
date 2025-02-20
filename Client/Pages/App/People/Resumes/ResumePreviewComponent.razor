@@ -2,13 +2,13 @@
 @using MyVideoResume.Abstractions.Resume
 @using MyVideoResume.Abstractions.Resume.Formats.JSONResumeFormat
 @using MyVideoResume.Data.Models.Resume
-@inherits ResumeComponent
+@inherits BaseComponent
 
 <RadzenCard style="background-color:white;">
     <RadzenCard class="rz-shadow-0 rz-border-radius-0" style="margin: 5px calc(-1 * var(--rz-card-padding));background-color:white; cursor: pointer" @onclick=@(()=> NavigateTo("resumes", ResumeItem.Id.ToString()))>
         <RadzenStack Orientation="Orientation.Vertical" JustifyContent="JustifyContent.Start" Gap="0">
             <RadzenText style="color: #262526" TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-4 rz-mb-0">Name</RadzenText>
-            <div style=" max-width: 250px; "><RadzenText style="color: #262526; text-overflow:ellipsis; white-space: nowrap; overflow: hidden;" TextStyle="TextStyle.H3" title="@(ResumeItem.ResumeName)">@(ResumeItem.ResumeName)</RadzenText></div>
+            <div style=" max-width: 250px; "><RadzenText style="color: #262526; text-overflow:ellipsis; white-space: nowrap; overflow: hidden;" TextStyle="TextStyle.H3" title="@(ResumeItem.Name)">@(ResumeItem.Name)</RadzenText></div>
             <RadzenText Visible=@DisplayItem() style="color: #262526" TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-2 rz-my-0">ID</RadzenText>
             <RadzenText Visible=@DisplayItem() style="color: #262526" TextStyle="TextStyle.Body1">@(ResumeItem.Id)</RadzenText>
             <RadzenText style="color: #262526" TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-2 rz-my-0">Creation</RadzenText>
@@ -20,43 +20,38 @@
         <RadzenRow RowGap="0">
             <RadzenColumn Visible=@DisplayItem()>
                 <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-4 rz-mb-0" style="color:white; ">Template</RadzenText>
-                <RadzenText TextStyle="TextStyle.Body1" style="color:white; "><b> @(ResumeItem.ResumeTemplateName)</b></RadzenText>
+                <RadzenText TextStyle="TextStyle.Body1" style="color:white; "><b> @(ResumeItem.TemplateName)</b></RadzenText>
                 <RadzenText TextStyle="TextStyle.Overline" class=" rz-display-flex rz-mt-4 rz-mb-0" style="color:white; ">Public</RadzenText>
                 <RadzenText TextStyle="TextStyle.Body1" style="color:white; "><b>@(ResumeItem.IsPublic)</b></RadzenText>
             </RadzenColumn>
             <RadzenColumn>
                 <RadzenText TextStyle="TextStyle.Overline" style="color:white; " class="rz-display-flex rz-mt-4 rz-mb-0">Summary</RadzenText>
-                <RadzenText style="color:white; text-overflow:ellipsis; white-space:normal; overflow: hidden; height:240px" TextStyle="TextStyle.Body1" title="@(ResumeItem.ResumeSummary)">@(ResumeItem.ResumeSummary)</RadzenText>
+                <RadzenText style="color:white; text-overflow:ellipsis; white-space:normal; overflow: hidden; height:240px" TextStyle="TextStyle.Body1" title="@(ResumeItem.Description)">@(ResumeItem.Description)</RadzenText>
                 @*                 <RadzenText style="color:white; " TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-4 rz-mb-0">Freight</RadzenText>
                 <RadzenText style="color:white; " TextStyle="TextStyle.Body1"><b>@(ResumeEntity?.Basics?.Summary)</b></RadzenText>
  *@            </RadzenColumn>
         </RadzenRow>
     </RadzenCard>
     <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Center" Gap="0">
-        <RadzenButton ButtonStyle="ButtonStyle.Danger" Variant="Variant.Text" Icon="delete" Text="Delete" Click=Delete Visible=@DisplayItem() />
-        <RadzenButton ButtonStyle="ButtonStyle.Dark" Variant="Variant.Text" Icon="edit" Text="Edit" Visible=@FeatureFlagService.IsResumeBuilderEnabled Click=@(()=> NavigateTo("resumes/builder", ResumeItem.Id)) />
         <RadzenButton ButtonStyle="ButtonStyle.Dark" Variant="Variant.Text" Icon="preview" Text="View" Click=@(()=> NavigateTo("resumes", ResumeItem.Id)) />
+        <ResumeActionsPanelComponent Deleted=@DeleteCompletedHandler Item=@ResumeItem DisableWatch=@ResumeItem.IsOwner.Value></ResumeActionsPanelComponent>
     </RadzenStack>
 </RadzenCard>
 
 @code {
     [Parameter] public EventCallback<ResponseResult> DeleteCompleted { get; set; }
-
-    [Parameter]
-    public ResumeSummaryItem ResumeItem { get; set; } = null;
-
-    [Parameter]
-    public PreviewMode Mode { get; set; } = PreviewMode.View;
+    [Parameter] public ResumeInformationSummaryDTO ResumeItem { get; set; } = null;
+    [Parameter] public Actions Mode { get; set; } = Actions.ReadView;
 
     public bool DisplayItem()
     {
         var result = false;
         switch (Mode)
         {
-            case PreviewMode.View:
+            case Actions.ReadView:
                 result = false;
                 break;
-            case PreviewMode.Edit:
+            case Actions.UpdateEdit:
                 result = ResumeItem.UserId == Security.User.Id;
                 break;
             default:
@@ -72,19 +67,18 @@
         await base.OnInitializedAsync();
 
         if (ResumeItem == null)
-            ResumeItem = new ResumeSummaryItem()
+            ResumeItem = new ResumeInformationSummaryDTO()
                 {
-                    ResumeName = "Place Holder",
-                    ResumeSummary = "Upload PDF Resume",
+                    Name = "Place Holder",
+                    Description = "Upload PDF Resume",
                     CreationDateTimeFormatted = DateTime.UtcNow.ToString("yyyy-MM-dd")
                 };
 
     }
 
-    protected async Task Delete()
+    async Task DeleteCompletedHandler(ResponseResult result)
     {
-        var result = new ResponseResult();
-        result = await ResumeWebService.Delete(ResumeItem.Id);
-        await DeleteCompleted.InvokeAsync(result);
+        if (DeleteCompleted.HasDelegate)
+            await DeleteCompleted.InvokeAsync(result);
     }
 }

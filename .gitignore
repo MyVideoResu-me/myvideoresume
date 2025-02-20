@@ -401,3 +401,4 @@ FodyWeavers.xsd
 *.sln.iml
 /MyVideoResume.AI/models/Phi-3-mini-4k-instruct-onnx
 /Server/appsettings.Development.json
+/MyVideoResume.API/appsettings.Development.json

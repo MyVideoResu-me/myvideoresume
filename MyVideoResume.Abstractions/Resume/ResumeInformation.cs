@@ -6,15 +6,8 @@ using System.ComponentModel;
 using System.Linq;
 
 namespace MyVideoResume.Abstractions.Resume;
-public enum ResumeType
-{
-    ResumeBuilder = 0,
-    JSONResumeFormat = 1,
-    WordDoc = 2,
-    Pdf = 3,
-}
 
-public class ResumeInformation : GISData
+public class ResumeInformationBase : GISData
 {
     public string UserId { get; set; }
 
@@ -24,6 +17,16 @@ public class ResumeInformation : GISData
 
     public string? Description { get; set; }
 
+    public bool? IsPrimaryDefault { get; set; } // Can only have 1 default or Primary
+
+    public float? SentimentScore { get; set; }
+
+    public bool? IsWatched { get; set; }
+
+}
+
+public class ResumeInformation : ResumeInformationBase
+{
     public DisplayPrivacy Privacy_ShowResume { get; set; } = DisplayPrivacy.ToPublic;
 
     public DisplayPrivacy Privacy_ShowContactDetails { get; set; } = DisplayPrivacy.ToConnections;
@@ -33,6 +36,6 @@ public class ResumeInformation : GISData
     public PaySchedule PaySchedule { get; set; } = PaySchedule.Yearly;
     public float MinimumSalary { get; set; }
     public ResumeType ResumeType { get; set; }
-    public float? SentimentScore { get; set; }
+
     public string ResumeSerialized { get; set; }
 }

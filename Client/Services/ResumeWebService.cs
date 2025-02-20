@@ -1,47 +1,32 @@
-using System;
-using System.Web;
-using System.Linq;
-using System.Collections.Generic;
-using System.Net.Http;
-using System.Threading.Tasks;
-using System.Text;
 using System.Text.Json;
-using System.Security.Claims;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Authorization;
 using Radzen;
-using MyVideoResume.Data.Models;
-using MyVideoResume.Client.Shared.Security.Recaptcha;
-using MyVideoResume.Data;
-using Microsoft.EntityFrameworkCore;
 using MyVideoResume.Data.Models.Resume;
 using MyVideoResume.Abstractions.Core;
-using static System.Net.WebRequestMethods;
-using MyVideoResume.Abstractions.Job;
 using MyVideoResume.Abstractions.Resume;
-using MyVideoResume.Client.Shared;
 using MyVideoResume.Web.Common;
 using System.Net.Http.Json;
+using Microsoft.Extensions.Caching.Hybrid;
 //using Refit;
 
 namespace MyVideoResume.Client.Services;
 
-public partial class ResumeWebService
+public partial class ResumeWebService : BaseWebService
 {
-    private readonly HttpClient _httpClient;
-    private readonly NavigationManager _navigationManager;
+    protected HybridCache _cache;
+    private readonly MatchWebService matchWebService;
     private readonly SecurityWebService _securityService;
-    private readonly ILogger<DashboardWebService> _logger;
+    private readonly ILogger<ResumeWebService> _logger;
 
-    public ResumeWebService(NavigationManager navigationManager, IHttpClientFactory factory, ILogger<DashboardWebService> logger, SecurityWebService securityService)
+    public ResumeWebService(HybridCache cache, NavigationManager navigationManager, IHttpClientFactory factory, ILogger<ResumeWebService> logger, SecurityWebService securityService, MatchWebService matchWebService) : base(cache, factory, navigationManager)
     {
-        this._httpClient = factory.CreateClient(Constants.HttpClientFactory);
-        this._navigationManager = navigationManager;
         this._logger = logger;
         this._securityService = securityService;
+        this.matchWebService = matchWebService;
+        this._cache = cache;
     }
 
+    #region AI / Summarize, Sentiment Analysis
     public async Task<ResponseResult<float>> GetSentimentAnalysisById(string id)
     {
         var result = new ResponseResult<float>();
@@ -59,14 +44,33 @@ public partial class ResumeWebService
         return await response.ReadAsync<float>();
     }
 
-    public async Task<List<ResumeSummaryItem>> GetPublicResumes() //Eventually Pass in a Search Object
+    public async Task<ResponseResult> Summarize(string resume)
     {
-        var result = new List<ResumeSummaryItem> { };
+        var uri = new Uri($"{_navigationManager.BaseUri}api/resume/summarize");
+        var response = await _httpClient.PostAsJsonAsync<string>(uri, resume);
+        var r = await response.ReadAsync<ResponseResult>();
+        return r;
+    }
+
+    #endregion
+
+    #region Homepage
+    public async Task<List<ResumeInformationSummaryDTO>> GetResumesPublic() //Eventually Pass in a Search Object
+    {
+        var result = new List<ResumeInformationSummaryDTO> { };
         try
         {
-            var uri = new Uri($"{_navigationManager.BaseUri}api/resume/GetPublicResumes");
-            var response = await _httpClient.GetAsync(uri);
-            result = await response.ReadAsync<List<ResumeSummaryItem>>();
+            var cachedResult = await _cache.GetOrCreateAsync(CacheKeys.PublicResumes, async (x) =>
+            {
+                var uri = new Uri($"{_navigationManager.BaseUri}api/resume/GetResumesPublic");
+                var response = await _httpClient.GetAsync(uri);
+                return result = await response.ReadAsync<List<ResumeInformationSummaryDTO>>();
+            });
+            result = cachedResult;
+            if (result.Count == 0)
+            {
+                await _cache.RemoveAsync(CacheKeys.PublicResumes);
+            }
         }
         catch (Exception ex)
         {
@@ -75,16 +79,23 @@ public partial class ResumeWebService
 
         return result;
     }
+    #endregion
 
-    public async Task<List<ResumeSummaryItem>> GetResumeSummaryItems() //Eventually Pass in a Search Object
+    #region Resume List
+    public async Task<List<ResumeInformationSummaryDTO>> GetResumesOwnedbyAuthUser() //Eventually Pass in a Search Object
     {
-        var result = new List<ResumeSummaryItem> { };
+        var result = new List<ResumeInformationSummaryDTO> { };
         try
         {
-            var uri = new Uri($"{_navigationManager.BaseUri}api/resume/GetSummaryItems");
-            var response = await _httpClient.GetAsync(uri);
-            result = await response.ReadAsync<List<ResumeSummaryItem>>();
-            result = result.OrderByDescending(x => x.CreationDateTimeFormatted).ToList();
+            var cachekeyUserOwnedResumes = $"{CacheKeys.UserResumes}{_securityService.User.Id}";
+            var cachedResult = await _cache.GetOrCreateAsync(cachekeyUserOwnedResumes, async (x) =>
+            {
+                var uri = new Uri($"{_navigationManager.BaseUri}api/resume/GetResumesOwnedbyAuthUser");
+                var response = await _httpClient.GetAsync(uri);
+                result = await response.ReadAsync<List<ResumeInformationSummaryDTO>>();
+                return result = result.OrderByDescending(x => x.CreationDateTimeFormatted).ToList();
+            });
+            result = cachedResult;
         }
         catch (Exception ex)
         {
@@ -93,6 +104,7 @@ public partial class ResumeWebService
 
         return result;
     }
+    #endregion
 
     public async Task<List<ResumeInformationEntity>> GetResumes()
     {
@@ -112,14 +124,78 @@ public partial class ResumeWebService
         return result;
     }
 
-    public async Task<ResumeInformationEntity> GetResume(string resumeId)
+    public async Task<ResponseResult<bool>> SetDefaultResume(string resumeId)
     {
-        var result = new ResumeInformationEntity();
+        var result = new ResponseResult<bool>();
         try
         {
-            var uri = new Uri($"{_navigationManager.BaseUri}api/resume/{resumeId}");
-            var response = await _httpClient.GetAsync(uri);
-            result = await response.ReadAsync<ResumeInformationEntity>();
+            var uri = new Uri($"{_navigationManager.BaseUri}api/resume/default/{resumeId}");
+            var content = new FormUrlEncodedContent(new Dictionary<string, string> { { "resumeId", resumeId } });
+            var response = await _httpClient.PostAsync(uri, content);
+            result = await response.ReadAsync<ResponseResult<bool>>();
+            var cachekeyUserOwnedResumes = $"{CacheKeys.UserResumes}{_securityService.User.Id}";
+            await _cache.RemoveAsync(cachekeyUserOwnedResumes);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.Message, ex);
+            result.ErrorMessage = "Error Setting Default.";
+        }
+        return result;
+    }
+
+    public async Task<ResponseResult<bool>> WatchResume(string resumeId)
+    {
+        var result = new ResponseResult<bool>();
+        try
+        {
+            var uri = new Uri($"{_navigationManager.BaseUri}api/resume/watch/{resumeId}");
+            var content = new FormUrlEncodedContent(new Dictionary<string, string> { { "resumeId", resumeId } });
+            var response = await _httpClient.PostAsync(uri, content);
+            result = await response.ReadAsync<ResponseResult<bool>>();
+            var cachekeyUserOwnedResumes = $"{CacheKeys.UserResumes}{_securityService.User.Id}";
+            await _cache.RemoveAsync(cachekeyUserOwnedResumes);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.Message, ex);
+            result.ErrorMessage = "Error Watching.";
+        }
+        return result;
+    }
+
+    public async Task<ResponseResult<bool>> UnwatchResume(string resumeId)
+    {
+        var result = new ResponseResult<bool>();
+        try
+        {
+            var uri = new Uri($"{_navigationManager.BaseUri}api/resume/unwatch/{resumeId}");
+            var content = new FormUrlEncodedContent(new Dictionary<string, string> { { "resumeId", resumeId } });
+            var response = await _httpClient.PostAsync(uri, content);
+            result = await response.ReadAsync<ResponseResult<bool>>();
+            var cachekeyUserOwnedResumes = $"{CacheKeys.UserResumes}{_securityService.User.Id}";
+            await _cache.RemoveAsync(cachekeyUserOwnedResumes);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.Message, ex);
+            result.ErrorMessage = "Error Watching.";
+        }
+        return result;
+    }
+
+    public async Task<ResumeInformationDTO> GetResume(string resumeId)
+    {
+        var result = new ResumeInformationDTO();
+        try
+        {
+            var cachedResult = await _cache.GetOrCreateAsync(resumeId, async (x) =>
+            {
+                var uri = new Uri($"{_navigationManager.BaseUri}api/resume/{resumeId}");
+                var response = await _httpClient.GetAsync(uri);
+                return result = await response.ReadAsync<ResumeInformationDTO>();
+            });
+            result = cachedResult;
         }
         catch (Exception ex)
         {
@@ -138,6 +214,9 @@ public partial class ResumeWebService
             var content = new FormUrlEncodedContent(new Dictionary<string, string> { { "resumeId", resumeId } });
             var response = await _httpClient.PostAsync(uri, content);
             result = await response.ReadAsync<ResponseResult>();
+            await _cache.RemoveAsync(resumeId);
+            var cachekeyUserOwnedResumes = $"{CacheKeys.UserResumes}{_securityService.User.Id}";
+            await _cache.RemoveAsync(cachekeyUserOwnedResumes);
         }
         catch (Exception ex)
         {
@@ -147,9 +226,9 @@ public partial class ResumeWebService
         return result;
     }
 
-    public async Task<ResponseResult<ResumeInformationEntity>> Save(ResumeInformationEntity resume)
+    public async Task<ResponseResult<ResumeInformationDTO>> Save(ResumeInformationDTO resume)
     {
-        var r = new ResponseResult<ResumeInformationEntity>();
+        var r = new ResponseResult<ResumeInformationDTO>();
         try
         {
             var uri = new Uri($"{_navigationManager.BaseUri}{Paths.Resume_API_Save}");
@@ -157,54 +236,17 @@ public partial class ResumeWebService
             var jsonText = JsonSerializer.Serialize(resume);
 
             var response = await _httpClient.PostAsJsonAsync<string>(uri, jsonText);
-            r = await response.ReadAsync<ResponseResult<ResumeInformationEntity>>();
+            r = await response.ReadAsync<ResponseResult<ResumeInformationDTO>>();
+
+            var cachekeyUserOwnedResumes = $"{CacheKeys.UserResumes}{_securityService.User.Id}";
+            await _cache.RemoveAsync(cachekeyUserOwnedResumes);
+
         }
         catch (Exception ex)
         {
             r.ErrorMessage = "Failed Saving";
             _logger.LogError(ex.Message, ex);
         }
-        return r;
-    }
-
-    //REFIT VERSION
-    //public async Task<ResponseResult<ResumeInformationEntity>> Save(ResumeInformationEntity resume)
-    //{
-    //    var r = new ResponseResult<ResumeInformationEntity>();
-    //    try
-    //    {
-    //        var api = RestService.For<IMyVideoResumeApi>(_navigationManager.BaseUri);
-    //        r = await api.ResumeEdit(resume);
-    //    }
-    //    catch (Exception ex)
-    //    {
-    //        _logger.LogError(ex.Message, ex);
-    //    }
-    //    return r;
-    //}
-
-
-    public async Task<ResponseResult> Match(string jobDescription, string resume)
-    {
-        var r = new ResponseResult();
-        try
-        {
-            var uri = new Uri($"{_navigationManager.BaseUri}api/resume/match");
-            var request = new JobMatchRequest() { Job = jobDescription, Resume = resume };
-            var response = await _httpClient.PostAsJsonAsync<JobMatchRequest>(uri, request);
-            r = await response.ReadAsync<ResponseResult>();
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex.Message, ex);
-        }
-        return r;
-    }
-    public async Task<ResponseResult> Summarize(string resume)
-    {
-        var uri = new Uri($"{_navigationManager.BaseUri}api/resume/summarize");
-        var response = await _httpClient.PostAsJsonAsync<string>(uri, resume);
-        var r = await response.ReadAsync<ResponseResult>();
         return r;
     }
 }

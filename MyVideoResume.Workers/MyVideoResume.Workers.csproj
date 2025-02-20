@@ -8,13 +8,14 @@
 	</PropertyGroup>
 	<ItemGroup>
 		<PackageReference Include="Hangfire.AspNetCore" Version="1.8.17" />
-		<PackageReference Include="HtmlAgilityPack" Version="1.11.72" />
-		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="9.0.0" />
-		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="9.0.0" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="9.0.1" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="9.0.1" />
 		<PackageReference Include="Hangfire.Core" Version="1.8.17" />
 		<PackageReference Include="Hangfire.SqlServer" Version="1.8.17" />
 		<PackageReference Include="Microsoft.Data.SqlClient" Version="*" />
-		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />	
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+		<PackageReference Include="System.Linq.Dynamic.Core" Version="1.6.0.1" />
+		<PackageReference Include="System.Text.RegularExpressions" Version="4.3.1" />	
 	</ItemGroup>
 	<ItemGroup>
 	  <ProjectReference Include="..\MyVideoResume.Application\MyVideoResume.Application.csproj" />

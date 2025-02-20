@@ -1,0 +1,75 @@
+﻿@inherits BaseComponent
+<RadzenRow Gap="5" RowGap="5" style="margin-bottom:25px">
+    <RadzenColumn>
+        <RadzenCard>
+            <RadzenRow JustifyContent="JustifyContent.Start" AlignItems="AlignItems.Center" Gap="0">
+                <RadzenColumn Size="6">
+                    Resume:
+                    <RadzenHtmlEditor @bind-Value=@Resume style="height: 275px; width:100%;" class="sentiment">
+                        <RadzenHtmlEditorUndo />
+                        <RadzenHtmlEditorRedo />
+                        <RadzenHtmlEditorSeparator />
+                        <RadzenHtmlEditorBold />
+                        <RadzenHtmlEditorItalic />
+                        <RadzenHtmlEditorUnderline />
+                        <RadzenHtmlEditorStrikeThrough />
+                        <RadzenHtmlEditorSeparator />
+                    </RadzenHtmlEditor>
+                </RadzenColumn>
+                <RadzenColumn Size="6">
+                    Job Description:
+                    <RadzenHtmlEditor @bind-Value=@JobDescription style="height: 275px; width:100%;" class="sentiment">
+                        <RadzenHtmlEditorUndo />
+                        <RadzenHtmlEditorRedo />
+                        <RadzenHtmlEditorSeparator />
+                        <RadzenHtmlEditorBold />
+                        <RadzenHtmlEditorItalic />
+                        <RadzenHtmlEditorUnderline />
+                        <RadzenHtmlEditorStrikeThrough />
+                        <RadzenHtmlEditorSeparator />
+                    </RadzenHtmlEditor>
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="padding: 5px">
+                <RadzenColumn>
+                    <RadzenButton Click=JobResumeMatchAsync Disabled=@(!JobDescription.HasValue() && !Resume.HasValue()) IsBusy=@Busy>Generate</RadzenButton>
+                </RadzenColumn>
+                <RadzenColumn>
+                    <RadzenStack AlignItems="AlignItems.Stretch" JustifyContent="JustifyContent.Left" Orientation="Orientation.Horizontal">
+                        Original Resume Score: <RadzenText TextStyle="TextStyle.H3">@OldScore</RadzenText>
+                        New Resume Score: <RadzenText TextStyle="TextStyle.H3">@NewScore</RadzenText>
+                    </RadzenStack>
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow>
+                Tailored Resume:
+                <RadzenAlert Variant="Variant.Filled" AlertStyle="AlertStyle.Warning" Size="AlertSize.Small" Shade="Shade.Dark" AllowClose=false>
+                    The resume generated should be reviewed for accuracy and validated before using. Do not lie on your resume. Integrity & Honesty are valuable characteristics that all employers expect.
+                </RadzenAlert>
+                <RadzenHtmlEditor @bind-Value=@Result style="height: 475px; width:100%;" Placeholder="Resume">
+                    <RadzenHtmlEditorUndo />
+                    <RadzenHtmlEditorRedo />
+                    <RadzenHtmlEditorSeparator />
+                    <RadzenHtmlEditorBold />
+                    <RadzenHtmlEditorItalic />
+                    <RadzenHtmlEditorUnderline />
+                    <RadzenHtmlEditorStrikeThrough />
+                    <RadzenHtmlEditorSeparator />
+                </RadzenHtmlEditor>
+            </RadzenRow>
+            <RadzenRow>
+                Recommendations:
+                <RadzenHtmlEditor @bind-Value=@Recommendations style="height: 275px; width:100%;" Placeholder="Recommendations">
+                    <RadzenHtmlEditorUndo />
+                    <RadzenHtmlEditorRedo />
+                    <RadzenHtmlEditorSeparator />
+                    <RadzenHtmlEditorBold />
+                    <RadzenHtmlEditorItalic />
+                    <RadzenHtmlEditorUnderline />
+                    <RadzenHtmlEditorStrikeThrough />
+                    <RadzenHtmlEditorSeparator />
+                </RadzenHtmlEditor>
+            </RadzenRow>
+        </RadzenCard>
+    </RadzenColumn>
+</RadzenRow>

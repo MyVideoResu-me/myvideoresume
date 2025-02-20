@@ -8,7 +8,8 @@ namespace MyVideoResume.Abstractions.Core;
 
 public class ResponseResult<T>
 {
-    public string ErrorMessage { get; set; }
+    public ErrorCodes? ErrorCode { get; set; }
+    public string? ErrorMessage { get; set; }
     public T Result { get; set; }
 }
 

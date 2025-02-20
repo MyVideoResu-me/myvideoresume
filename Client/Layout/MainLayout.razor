@@ -14,20 +14,27 @@
             <RadzenColumn SizeXS="10" Size="9">
                 <RadzenStack AlignItems="AlignItems.Center" Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.End" Gap="0.5rem" class="rz-px-2">
                     <RadzenMenu Responsive="false">
-                        <RadzenMenuItem Icon="add_circle">
-                            <RadzenMenuItem Text="Create Job" Path=@Paths.Jobs_View Icon="note_add"></RadzenMenuItem>
-                            <RadzenMenuItem Text="Create Resume" Path=@Paths.Resume_View Icon="video_call"></RadzenMenuItem>
-                        </RadzenMenuItem>
+                        <AuthorizeView>
+                            <Authorized>
+                                <RadzenMenuItem Icon="add_circle">
+                                    <RadzenMenuItem Text="Create Job" Path=@Paths.Jobs_View Icon="note_add" Visible="@Security.IsJobSeeker()"></RadzenMenuItem>
+                                    <RadzenMenuItem Text="Create Resume" Path=@Paths.Resume_View Icon="video_call" Visible="@Security.IsInRole(Constants.JobSeeker, Constants.Recruiter)"></RadzenMenuItem>
+                                </RadzenMenuItem>
+                            </Authorized>
+                            <NotAuthorized>
+                                <RadzenButton ButtonStyle="ButtonStyle.Light" Style="font-weight: bold" Text="$" Click=@(()=> NavigateTo(@Paths.Site_Pricing))></RadzenButton>
+                            </NotAuthorized>
+                        </AuthorizeView>
                     </RadzenMenu>
                     <AuthorizeView>
                         <Authorized>
                             <RadzenProfileMenu Click="@ProfileMenuClick">
                                 <ChildContent>
-                                    <RadzenProfileMenuItem Path="account/settings" Icon="manage_accounts" Text="My Account" title="My Account" />
-                                    <RadzenProfileMenuItem Path="dashboard" Icon="manage_accounts" Text="Dashboard" />
-                                    <RadzenProfileMenuItem Path=@Paths.Admin_BackgroundJobsPortal Icon="smart_toy" Text="Portal" Visible="@Security.IsInRole("Admin")" />
-                                    <RadzenProfileMenuItem Path=@Paths.Admin_ApplicationUsers Icon="person" Text="Users" Visible="@Security.IsInRole("Admin")" />
-                                    <RadzenProfileMenuItem Path=@Paths.Admin_ApplicationRoles Icon="security" Text="Roles" Visible="@Security.IsInRole("Admin")" />
+                                    <RadzenProfileMenuItem Path=@Paths.Profile_Settings Icon="manage_accounts" Text="My Account" title="My Account" />
+                                    <RadzenProfileMenuItem Path=@Paths.Dashboard_View Icon="manage_accounts" Text="Dashboard" />
+                                    <RadzenProfileMenuItem Path=@Paths.Admin_BackgroundJobsPortal Icon="smart_toy" Text="Portal" Visible="@Security.IsAdmin()" />
+                                    <RadzenProfileMenuItem Path=@Paths.Admin_ApplicationUsers Icon="person" Text="Users" Visible="@Security.IsAdmin()" />
+                                    <RadzenProfileMenuItem Path=@Paths.Admin_ApplicationRoles Icon="security" Text="Roles" Visible="@Security.IsAdmin()" />
                                     <RadzenProfileMenuItem Text="Logout" Value="Logout" Icon="power_settings_new" />
                                 </ChildContent>
                                 <Template>
@@ -36,7 +43,7 @@
                             </RadzenProfileMenu>
                         </Authorized>
                         <NotAuthorized>
-                            <RadzenLink Icon="login" Path="Login" Text=" Sign In" />
+                            <RadzenButton ButtonStyle="ButtonStyle.Primary" Icon="Login" Click=@(()=> NavigateTo(Paths.Site_Login)) Text="Sign In"></RadzenButton>
                         </NotAuthorized>
                     </AuthorizeView>
                     <RadzenAppearanceToggle DarkTheme="standard-dark" />
@@ -53,9 +60,10 @@
             <RadzenPanelMenuItem Text="People" Path="people" Icon="contacts" title="People" />
             <RadzenPanelMenuItem Text="Tools" Icon="handyman" title="Tools">
                 <RadzenPanelMenuItem Text="Sentiment Analysis" Path=@Paths.Tools_Sentiment Icon="mood" title="Sentiment Analysis" />
+                <RadzenPanelMenuItem Text="Job Match Analysis" Path=@Paths.Tools_JobMatch Icon="join_inner" title="Job Match Analysis" />
                 <RadzenPanelMenuItem Text="Summarize Resume" Path=@Paths.Tools_SummarizeResume Icon="query_stats" title="Summarize Resume" />
-                <RadzenPanelMenuItem Text="Job Resume Match" Path=@Paths.Tools_JobMatch Icon="join_inner" title="Job Resume Match" />
-                <RadzenPanelMenuItem Text="PDF to JSON" Path=@Paths.Tools_PdfToJson Icon="convert_to_text" title="PDF to JSON" />
+                <RadzenPanelMenuItem Text="Convert Resume" Path=@Paths.Tools_PdfToJson Icon="convert_to_text" title="PDF to JSON" />
+                <RadzenPanelMenuItem Text="Best Resume" Path=@Paths.Tools_BestResume Icon="star" title="Best Resume Generator" />
 
             </RadzenPanelMenuItem>
             <RadzenPanelMenuItem Text="Tasks" Icon="task_alt" title="Tasks">
@@ -79,7 +87,7 @@
         </RadzenRow>
     </RadzenBody>
     <RadzenFooter>
-        <RadzenRow JustifyContent="JustifyContent.Center" AlignItems="AlignItems.Center" Gap="0">
+        <RadzenRow JustifyContent="JustifyContent.Left" AlignItems="AlignItems.Normal" Gap="0">
             <RadzenColumn Size="12">
                 <CopyrightInformation></CopyrightInformation>
             </RadzenColumn>

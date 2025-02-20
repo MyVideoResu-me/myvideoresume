@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Components.Routing;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.Web.Virtualization;
 using Microsoft.JSInterop;
+using MyVideoResume.Abstractions.Resume;
 using MyVideoResume.Client.Services;
 using MyVideoResume.Data.Models.Resume;
 using Radzen;
@@ -19,10 +20,11 @@ public partial class ResumeEmbedded
 
     [Parameter]
     public String Slug { get; set; }
+    [Inject] protected ResumeWebService ResumeWebService { get; set; }
 
     [Inject] ILogger<ResumeViewer> Logger { get; set; }
 
-    public ResumeInformationEntity Resume { get; set; } = new ResumeInformationEntity();
+    public ResumeInformationDTO Resume { get; set; } = new ResumeInformationDTO();
 
     public bool IsResumeDeleted { get; set; }
 

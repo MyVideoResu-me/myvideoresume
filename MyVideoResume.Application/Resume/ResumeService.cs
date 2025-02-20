@@ -7,9 +7,10 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Primitives;
 using MyVideoResume.Abstractions.Core;
 using MyVideoResume.Abstractions.Resume;
-using MyVideoResume.Abstractions.Resume.Formats.JSONResumeFormat;
+using MyVideoResume.Application.Account;
 using MyVideoResume.Data;
 using MyVideoResume.Data.Models.Resume;
+using MyVideoResume.Extensions;
 using MyVideoResume.Web.Common;
 using Radzen;
 using System.Net.Http.Json;
@@ -23,19 +24,17 @@ public class ResumeService
     private readonly DataContext _dataContext;
     private readonly IConfiguration _configuration;
     private readonly AccountService _accountService;
-    private readonly NavigationManager _navigationManager;
     private readonly HttpClient _httpClient;
     private readonly string _baseUri;
     private readonly IServiceScopeFactory _serviceScopeFactory;
 
-    public ResumeService(ILogger<ResumeService> logger, IConfiguration configuration, DataContext context, AccountService accountService, NavigationManager navigationManager, IHttpClientFactory httpClientFactory, IServiceScopeFactory serviceScopeFactory)
+    public ResumeService(ILogger<ResumeService> logger, IConfiguration configuration, DataContext context, AccountService accountService, IHttpClientFactory httpClientFactory, IServiceScopeFactory serviceScopeFactory)
     {
         _baseUri = configuration.GetValue<string>(Constants.BaseUriConfigurationProperty);
         _dataContext = context;
         _logger = logger;
         _configuration = configuration;
         _accountService = accountService;
-        _navigationManager = navigationManager;
         _httpClient = httpClientFactory.CreateClient(Constants.HttpClientFactory);
         _serviceScopeFactory = serviceScopeFactory;
     }
@@ -71,9 +70,9 @@ public class ResumeService
     }
 
     //Get All Public Resume Summaries
-    public async Task<List<ResumeSummaryItem>> GetResumeSummaryItems(string? userId = null, bool? onlyPublic = null)
+    public async Task<List<ResumeInformationSummaryDTO>> GetResumeInformationSummaryData(string? userId = null, bool? onlyPublic = null, int? take = null)
     {
-        var result = new List<ResumeSummaryItem>();
+        var result = new List<ResumeInformationSummaryDTO>();
         try
         {
             var query = _dataContext.ResumeInformation
@@ -82,19 +81,70 @@ public class ResumeService
                 .Include(x => x.UserProfile)
                 .Include(x => x.ResumeTemplate)
                 .AsNoTracking()
-                .Where(x => x.DeletedDateTime == null);
+                .Where(x => x.DeletedDateTime == null)
+                .OrderBy(x => x.CreationDateTime)
+                .AsSingleQuery();
 
             if (onlyPublic.HasValue)
             {
                 query = query.Where(x => x.Privacy_ShowResume == DisplayPrivacy.ToPublic);
             }
 
-            if (!string.IsNullOrEmpty(userId))
+            if (!string.IsNullOrEmpty(userId)) //Only resumes they own or have created
             {
                 query = query.Where(x => x.UserId == userId);
             }
 
-            result = query.Select(x => new ResumeSummaryItem() { ResumeSerialized = x.ResumeSerialized, SentimentScore = x.SentimentScore, UserId = x.UserId, CreationDateTimeFormatted = x.CreationDateTime.Value.ToString("yyyy-MM-dd"), IsPublic = true, Id = x.Id.ToString(), ResumeTemplateName = x.ResumeTemplate.Name, ResumeSummary = x.MetaResume.Basics.Summary, ResumeSlug = x.Slug, ResumeName = x.MetaResume.Basics.Name }).ToList();
+            if (take.HasValue) //Homepage or Featured
+                query = query.Take(5);
+
+            var resumeSummaryItems = query.Select(x => new ResumeInformationSummaryDTO()
+            {
+                SentimentScore = x.SentimentScore,
+                UserId = x.UserId,
+                IsOwner = userId == x.UserId,
+                CreationDateTimeFormatted = x.CreationDateTime.Value.ToString("yyyy-MM-dd"),
+                IsPublic = true,
+                Id = x.Id.ToString(),
+                TemplateName = x.ResumeTemplate.Name,
+                Description = x.MetaResume.Basics.Summary,
+                Slug = x.Slug,
+                Name = x.MetaResume.Basics.Name,
+                IsPrimaryDefault = x.IsPrimaryDefault,
+                IsWatched = false
+            }).ToList();
+
+            if (!string.IsNullOrEmpty(userId))
+            {
+                // Check if the user exists
+                var userProfile = _dataContext.UserProfiles.FirstOrDefault(x => x.UserId == userId);
+                if (userProfile != null)
+                {
+                    var watchedResumes = _dataContext.WatchedResumes
+                    .Include(x => x.ResumeInformation).ThenInclude(x => x.MetaResume).ThenInclude(y => y.Basics)
+                    .Include(x => x.ResumeInformation).ThenInclude(x => x.ResumeTemplate)
+                    .Where(x => x.UserProfileId == userProfile.Id)
+                    .Select(x => new ResumeInformationSummaryDTO()
+                    {
+                        SentimentScore = x.ResumeInformation.SentimentScore,
+                        UserId = x.ResumeInformation.UserId,
+                        IsOwner = false,
+                        CreationDateTimeFormatted = x.ResumeInformation.CreationDateTime.Value.ToString("yyyy-MM-dd"),
+                        IsPublic = true,
+                        Id = x.ResumeInformation.Id.ToString(),
+                        TemplateName = x.ResumeInformation.ResumeTemplate.Name,
+                        Description = x.ResumeInformation.MetaResume.Basics.Summary,
+                        Slug = x.ResumeInformation.Slug,
+                        Name = x.ResumeInformation.MetaResume.Basics.Name,
+                        IsPrimaryDefault = x.ResumeInformation.IsPrimaryDefault,
+                        IsWatched = true
+                    }).ToList();
+
+                    resumeSummaryItems.AddRange(watchedResumes);
+                }
+            }
+
+            result = resumeSummaryItems;
         }
         catch (Exception ex)
         {
@@ -105,21 +155,30 @@ public class ResumeService
 
     private IQueryable<ResumeInformationEntity> GetReadonlyResume()
     {
-
-        return GetResume().AsNoTracking();
+        return GetAllResumeEntityDetails().AsNoTracking();
     }
 
-    private IQueryable<ResumeInformationEntity> GetResume()
+
+    private IQueryable<ResumeInformationEntity> GetPartialResumeEntityDetails()
     {
         var items = _dataContext.ResumeInformation
-            .Include(x => x.MetaResume)
+            .Include(x => x.UserProfile)
+            .AsNoTracking()
+            .AsSingleQuery();
+        return items;
+    }
+
+
+    private IQueryable<ResumeInformationEntity> GetAllResumeEntityDetails()
+    {
+        var items = _dataContext.ResumeInformation
+            .Include(x => x.MetaResume).ThenInclude(x => x.Basics)
             .Include(x => x.MetaResume).ThenInclude(x => x.Publications)
             .Include(x => x.MetaResume).ThenInclude(x => x.Projects)
             .Include(x => x.MetaResume).ThenInclude(x => x.Languages)
             .Include(x => x.MetaResume).ThenInclude(x => x.Work)
             .Include(x => x.MetaResume).ThenInclude(x => x.Awards)
             .Include(x => x.MetaResume).ThenInclude(x => x.References)
-            .Include(x => x.MetaResume).ThenInclude(x => x.Basics)
             .Include(x => x.MetaResume).ThenInclude(x => x.Certificates)
             .Include(x => x.MetaResume).ThenInclude(x => x.Education)
             .Include(x => x.MetaResume).ThenInclude(x => x.Interests)
@@ -184,6 +243,24 @@ public class ResumeService
         return result;
     }
 
+    public async Task<ResumeInformationEntity> GetDefaultResume(string userId)
+    {
+        var result = new ResumeInformationEntity();
+        try
+        {
+            var resumes = GetPartialResumeEntityDetails().Where(x => x.UserId == userId).ToList();
+            if (resumes.Count != 0)
+                result = resumes.FirstOrDefault(x => x.IsPrimaryDefault == true);
+            if (result == null)
+                result = resumes.OrderByDescending(x => x.SentimentScore).FirstOrDefault();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.Message, ex);
+        }
+        return result;
+    }
+
     public async Task<ResponseResult> DeleteResume(string userId, string resumeId)
     {
 
@@ -226,6 +303,122 @@ public class ResumeService
         return result;
     }
 
+    public async Task<ResponseResult<bool>> SetDefaultResume(string userId, string resumeId)
+    {
+        var result = new ResponseResult<bool>();
+        result.Result = false;
+        result.ErrorMessage = "Failed to set default resume";
+
+        try
+        {
+            // Get all the user's resumes
+            var userResumes = _dataContext.ResumeInformation
+                .Where(x => x.UserId == userId && x.DeletedDateTime == null)
+                .ToList();
+
+            if (userResumes != null && userResumes.Count > 0)
+            {
+                // Set all resumes to not be the default
+                foreach (var resume in userResumes)
+                {
+                    resume.IsPrimaryDefault = false;
+                }
+
+                // Find the specific resume and set it to default
+                var defaultResume = userResumes.FirstOrDefault(x => x.Id == Guid.Parse(resumeId));
+                if (defaultResume != null)
+                {
+                    defaultResume.IsPrimaryDefault = true;
+                    await _dataContext.SaveChangesAsync();
+                    result.Result = true;
+                    result.ErrorMessage = string.Empty;
+                }
+                else
+                {
+                    result.ErrorMessage = "Resume not found";
+                }
+            }
+            else
+            {
+                result.ErrorMessage = "No resumes found for the user";
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.Message, ex);
+            result.ErrorMessage = ex.Message;
+        }
+
+        return result;
+    }
+
+    public async Task<ResponseResult<bool>> WatchResume(string authUserId, string resumeId, bool watching)
+    {
+        var result = new ResponseResult<bool>();
+        result.Result = false;
+        result.ErrorMessage = "Failed to update watch status";
+
+        try
+        {
+            var resumeGuid = Guid.Parse(resumeId);
+
+            // Check if the user exists
+            var userProfile = _dataContext.UserProfiles.FirstOrDefault(x => x.UserId == authUserId);
+            if (userProfile != null)
+            {
+
+                if (!watching)
+                {
+                    // Get the watch and remove it
+                    var resumeBeingWatched = _dataContext.WatchedResumes
+                        .FirstOrDefault(x => x.UserProfileId == userProfile.Id && x.ResumeId == resumeGuid);
+                    if (resumeBeingWatched != null)
+                    {
+                        _dataContext.WatchedResumes.Remove(resumeBeingWatched);
+                        await _dataContext.SaveChangesAsync();
+                        result.Result = true;
+                        result.ErrorMessage = string.Empty;
+                    }
+                    else
+                    {
+                        result.ErrorMessage = "Watch not found";
+                    }
+                }
+                else
+                {
+                    // Check if the watch already exists
+                    var existingWatch = _dataContext.WatchedResumes
+                        .FirstOrDefault(x => x.UserProfileId == userProfile.Id && x.ResumeId == resumeGuid);
+                    if (existingWatch == null)
+                    {
+                        // Create the watch
+                        var watchedResume = new WatchedResumeEntity
+                        {
+                            UserProfileId = userProfile.Id,
+                            ResumeId = resumeGuid,
+                            WatchedDateTime = DateTime.UtcNow
+                        };
+                        _dataContext.WatchedResumes.Add(watchedResume);
+                        await _dataContext.SaveChangesAsync();
+                        result.Result = true;
+                        result.ErrorMessage = string.Empty;
+                    }
+                    else
+                    {
+                        result.ErrorMessage = "Watch already exists";
+                    }
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.Message, ex);
+            result.ErrorMessage = ex.Message;
+        }
+
+        return result;
+    }
+
     public async Task<ResponseResult<ResumeInformationEntity>> CreateResumeInformation(string userId, string resumeText)
     {
         var result = new ResponseResult<ResumeInformationEntity>() { };
@@ -255,6 +448,28 @@ public class ResumeService
         }
         return result;
     }
+
+    public async Task<ResponseResult<ResumeInformationEntity>> QueueResumeToJobRequest(ResponseResult<ResumeInformationEntity> result)
+    {
+        try
+        {
+            _dataContext.QueueForResumes.Add(new Data.Models.Queues.QueueResumeToJobEntity()
+            {
+                ResumeItem = result.Result,
+                CreationDateTime = DateTime.UtcNow,
+                Status = BatchProcessStatus.NotStarted
+            });
+            _dataContext.SaveChanges();
+        }
+        catch (Exception ex)
+        {
+            result.ErrorMessage = ex.Message;
+            _logger.LogError(ex, ex.Message);
+        }
+
+        return result;
+    }
+
 
     private ResumeInformationEntity GetResumeInformation(string userId, string resumeItemId)
     {

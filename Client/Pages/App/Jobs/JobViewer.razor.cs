@@ -24,7 +24,7 @@ public partial class JobViewer
 
     [Inject] ILogger<JobViewer> Logger { get; set; }
 
-    public JobItemEntity Item { get; set; } = new JobItemEntity();
+    public JobItemDTO Item { get; set; } = new JobItemDTO();
 
     public bool IsDeleted { get; set; }
 

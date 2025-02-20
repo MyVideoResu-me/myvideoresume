@@ -3,14 +3,16 @@ using DocumentFormat.OpenXml.Spreadsheet;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MyVideoResume.Abstractions.Core;
-using MyVideoResume.Abstractions.Job;
+using MyVideoResume.Abstractions.Match;
 using MyVideoResume.Abstractions.Resume;
 using MyVideoResume.AI;
 using MyVideoResume.Application.Resume;
 using MyVideoResume.Client.Services;
+using MyVideoResume.Data;
 using MyVideoResume.Data.Models;
 using MyVideoResume.Data.Models.Resume;
 using MyVideoResume.Documents;
+using MyVideoResume.Extensions;
 using MyVideoResume.Services;
 using MyVideoResume.Web.Common;
 using System.Security.Claims;
@@ -25,14 +27,16 @@ public partial class ResumeController : ControllerBase
     private readonly IResumePromptEngine _engine;
     private readonly ILogger<ResumeController> _logger;
     private readonly ResumeService _resumeService;
+    private readonly MatchService _matchService;
     private readonly DocumentProcessor _documentProcessor;
 
-    public ResumeController(IResumePromptEngine engine, ILogger<ResumeController> logger, ResumeService resumeService, DocumentProcessor documentProcessor)
+    public ResumeController(IResumePromptEngine engine, ILogger<ResumeController> logger, ResumeService resumeService, DocumentProcessor documentProcessor, MatchService matchService)
     {
         _logger = logger;
         _engine = engine;
         _resumeService = resumeService;
         _documentProcessor = documentProcessor;
+        _matchService = matchService;
     }
 
     [HttpGet("{resumeId}")]
@@ -50,13 +54,13 @@ public partial class ResumeController : ControllerBase
         return result;
     }
 
-    [HttpGet("GetPublicResumes")]
-    public async Task<ActionResult<List<ResumeSummaryItem>>> GetPublicResumes()
+    [HttpGet("GetResumesPublic")]
+    public async Task<ActionResult<List<ResumeInformationSummaryDTO>>> GetResumesPublic()
     {
-        var result = new List<ResumeSummaryItem>();
+        var result = new List<ResumeInformationSummaryDTO>();
         try
         {
-            result = await _resumeService.GetResumeSummaryItems(onlyPublic: true);
+            result = await _resumeService.GetResumeInformationSummaryData(onlyPublic: true, take: 5);
         }
         catch (Exception ex)
         {
@@ -66,14 +70,14 @@ public partial class ResumeController : ControllerBase
     }
 
     [Authorize]
-    [HttpGet("GetSummaryItems")]
-    public async Task<ActionResult<List<ResumeSummaryItem>>> GetSummaryItems()
+    [HttpGet("GetResumesOwnedbyAuthUser")]
+    public async Task<ActionResult<List<ResumeInformationSummaryDTO>>> GetResumesOwnedbyAuthUser()
     {
-        var result = new List<ResumeSummaryItem>();
+        var result = new List<ResumeInformationSummaryDTO>();
         try
         {
-            var id = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            result = await _resumeService.GetResumeSummaryItems(id);
+            var id = User.FindFirstValue(ClaimTypes.NameIdentifier); //Users Resumes
+            result = await _resumeService.GetResumeInformationSummaryData(id);
         }
         catch (Exception ex)
         {
@@ -114,7 +118,6 @@ public partial class ResumeController : ControllerBase
             _logger.LogError(ex.Message, ex);
         }
         return result;
-
     }
 
     [Authorize]
@@ -134,6 +137,61 @@ public partial class ResumeController : ControllerBase
         }
         return result;
     }
+
+    [Authorize]
+    [HttpPost("default/{resumeId}")]
+    public async Task<ActionResult<ResponseResult<bool>>> SetDefaultResume(string resumeId)
+    {
+        var result = new ResponseResult<bool>();
+        try
+        {
+            var id = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            result = await _resumeService.SetDefaultResume(id, resumeId);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.Message, ex);
+            result.ErrorMessage = ex.Message;
+        }
+        return result;
+    }
+
+    [Authorize]
+    [HttpPost("watch/{resumeId}")]
+    public async Task<ActionResult<ResponseResult<bool>>> WatchResume(string resumeId)
+    {
+        var result = new ResponseResult<bool>();
+        try
+        {
+            var id = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            result = await _resumeService.WatchResume(id, resumeId, true);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.Message, ex);
+            result.ErrorMessage = ex.Message;
+        }
+        return result;
+    }
+
+    [Authorize]
+    [HttpPost("unwatch/{resumeId}")]
+    public async Task<ActionResult<ResponseResult<bool>>> UnwatchResume(string resumeId)
+    {
+        var result = new ResponseResult<bool>();
+        try
+        {
+            var id = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            result = await _resumeService.WatchResume(id, resumeId, false);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.Message, ex);
+            result.ErrorMessage = ex.Message;
+        }
+        return result;
+    }
+
 
     [HttpPost("SentimentPrediction")]
     public async Task<ActionResult<ResponseResult<float>>> SentimentPrediction([FromBody] string id)
@@ -159,22 +217,6 @@ public partial class ResumeController : ControllerBase
         try
         {
             result = await _engine.SummarizeResume(resumeText);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex.Message, ex);
-            result.Result = ex.Message;
-        }
-        return result;
-    }
-
-    [HttpPost("Match")]
-    public async Task<ActionResult<ResponseResult>> Match([FromBody] JobMatchRequest request)
-    {
-        var result = new ResponseResult();
-        try
-        {
-            result = await _engine.JobResumeMatch(request);
         }
         catch (Exception ex)
         {
@@ -220,7 +262,7 @@ public partial class ResumeController : ControllerBase
                 {
                     result = await _resumeService.CreateResume(id, resumeJson);
                 }
-                else 
+                else
                 {
                     var temppdfresult = await _engine.ResumeParseJSON(resumeJson);
                     if (!temppdfresult.ErrorMessage.HasValue())
@@ -233,6 +275,13 @@ public partial class ResumeController : ControllerBase
                     {
                         result.ErrorMessage = temppdfresult.ErrorMessage;
                     }
+                }
+
+                //TODO: Check the Account if Paid or if the profile has it turned on
+                //Queue the Resume to be Matched
+                if (!result.ErrorMessage.HasValue())
+                {
+                    result = await _resumeService.QueueResumeToJobRequest(result);
                 }
             }
         }

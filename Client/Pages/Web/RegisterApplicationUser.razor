@@ -6,7 +6,7 @@
             <RadzenStack style="margin-bottom: 1rem;">
                 <RadzenFormField Text="Email" Variant="Variant.Outlined">
                     <ChildContent>
-                        <RadzenTextBox style="display: block; width: 100%" @bind-Value="@(user.Email)" Name="UserName" />
+                        <RadzenTextBox style="display: block; width: 100%" @bind-Value="@(user.Email)" Placeholder="Email" Name="UserName" />
                     </ChildContent>
                     <Helper>
                         <RadzenRequiredValidator Component="UserName" Text="Email is required" />                        <RadzenEmailValidator Component="UserName" Text="Provide a valid email address. "  />                    </Helper>                </RadzenFormField>

@@ -1,0 +1,56 @@
+﻿@inherits BaseComponent
+<RadzenRow Gap="5" RowGap="5" style="margin-bottom:25px">
+    <RadzenColumn>
+        <RadzenCard>
+            <RadzenRow JustifyContent="JustifyContent.Start" AlignItems="AlignItems.Center" Gap="0">
+                <RadzenColumn Size="6">
+                    Resume:
+                    <RadzenHtmlEditor @bind-Value=@Resume style="height: 275px; width:100%;" class="sentiment">
+                        <RadzenHtmlEditorUndo />
+                        <RadzenHtmlEditorRedo />
+                        <RadzenHtmlEditorSeparator />
+                        <RadzenHtmlEditorBold />
+                        <RadzenHtmlEditorItalic />
+                        <RadzenHtmlEditorUnderline />
+                        <RadzenHtmlEditorStrikeThrough />
+                        <RadzenHtmlEditorSeparator />
+                    </RadzenHtmlEditor>
+                </RadzenColumn>
+                <RadzenColumn Size="6">
+                    Job Description:
+                    <RadzenHtmlEditor @bind-Value=@JobDescription style="height: 275px; width:100%;" class="sentiment">
+                        <RadzenHtmlEditorUndo />
+                        <RadzenHtmlEditorRedo />
+                        <RadzenHtmlEditorSeparator />
+                        <RadzenHtmlEditorBold />
+                        <RadzenHtmlEditorItalic />
+                        <RadzenHtmlEditorUnderline />
+                        <RadzenHtmlEditorStrikeThrough />
+                        <RadzenHtmlEditorSeparator />
+                    </RadzenHtmlEditor>
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="padding: 5px">
+                <RadzenColumn>
+                    <RadzenButton Click=JobResumeMatchAsync BusyText="Processing..." Disabled=@(!JobDescription.HasValue() && !Resume.HasValue()) IsBusy=@Busy>Match</RadzenButton>
+                </RadzenColumn>
+                <RadzenColumn>
+                    <RadzenText TextStyle="TextStyle.H2">Score: @Score</RadzenText>
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow>
+                Recommendations:
+                <RadzenHtmlEditor @bind-Value=@Result style="height: 275px; width:100%;" Placeholder="Results">
+                    <RadzenHtmlEditorUndo />
+                    <RadzenHtmlEditorRedo />
+                    <RadzenHtmlEditorSeparator />
+                    <RadzenHtmlEditorBold />
+                    <RadzenHtmlEditorItalic />
+                    <RadzenHtmlEditorUnderline />
+                    <RadzenHtmlEditorStrikeThrough />
+                    <RadzenHtmlEditorSeparator />
+                </RadzenHtmlEditor>
+            </RadzenRow>
+        </RadzenCard>
+    </RadzenColumn>
+</RadzenRow>

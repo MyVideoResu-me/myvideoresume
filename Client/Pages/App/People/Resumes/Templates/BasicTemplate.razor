@@ -1,9 +1,11 @@
-﻿@using MyVideoResume.Data.Models.Resume
-@using MyVideoResume.Abstractions.Resume.Formats.JSONResumeFormat
-@using AgeCalculator
+﻿@using AgeCalculator
 @using AgeCalculator.Extensions
+@using MyVideoResume.Abstractions.MetaContent
 @using MyVideoResume.Abstractions.Resume
-@inherits BaseComponent
+@using MyVideoResume.Abstractions.Resume.Formats.JSONResumeFormat
+@using MyVideoResume.Data.Models.MetaContent
+@using MyVideoResume.Data.Models.Resume
+@inherits AppBaseComponent
 @layout EmptyLayout
 
 @if (Resume != null && Resume.MetaResume != null)
@@ -220,13 +222,13 @@
 @code {
     private const string placeholder = "Placeholder";
     [Parameter]
-    public ResumeInformationEntity Resume { get; set; } = new ResumeInformationEntity()
+    public ResumeInformationDTO Resume { get; set; } = new ResumeInformationDTO()
         {
             Description = placeholder,
             Privacy_ShowResume = DisplayPrivacy.ToPublic,
             Privacy_ShowContactDetails = DisplayPrivacy.ToPublic,
-            MetaData = new List<MetaDataEntity>(),
-            MetaResume = new MetaResumeEntity() { Basics = new() { Name = placeholder, Email = placeholder, Phone = placeholder, Summary = placeholder, Location = new() }, Awards = new(), Certificates = new(), Education = new List<Education>(), Interests = new(), Languages = new List<LanguageItem>(), Projects = new List<Project>(), Publications = new List<Publication>(), References = new List<ReferenceItem>(), Skills = new List<Skill>(), Volunteer = new List<Volunteer>() { new() { Organization = placeholder, Summary = placeholder, Highlights = new() { placeholder } } }, Work = new List<Work>() { new() { Highlights = new() { placeholder }, Name = placeholder, Summary = placeholder, Position = placeholder, StartDate = placeholder, EndDate = placeholder } } }
+            MetaData = new List<MetaDataDTO>(),
+            MetaResume = new JSONResumeDTO() { Basics = new() { Name = placeholder, Email = placeholder, Phone = placeholder, Summary = placeholder, Location = new() }, Awards = new(), Certificates = new(), Education = new List<Education>(), Interests = new(), Languages = new List<LanguageItem>(), Projects = new List<Project>(), Publications = new List<Publication>(), References = new List<ReferenceItem>(), Skills = new List<Skill>(), Volunteer = new List<Volunteer>() { new() { Organization = placeholder, Summary = placeholder, Highlights = new() { placeholder } } }, Work = new List<Work>() { new() { Highlights = new() { placeholder }, Name = placeholder, Summary = placeholder, Position = placeholder, StartDate = placeholder, EndDate = placeholder } } }
         };
 
     protected string ToFrom(string to, string from)

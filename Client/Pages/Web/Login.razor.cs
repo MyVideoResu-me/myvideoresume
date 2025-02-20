@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Components.Web;
 using Radzen;
 using Radzen.Blazor;
 using MyVideoResume.Web.Common;
+using MyVideoResume.Extensions;
 
 namespace MyVideoResume.Client.Pages.Web;
 
@@ -36,6 +37,7 @@ public partial class Login
         errorVisible = !string.IsNullOrEmpty(error);
 
         infoVisible = !string.IsNullOrEmpty(info);
+
     }
 
     protected async Task Register()

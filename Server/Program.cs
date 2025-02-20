@@ -15,10 +15,8 @@ using MyVideoResume.Client.Services;
 using MyVideoResume.Services;
 using MyVideoResume.AI;
 using MyVideoResume.Documents;
-using MyVideoResume.Client.Shared.Security.Recaptcha;
 using MyVideoResume.Application.Resume;
 using MyVideoResume.Application;
-using Microsoft.Extensions.DependencyInjection;
 using Scalar.AspNetCore;
 using MyVideoResume.Workers;
 using MyVideoResume.Application.FeatureFlag;
@@ -26,6 +24,16 @@ using MyVideoResume.Client.Services.FeatureFlag;
 using MyVideoResume.Application.Job;
 using AutoMapper;
 using MyVideoResume.Mapper;
+using MyVideoResume.Data.Models.Account;
+using Account = MyVideoResume.Application.Account;
+using MyVideoResume.Client.Pages.Shared.Security.Recaptcha;
+using MyVideoResume.Application.Job.BackgroundProcessing;
+using MyVideoResume.Application.Payments;
+using Stripe;
+using MyVideoResume.Application.Business;
+using DocumentFormat.OpenXml.Office2016.Drawing.ChartDrawing;
+using MyVideoResume.Application.DataCollection;
+using UAParser;
 
 var builder = WebApplication.CreateBuilder(args);
 //Logging
@@ -41,7 +49,7 @@ var loggerConfiguration = new LoggerConfiguration()
 .Enrich.FromLogContext()
 
 #if RELEASE
-.WriteTo.NewRelicLogs(endpointUrl: "https://log-api.newrelic.com/log/v1", applicationName: "MyVideoResu.ME", licenseKey: newRelicKey)
+.WriteTo.NewRelicLogs(endpointUrl: "https://log-api.newrelic.com/log/v1", applicationName: "MyVideoResu.ME-WEB", licenseKey: newRelicKey)
 #else
 .WriteTo.Async(c => c.Console())
 .WriteTo.Async(c => c.File($"Logs/logs{DateTime.Now.ToEpochTime()}.txt"))
@@ -73,7 +81,6 @@ builder.Services.AddRadzenCookieThemeService(options =>
     options.Duration = TimeSpan.FromDays(365);
 });
 
-builder.Services.AddHttpClient();
 builder.Services.AddScoped<DataContextService>();
 builder.Services.AddDbContext<MyVideoResume.Data.DataContext>(options =>
 {
@@ -86,29 +93,52 @@ builder.Services.AddControllers().AddOData(opt =>
 });
 builder.Services.AddOpenApi();
 
-builder.Services.AddScoped<AccountService>();
+builder.Services.AddScoped<Account.AccountService>();
 builder.Services.AddScoped<MenuService>();
 builder.Services.AddSingleton<DocumentProcessor>();
 builder.Services.AddSingleton<RecaptchaService>();
-builder.Services.AddSingleton<EmailService>();
+
+#if DEBUG
+builder.Services.AddSingleton<IEmailService, EmailService>();
+#else
+builder.Services.AddSingleton<IEmailService, ZohoEmailService>();
+#endif
+
 builder.Services.AddScoped<JobWebService>();
 builder.Services.AddSingleton<IJobPromptEngine, JobPromptEngine>();
 builder.Services.AddScoped<JobService>();
 builder.Services.AddScoped<ResumeWebService>();
 builder.Services.AddSingleton<IResumePromptEngine, ResumePromptEngine>();
 builder.Services.AddScoped<ResumeService>();
+builder.Services.AddScoped<TaskService>();
+builder.Services.AddScoped<MatchService>();
 builder.Services.AddSingleton<ResumeBackgroundJobService>();
-builder.Services.AddSingleton<JobBackgroundService>();
+builder.Services.AddSingleton<JobQueueProcessor>();
+builder.Services.AddSingleton<JobRecommendationProcessor>();
+builder.Services.AddSingleton<JobWebsiteProcessor>();
 builder.Services.AddSingleton<IFeatureFlagService, SplitFeatureFlagService>();
 builder.Services.AddScoped<FeatureFlagClientService>();
 builder.Services.AddScoped<FeatureFlagWebService>();
 builder.Services.AddScoped<SecurityWebService>();
 builder.Services.AddScoped<DashboardWebService>();
-builder.Services.AddHttpClient("MyVideoResume.Server").ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler { UseCookies = true }).AddHeaderPropagation(o => o.Headers.Add("Cookie"));
+builder.Services.AddScoped<TaskWebService>();
+builder.Services.AddScoped<MatchWebService>();
+builder.Services.AddScoped<InboxWebService>();
+builder.Services.AddHttpClient("MyVideoResume").ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler { UseCookies = true }).AddHeaderPropagation(o => o.Headers.Add("Cookie"));
 builder.Services.AddHeaderPropagation(o => o.Headers.Add("Cookie"));
 builder.Services.AddAuthentication();
 builder.Services.AddAuthenticationStateDeserialization();
 builder.Services.AddAuthorization();
+
+builder.Services.AddSingleton<Parser>(Parser.GetDefault());
+
+// Register other services
+builder.Services.AddTransient<IRequestLogger, RequestLogger>();
+
+//Payments
+builder.Services.Configure<StripeConfig>(builder.Configuration.GetSection("Stripe"));
+StripeConfiguration.ApiKey = builder.Configuration.GetSection("Stripe")["ApiKey"];
+StripeConfiguration.ClientId = builder.Configuration.GetSection("Stripe")["ClientId"];
 
 //AI & ML 
 builder.Services.AddSentimentAnalysis(builder);
@@ -140,6 +170,9 @@ var mapperConfiguration = new MapperConfiguration(configuration =>
 });
 var mapper = mapperConfiguration.CreateMapper();
 builder.Services.AddSingleton(mapper);
+#pragma warning disable EXTEXP0018 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
+builder.Services.AddHybridCache();
+#pragma warning restore EXTEXP0018 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
 
 builder.Host.UseSerilog();
 
@@ -171,7 +204,7 @@ else
 
 
 app.UseSerilogRequestLogging();
-
+app.UseMiddleware<RequestLoggingMiddleware>();
 app.UseHttpsRedirection();
 app.MapControllers();
 app.UseHeaderPropagation();

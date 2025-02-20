@@ -1,0 +1,81 @@
+﻿@using MyVideoResume.Client.Pages.App.People.Resumes.Templates
+@inherits BasicTemplate
+
+@code {
+
+    [Parameter] public EventCallback<ResponseResult<float>> SentimentAnalysisProcessed { get; set; }
+    [Inject] protected ResumeWebService ResumeWebService { get; set; }
+    [Inject] protected IMapper Mapper { get; set; }
+
+    protected async Task DownloadAsHtml(JSONResume resume)
+    {
+        var resumeText = new ComponentRenderer<HtmlTemplate>()
+        .AddService(FeatureFlagService)
+        .AddService(MenuService)
+        .AddService(NavigationManager)
+        .AddService(AuthenticationStateProvider)
+        .AddService(Http)
+        .AddService(JSRuntime)
+        .AddService(DialogService)
+        .AddService(TooltipService)
+        .AddService(ContextMenuService)
+        .AddService(NotificationService)
+        .AddService(Security)
+        .Set(c => c.Resume, resume)
+        .Render();
+
+        await DownloadHtmlFile(resumeText, $"HtmlResume={resume.Basics.Name}");
+    }
+
+    protected async Task DownloadAsJson(JSONResume resume)
+    {
+        var vm = Mapper.Map<JSONResume, ExportJSONResume>(resume);
+        var jsonResume = JsonSerializer.Serialize<ExportJSONResume>(vm);
+        await DownloadJsonFile(jsonResume, $"JsonResume-{resume.Basics.Name}");
+    }
+
+    protected async Task OpenSentimentAnalysis(IResumeItem item)
+    {
+        var text = "Calculate";
+
+        float floatValue = 0;
+        if (@item.SentimentScore.HasValue)
+        {
+            floatValue = @item.SentimentScore.Value;
+            text = "Recalculate";
+        }
+        var result = await DialogService.OpenAsync("Sentiment Analysis", ds =>
+    @<RadzenStack Orientation="Orientation.Vertical">
+                <RadzenBadge BadgeStyle="BadgeStyle.Light" Shade="Shade.Dark" >
+                    Sentiment is calculated by positive adjectives / nouns / verbs.
+                </RadzenBadge>
+               <RadzenCard Variant="Variant.Outlined">
+                    <HappinessScale Value=@floatValue />
+                </RadzenCard>
+                <RadzenButton ButtonStyle="ButtonStyle.Primary" Text=@text Click=@(() => ProcessSentimentAnalysis(item)) ></RadzenButton>
+            </RadzenStack>
+        );
+
+    }
+
+    protected async Task ProcessSentimentAnalysis(IResumeItem item)
+    {
+        var result = new ResponseResult<float>();
+        result = await ResumeWebService.GetSentimentAnalysisById(item.Id);
+        if (result.ErrorMessage.HasValue())
+        {
+            ShowErrorNotification("Failed to Process Sentiment", string.Empty);
+        }
+        else
+        {
+            ShowSuccessNotification("Sentiment Updated", string.Empty);
+            item.SentimentScore = result.Result;
+
+            DialogService.Close();
+            await OpenSentimentAnalysis(item);
+            if (SentimentAnalysisProcessed.HasDelegate)
+                SentimentAnalysisProcessed.InvokeAsync(result);
+        }
+    }
+
+}

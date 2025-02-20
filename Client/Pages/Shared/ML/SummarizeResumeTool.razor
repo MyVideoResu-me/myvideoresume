@@ -1,0 +1,38 @@
+﻿@using MyVideoResume.Client.Pages.App.People.Resumes
+@inherits ResumeComponent
+<RadzenRow Gap="5" RowGap="5" style="margin-bottom:25px">
+    <RadzenColumn>
+        <RadzenCard>
+            <RadzenRow>
+                <h2>Summarize Resume</h2>
+            </RadzenRow>
+            <RadzenRow class="sentiment">
+                Resume:
+                <RadzenHtmlEditor @bind-Value=@Resume style="height: 275px; width:100%;" class="sentiment">
+                    <RadzenHtmlEditorUndo />
+                    <RadzenHtmlEditorRedo />
+                    <RadzenHtmlEditorSeparator />
+                    <RadzenHtmlEditorBold />
+                    <RadzenHtmlEditorItalic />
+                    <RadzenHtmlEditorUnderline />
+                    <RadzenHtmlEditorStrikeThrough />
+                    <RadzenHtmlEditorSeparator />
+                </RadzenHtmlEditor>
+
+                <RadzenButton Click=SummarizeAsync BusyText="Processing..." IsBusy=@Busy>Summarize</RadzenButton>
+            </RadzenRow>
+            <RadzenRow>
+                <RadzenHtmlEditor @bind-Value=@Result style="height: 275px; width:100%;" Placeholder="Results">
+                    <RadzenHtmlEditorUndo />
+                    <RadzenHtmlEditorRedo />
+                    <RadzenHtmlEditorSeparator />
+                    <RadzenHtmlEditorBold />
+                    <RadzenHtmlEditorItalic />
+                    <RadzenHtmlEditorUnderline />
+                    <RadzenHtmlEditorStrikeThrough />
+                    <RadzenHtmlEditorSeparator />
+                </RadzenHtmlEditor>
+            </RadzenRow>
+        </RadzenCard>
+    </RadzenColumn>
+</RadzenRow>

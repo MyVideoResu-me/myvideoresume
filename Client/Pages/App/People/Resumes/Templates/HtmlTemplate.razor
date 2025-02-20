@@ -1,0 +1,341 @@
+﻿@using AgeCalculator
+@using AgeCalculator.Extensions
+@using MyVideoResume.Abstractions.Resume
+@using MyVideoResume.Abstractions.Resume.Formats.JSONResumeFormat
+@using MyVideoResume.Data.Models.MetaContent
+@using MyVideoResume.Data.Models.Resume
+@inherits AppBaseComponent
+@layout EmptyLayout
+
+@if (Resume != null)
+{
+    <RadzenRow>
+        <RadzenStack AlignItems="AlignItems.Normal" Orientation="Orientation.Vertical">
+            <RadzenText Text=@Title() TextStyle="Radzen.Blazor.TextStyle.DisplayH2" TagName="Radzen.Blazor.TagName.Auto"></RadzenText>
+            <RadzenText Text=@Resume.Basics.Email TextStyle="Radzen.Blazor.TextStyle.Body1" TagName="Radzen.Blazor.TagName.Auto"></RadzenText>
+            <RadzenText Text=@Resume.Basics.Phone TextStyle="Radzen.Blazor.TextStyle.Body1" TagName="Radzen.Blazor.TagName.Auto"></RadzenText>
+            <RadzenLink Path=@Resume.Basics.Url Text="My Website" Icon="globe" target="_blank" Visible=Resume.Basics.Url.HasValue() />
+        </RadzenStack>
+    </RadzenRow>
+    <RadzenRow Style="padding-bottom:15px">
+        <RadzenColumn Style="max-width: 100%">
+            <RadzenCard>
+                <RadzenText Text="Summary" TextStyle="Radzen.Blazor.TextStyle.DisplayH5" TagName="Radzen.Blazor.TagName.Auto"></RadzenText>
+                <div style="padding:15px;">
+                    <RadzenRow>
+                        <RadzenColumn SizeSM="12">
+                            <RadzenText TextStyle="TextStyle.Body1">@Resume.Basics?.Summary</RadzenText>
+                        </RadzenColumn>
+                    </RadzenRow>
+                </div>
+            </RadzenCard>
+        </RadzenColumn>
+    </RadzenRow>
+    @if (Resume.Work != null && Resume.Work.Count > 0)
+    {
+        <RadzenRow Style="padding-bottom:15px">
+            <RadzenColumn Style="max-width: 100%">
+                <RadzenCard>
+                    <RadzenText Text="Work Experience" TextStyle="Radzen.Blazor.TextStyle.DisplayH5" TagName="Radzen.Blazor.TagName.Auto"></RadzenText>
+                    @foreach (var item in Resume.Work.OrderByDescending(x => x.EndDate))
+                    {
+                        <div style="padding:15px;">
+                            <RadzenRow>
+                                <RadzenColumn SizeSM="12">
+                                    @if (!string.IsNullOrWhiteSpace(item.Url))
+                                    {
+                                        <a href="@item.Url"><RadzenText TextStyle="TextStyle.Body1">@item.Name</RadzenText></a>
+                                    }
+                                    else
+                                    {
+                                        <RadzenText TextStyle="TextStyle.Body1">@item.Name</RadzenText>
+                                    }
+                                    <RadzenText TextStyle="TextStyle.Body1"><b> @(item.Position)</b></RadzenText>
+                                    <RadzenText TextStyle="TextStyle.Body2">@ToFrom(item.StartDate, item.EndDate)</RadzenText>
+                                    <RadzenText TextStyle="TextStyle.Overline">@item.Summary</RadzenText>
+                                </RadzenColumn>
+                            </RadzenRow>
+                            @if (item.Highlights?.Count > 0)
+                            {
+                                <RadzenRow>
+                                    <RadzenColumn SizeSM="12">
+                                        <RadzenText TextStyle="TextStyle.Body1"><b>Highlights</b></RadzenText>
+                                        <ul>
+                                            @foreach (var i in item.Highlights)
+                                            {
+                                                <li>@i</li>
+                                            }
+                                        </ul>
+                                    </RadzenColumn>
+                                </RadzenRow>
+                            }
+                        </div>
+                    }
+                </RadzenCard>
+            </RadzenColumn>
+        </RadzenRow>
+    }
+
+
+    @if (Resume.Education != null && Resume.Education.Count > 0)
+    {
+        <RadzenRow Style="padding-bottom:15px">
+            <RadzenColumn Style="max-width: 100%">
+                <RadzenCard>
+                    <RadzenText Text="Education" TextStyle="Radzen.Blazor.TextStyle.DisplayH5" TagName="Radzen.Blazor.TagName.Auto"></RadzenText>
+                    @foreach (var item in Resume.Education)
+                    {
+                        <div style="padding:15px;">
+                            <RadzenRow>
+                                <RadzenColumn SizeSM="12">
+                                    <RadzenText TextStyle="TextStyle.Body1">@item.Institution</RadzenText>
+                                    <RadzenText TextStyle="TextStyle.Body1"><b>@item.StudyType, @(item.Area)</b></RadzenText>
+                                    <RadzenText TextStyle="TextStyle.Body2">@ToFrom(item.StartDate, item.EndDate)</RadzenText>
+                                </RadzenColumn>
+                            </RadzenRow>
+                            @if (item.Courses != null && item.Courses.Count > 0)
+                            {
+                                <RadzenRow>
+                                    <RadzenColumn SizeSM="12">
+                                        <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-4 rz-mb-0">Courses</RadzenText>
+                                        <RadzenText TextStyle="TextStyle.Body1"><b>@(string.Join(", ", item.Courses))</b></RadzenText>
+                                    </RadzenColumn>
+                                </RadzenRow>
+                            }
+                        </div>
+                    }
+                </RadzenCard>
+            </RadzenColumn>
+        </RadzenRow>
+    }
+
+    @if (Resume.Volunteer != null && Resume.Volunteer.Count > 0)
+    {
+        <RadzenRow Style="padding-bottom:15px">
+            <RadzenColumn Style="max-width: 100%">
+                <RadzenCard>
+                    <RadzenText Text="Volunteering" TextStyle="Radzen.Blazor.TextStyle.DisplayH5" TagName="Radzen.Blazor.TagName.Auto"></RadzenText>
+                    @foreach (var item in Resume.Volunteer)
+                    {
+                        <div style="padding:15px;">
+                            <RadzenRow>
+                                <RadzenColumn SizeSM="12">
+                                    <RadzenText TextStyle="TextStyle.Body1">@item.Organization</RadzenText>
+                                    <RadzenText TextStyle="TextStyle.Body1"><b> @(item.Position)</b></RadzenText>
+                                    <RadzenText TextStyle="TextStyle.Body2">@ToFrom(item.StartDate, item.EndDate)</RadzenText>
+                                </RadzenColumn>
+                            </RadzenRow>
+                            @if (item.Summary.HasValue())
+                            {
+                                <RadzenRow>
+                                    <RadzenColumn SizeSM="12">
+                                        <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-4 rz-mb-0">Summary</RadzenText>
+                                        <RadzenText TextStyle="TextStyle.Body1"><b> @(item.Summary)</b></RadzenText>
+                                    </RadzenColumn>
+                                </RadzenRow>
+                            }
+                        </div>
+                    }
+                </RadzenCard>
+            </RadzenColumn>
+        </RadzenRow>
+    }
+
+    @if (Resume.Skills != null && Resume.Skills.Count > 0)
+    {
+        <RadzenRow Style="padding-bottom:15px">
+            <RadzenColumn Style="max-width: 100%">
+                <RadzenCard>
+                    <RadzenText Text="Skills" TextStyle="Radzen.Blazor.TextStyle.DisplayH5" TagName="Radzen.Blazor.TagName.Auto"></RadzenText>
+                    @foreach (var item in Resume.Skills)
+                    {
+                        <div style="padding:15px;">
+                            <RadzenText TextStyle="TextStyle.Body1">@item.Name</RadzenText>
+                            <RadzenRow>
+                                <RadzenColumn SizeSM="4">
+                                    <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-4 rz-mb-0">Level</RadzenText>
+                                    <RadzenText TextStyle="TextStyle.Body1"><b> @(item.Level)</b></RadzenText>
+                                </RadzenColumn>
+                                <RadzenColumn SizeSM="8">
+                                    <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-4 rz-mb-0">Keywords</RadzenText>
+                                    <RadzenText TextStyle="TextStyle.Body1"><b>@(string.Join(", ", item.Keywords))</b></RadzenText>
+                                </RadzenColumn>
+                            </RadzenRow>
+                        </div>
+                    }
+                </RadzenCard>
+            </RadzenColumn>
+        </RadzenRow>
+    }
+
+    @if (ShowProjectsSection())
+    {
+        <RadzenRow>
+            <RadzenColumn Style="max-width: 100%">
+                <RadzenText Text="Projects" TextStyle="Radzen.Blazor.TextStyle.DisplayH5" TagName="Radzen.Blazor.TagName.Auto"></RadzenText>
+            </RadzenColumn>
+        </RadzenRow>
+        <RadzenRow Style="padding-bottom:15px">
+            <RadzenColumn Style="max-width: 100%">
+                <RadzenCard>
+                    @foreach (var item in Resume.Projects.OrderByDescending(x => x.EndDate))
+                    {
+                        <div style="padding:15px;">
+                            <RadzenRow>
+                                <RadzenColumn SizeSM="12">
+                                    @if (!string.IsNullOrWhiteSpace(item.Url))
+                                    {
+                                        <a href="@item.Url"><RadzenText TextStyle="TextStyle.Body1">@item.Name</RadzenText></a>
+                                    }
+                                    else
+                                    {
+                                        <RadzenText TextStyle="TextStyle.Body1">@item.Name</RadzenText>
+                                    }
+                                    <RadzenText TextStyle="TextStyle.Body1"><b> @(item.Description)</b></RadzenText>
+                                    <RadzenText TextStyle="TextStyle.Body2">@ToFrom(item.StartDate, item.EndDate)</RadzenText>
+                                </RadzenColumn>
+                            </RadzenRow>
+                            @if (item.Highlights?.Count > 0)
+                            {
+                                <RadzenRow>
+                                    <RadzenColumn SizeSM="12">
+                                        <RadzenText TextStyle="TextStyle.Body1"><b>Highlights</b></RadzenText>
+                                        <ul>
+                                            @foreach (var i in item.Highlights)
+                                            {
+                                                <li>@i</li>
+                                            }
+                                        </ul>
+                                    </RadzenColumn>
+                                </RadzenRow>
+                            }
+                        </div>
+                    }
+                </RadzenCard>
+            </RadzenColumn>
+        </RadzenRow>
+    }
+
+}
+
+@code {
+    private const string placeholder = "Placeholder";
+    [Parameter]
+    public JSONResume Resume { get; set; } = new JSONResume()
+        {
+            Basics = new() { Name = placeholder, Email = placeholder, Phone = placeholder, Summary = placeholder, Location = new() },
+            Awards = new(),
+            Certificates = new(),
+            Education = new List<Education>(),
+            Interests = new(),
+            Languages = new List<LanguageItem>(),
+            Projects = new List<Project>(),
+            Publications = new List<Publication>(),
+            References = new List<ReferenceItem>(),
+            Skills = new List<Skill>(),
+            Volunteer = new List<Volunteer>() { new() { Organization = placeholder, Summary = placeholder, Highlights = new() { placeholder } } },
+            Work = new List<Work>() { new() { Highlights = new() { placeholder }, Name = placeholder, Summary = placeholder, Position = placeholder, StartDate = placeholder, EndDate = placeholder } }
+        };
+
+    protected string ToFrom(string to, string from)
+    {
+        var result = "";
+        if (to.HasValue() && from.HasValue())
+        {
+            var endDateText = string.Empty;
+
+            var endDate = DateTime.UtcNow;
+            if (!DateTime.TryParse(from, out endDate))
+            {
+                endDate = DateTime.UtcNow;
+                endDateText = from;
+            }
+            else
+            {
+                endDateText = endDate.ToString("yyyy-MM");
+            }
+            DateTime todateTimeNow;
+            if (DateTime.TryParse(to, out todateTimeNow))
+            {
+                result = $"{todateTimeNow.ToString("yyyy-MM")} - {endDateText}";
+            }
+        }
+        else if (to.HasValue() || from.HasValue())
+        {
+            if (to.HasValue())
+                result = $"{DateTime.Parse(to).ToString("yyyy-MM")}";
+            if (from.HasValue())
+                result = $"{DateTime.Parse(from).ToString("yyyy-MM")}";
+        }
+        return result;
+    }
+
+    protected string Title()
+    {
+        if (Resume.Basics == null)
+            Resume.Basics = new Basics();
+
+        if (!Resume.Basics.Name.HasValue())
+            Resume.Basics.Name = "Export";
+
+        return Resume.Basics.Name;
+    }
+
+    protected bool ShowWorkSection()
+    {
+        return Resume.Work != null && Resume.Work.Count > 0;
+    }
+    protected bool ShowVolunteerSection()
+    {
+        return Resume.Volunteer != null && Resume.Volunteer.Count > 0;
+    }
+    protected bool ShowProjectsSection()
+    {
+        return Resume.Projects != null && Resume.Projects.Count > 0;
+    }
+    protected bool ShowReferencesSection()
+    {
+        return Resume.References != null && Resume.References.Count > 0;
+    }
+    protected bool ShowSkillsSection()
+    {
+        return Resume.Skills != null && Resume.Skills.Count > 0;
+    }
+    protected bool ShowEducationSection()
+    {
+        return Resume.Education != null && Resume.Education.Count > 0;
+    }
+    protected bool ShowAwardsSection()
+    {
+        return Resume.Awards != null && Resume.Awards.Count > 0;
+    }
+
+
+    protected string YearsMonths(string to, string from)
+    {
+        var result = "";
+
+        if (!string.IsNullOrEmpty(to) && !string.IsNullOrEmpty(from))
+        {
+            var endDate = DateTime.UtcNow;
+            if (!DateTime.TryParse(from, out endDate))
+            {
+                endDate = DateTime.UtcNow;
+            }
+            var toDate = DateTime.UtcNow;
+            if (DateTime.TryParse(to, out toDate))
+            {
+                var age = toDate.CalculateAge(endDate);
+                if (age.Years > 0 && age.Months > 0)
+                    result = $"{@age.Years} years, {@age.Months} months";
+                else if (age.Years == 0 && age.Months > 0)
+                    result = $"{@age.Months} months";
+                else
+                    result = $"{@age.Years} years";
+            }
+        }
+
+        //TODO (check if its only 4 characters (YEAR)); Set the Date to Year-01-01
+        return result;
+    }
+}
