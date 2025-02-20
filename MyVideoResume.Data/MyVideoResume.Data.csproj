@@ -41,7 +41,6 @@
 	  <ProjectReference Include="..\MyVideoResume.Abstractions\MyVideoResume.Abstractions.csproj" />
 	</ItemGroup>
 	<ItemGroup>
-	  <Folder Include="Migrations\MyVideoResume\" />
 	  <Folder Include="Models\Payments\" />
 	</ItemGroup>
 </Project>
