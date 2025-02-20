@@ -16,9 +16,9 @@ public partial class DashboardWebService : BaseWebService
         _logger = logger;
         _resumeService = resumeService;
     }
-    public async Task<List<ResumeSummaryItem>> GetResumeSummaries()
+    public async Task<List<ResumeInformationSummaryDTO>> GetResumeSummaries()
     {
-        var result = await _resumeService.GetResumeSummaryItems();
+        var result = await _resumeService.GetResumesOwnedbyAuthUser();
         return result;
     }
 

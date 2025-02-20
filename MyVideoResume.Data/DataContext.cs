@@ -50,13 +50,16 @@ public partial class DataContext : DbContext
     public DbSet<UserCompanyRoleAssociationEntity> UserCompanyRolesAssociation { get; set; } = default!;
 
     public DbSet<AddressEntity> Addresses { get; set; } = default!;
+
     public DbSet<JobItemEntity> Jobs { get; set; } = default!;
     public DbSet<JobPreferencesEntity> JobPreferences { get; set; } = default!;
+    public DbSet<ApplicantToJobEntity> ApplicantsToJobs { get; set; } = default!;
+
     public DbSet<MetaResumeEntity> Resumes { get; set; } = default!;
     public DbSet<ResumeInformationEntity> ResumeInformation { get; set; } = default!;
     public DbSet<MetaDataEntity> MetaData { get; set; } = default!;
     public DbSet<ResumeTemplateEntity> ResumeTemplates { get; set; } = default!;
-    public DbSet<ApplicantToJobEntity> ApplicantsToJobs { get; set; } = default!;
+    public DbSet<WatchedResumeEntity> WatchedResumes { get; set; } = default!;
 
 
     public DbSet<JobWebsiteEntity> JobWebsites { get; set; } = default!;
@@ -68,6 +71,7 @@ public partial class DataContext : DbContext
     public DbSet<QueueJobToJobEntity> QueueForJobsToJobs { get; set; } = default!;
 
     public DbSet<RequestLogEntity> RequestLogs { get; set; } = default!;
+
 
 
     public DbSet<TaskEntity> Tasks { get; set; } = default!;

@@ -71,4 +71,6 @@ public static class CacheKeys
 {
     public const string UserProfile = "UserProfile";
     public const string UserRoles = "UserRoles";
+    public const string PublicResumes = "PublicResumes";
+    public const string UserResumes = "UserResumes";
 }

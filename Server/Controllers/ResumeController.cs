@@ -54,13 +54,13 @@ public partial class ResumeController : ControllerBase
         return result;
     }
 
-    [HttpGet("GetPublicResumes")]
-    public async Task<ActionResult<List<ResumeSummaryItem>>> GetPublicResumes()
+    [HttpGet("GetResumesPublic")]
+    public async Task<ActionResult<List<ResumeInformationSummaryDTO>>> GetResumesPublic()
     {
-        var result = new List<ResumeSummaryItem>();
+        var result = new List<ResumeInformationSummaryDTO>();
         try
         {
-            result = await _resumeService.GetResumeSummaryItems(onlyPublic: true, take: 5);
+            result = await _resumeService.GetResumeInformationSummaryData(onlyPublic: true, take: 5);
         }
         catch (Exception ex)
         {
@@ -70,14 +70,14 @@ public partial class ResumeController : ControllerBase
     }
 
     [Authorize]
-    [HttpGet("GetSummaryItems")]
-    public async Task<ActionResult<List<ResumeSummaryItem>>> GetSummaryItems()
+    [HttpGet("GetResumesOwnedbyAuthUser")]
+    public async Task<ActionResult<List<ResumeInformationSummaryDTO>>> GetResumesOwnedbyAuthUser()
     {
-        var result = new List<ResumeSummaryItem>();
+        var result = new List<ResumeInformationSummaryDTO>();
         try
         {
-            var id = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            result = await _resumeService.GetResumeSummaryItems(id);
+            var id = User.FindFirstValue(ClaimTypes.NameIdentifier); //Users Resumes
+            result = await _resumeService.GetResumeInformationSummaryData(id);
         }
         catch (Exception ex)
         {

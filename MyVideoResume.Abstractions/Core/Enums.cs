@@ -511,6 +511,14 @@ public enum DataCollectionTypes
     JobEmbedded
 }
 
+public enum ResumeType
+{
+    ResumeBuilder = 0,
+    JSONResumeFormat = 1,
+    WordDoc = 2,
+    Pdf = 3,
+}
+
 public enum ErrorCodes
 {
     SystemError,

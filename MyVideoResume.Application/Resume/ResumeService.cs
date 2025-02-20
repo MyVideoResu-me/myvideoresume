@@ -70,9 +70,9 @@ public class ResumeService
     }
 
     //Get All Public Resume Summaries
-    public async Task<List<ResumeSummaryItem>> GetResumeSummaryItems(string? userId = null, bool? onlyPublic = null, int? take = null)
+    public async Task<List<ResumeInformationSummaryDTO>> GetResumeInformationSummaryData(string? userId = null, bool? onlyPublic = null, int? take = null)
     {
-        var result = new List<ResumeSummaryItem>();
+        var result = new List<ResumeInformationSummaryDTO>();
         try
         {
             var query = _dataContext.ResumeInformation
@@ -90,15 +90,54 @@ public class ResumeService
                 query = query.Where(x => x.Privacy_ShowResume == DisplayPrivacy.ToPublic);
             }
 
-            if (!string.IsNullOrEmpty(userId))
+            if (!string.IsNullOrEmpty(userId)) //Only resumes they own or have created
             {
                 query = query.Where(x => x.UserId == userId);
             }
-            if (take.HasValue)
+
+            if (take.HasValue) //Homepage or Featured
                 query = query.Take(5);
 
+            var resumeSummaryItems = query.Select(x => new ResumeInformationSummaryDTO()
+            {
+                SentimentScore = x.SentimentScore,
+                UserId = x.UserId,
+                IsOwner = userId == x.UserId,
+                CreationDateTimeFormatted = x.CreationDateTime.Value.ToString("yyyy-MM-dd"),
+                IsPublic = true,
+                Id = x.Id.ToString(),
+                TemplateName = x.ResumeTemplate.Name,
+                Description = x.MetaResume.Basics.Summary,
+                Slug = x.Slug,
+                Name = x.MetaResume.Basics.Name,
+                IsWatched = false
+            }).ToList();
 
-            result = query.Select(x => new ResumeSummaryItem() { SentimentScore = x.SentimentScore, UserId = x.UserId, CreationDateTimeFormatted = x.CreationDateTime.Value.ToString("yyyy-MM-dd"), IsPublic = true, Id = x.Id.ToString(), ResumeTemplateName = x.ResumeTemplate.Name, ResumeSummary = x.MetaResume.Basics.Summary, ResumeSlug = x.Slug, ResumeName = x.MetaResume.Basics.Name }).ToList();
+            if (!string.IsNullOrEmpty(userId))
+            {
+                var watchedResumes = _dataContext.WatchedResumes
+                    .Include(x => x.ResumeInformation).ThenInclude(x => x.MetaResume).ThenInclude(y => y.Basics)
+                    .Include(x => x.ResumeInformation).ThenInclude(x => x.ResumeTemplate)
+                    .Where(x => x.UserId.ToString() == userId)
+                    .Select(x => new ResumeInformationSummaryDTO()
+                    {
+                        SentimentScore = x.ResumeInformation.SentimentScore,
+                        UserId = x.ResumeInformation.UserId,
+                        IsOwner = false,
+                        CreationDateTimeFormatted = x.ResumeInformation.CreationDateTime.Value.ToString("yyyy-MM-dd"),
+                        IsPublic = true,
+                        Id = x.ResumeInformation.Id.ToString(),
+                        TemplateName = x.ResumeInformation.ResumeTemplate.Name,
+                        Description = x.ResumeInformation.MetaResume.Basics.Summary,
+                        Slug = x.ResumeInformation.Slug,
+                        Name = x.ResumeInformation.MetaResume.Basics.Name,
+                        IsWatched = true
+                    }).ToList();
+
+                resumeSummaryItems.AddRange(watchedResumes);
+            }
+
+            result = resumeSummaryItems;
         }
         catch (Exception ex)
         {
@@ -126,14 +165,13 @@ public class ResumeService
     private IQueryable<ResumeInformationEntity> GetAllResumeEntityDetails()
     {
         var items = _dataContext.ResumeInformation
-            .Include(x => x.MetaResume)
+            .Include(x => x.MetaResume).ThenInclude(x => x.Basics)
             .Include(x => x.MetaResume).ThenInclude(x => x.Publications)
             .Include(x => x.MetaResume).ThenInclude(x => x.Projects)
             .Include(x => x.MetaResume).ThenInclude(x => x.Languages)
             .Include(x => x.MetaResume).ThenInclude(x => x.Work)
             .Include(x => x.MetaResume).ThenInclude(x => x.Awards)
             .Include(x => x.MetaResume).ThenInclude(x => x.References)
-            .Include(x => x.MetaResume).ThenInclude(x => x.Basics)
             .Include(x => x.MetaResume).ThenInclude(x => x.Certificates)
             .Include(x => x.MetaResume).ThenInclude(x => x.Education)
             .Include(x => x.MetaResume).ThenInclude(x => x.Interests)

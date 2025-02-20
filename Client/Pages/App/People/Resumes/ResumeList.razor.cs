@@ -12,8 +12,8 @@ public partial class ResumeList
 {
     public bool ShowGrid { get; set; } = true;
     public bool ShowPreview { get { return !ShowGrid; } }
-    List<ResumeSummaryItem> ResumeItems { get; set; } = new List<ResumeSummaryItem>();
-    IList<ResumeSummaryItem> SelectedResumeItems { get; set; } = new List<ResumeSummaryItem>();
+    List<ResumeInformationSummaryDTO> ResumeItems { get; set; } = new List<ResumeInformationSummaryDTO>();
+    IList<ResumeInformationSummaryDTO> SelectedResumeItems { get; set; } = new List<ResumeInformationSummaryDTO>();
 
 
 
@@ -28,7 +28,7 @@ public partial class ResumeList
         else
         {
             ShowSuccessNotification("Resume Deleted", string.Empty);
-            ResumeItems = await ResumeWebService.GetResumeSummaryItems();
+            ResumeItems = await ResumeWebService.GetResumesOwnedbyAuthUser();
         }
     }
 
@@ -38,13 +38,13 @@ public partial class ResumeList
         await base.OnInitializedAsync();
 
         if (Security.IsAuthenticated())
-            ResumeItems = await ResumeWebService.GetResumeSummaryItems();
+            ResumeItems = await ResumeWebService.GetResumesOwnedbyAuthUser();
     }
 
     protected async Task ResumeCreated(ResponseResult<ResumeInformationDTO> result)
     {
         if (!result.ErrorMessage.HasValue())
-            ResumeItems = await ResumeWebService.GetResumeSummaryItems();
+            ResumeItems = await ResumeWebService.GetResumesOwnedbyAuthUser();
     }
 
 

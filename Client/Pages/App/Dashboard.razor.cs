@@ -29,7 +29,7 @@ public partial class Dashboard
     [Inject]
     protected ILogger<Dashboard> Console { get; set; }
 
-    List<ResumeSummaryItem> ResumeList { get; set; } = new List<ResumeSummaryItem>();
+    List<ResumeInformationSummaryDTO> ResumeList { get; set; } = new List<ResumeInformationSummaryDTO>();
 
     protected override async Task OnInitializedAsync()
     {
