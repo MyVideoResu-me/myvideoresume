@@ -523,4 +523,5 @@ public enum ErrorCodes
 {
     SystemError,
     NoResume,
+    JobError,
 }
