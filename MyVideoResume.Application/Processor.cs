@@ -94,6 +94,11 @@ public class Processor
                 // 2. Add the Job to the User's Job List
                 // 3. Create Tasks for the Person to Complete
             }
+            else
+            {
+                result.ErrorMessage = job.ErrorMessage;
+                result.ErrorCode = ErrorCodes.JobError;
+            }
         }
         catch (Exception ex)
         {
