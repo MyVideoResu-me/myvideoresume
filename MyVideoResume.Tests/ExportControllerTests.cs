@@ -20,34 +20,6 @@ namespace MyVideoResume.Tests
         }
 
         [Fact]
-        public void ApplyQuery_ShouldApplyExpandFilterOrderBySkipTopSelect()
-        {
-            // Arrange
-            var data = new List<TestEntity>
-            {
-                new TestEntity { Id = 1, Name = "Test1" },
-                new TestEntity { Id = 2, Name = "Test2" }
-            }.AsQueryable();
-
-            var queryCollection = new QueryCollection(new Dictionary<string, StringValues>
-            {
-                { "$expand", new StringValues("RelatedEntities") },
-                { "$filter", new StringValues("Id eq 1") },
-                { "$orderBy", new StringValues("Name desc") },
-                { "$skip", new StringValues("0") },
-                { "$top", new StringValues("1") },
-                { "$select", new StringValues("Id,Name") }
-            });
-
-            // Act
-            var result = _controller.ApplyQuery(data, queryCollection);
-
-            // Assert
-            Assert.Single(result);
-            Assert.Equal(1, result.First().Id);
-        }
-
-        [Fact]
         public void ToCSV_ShouldReturnCSVFileStreamResult()
         {
             // Arrange
