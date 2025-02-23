@@ -58,7 +58,7 @@ public class OpenAIPromptEngine : IPromptEngine
 
     public static string TruncateToMaxTokens(string input)
     {
-        int maxTokens = 128000;
+        int maxTokens = 127500;
 
         var encoding = _tokenizer.Encode(input);
 
