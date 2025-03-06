@@ -10,9 +10,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		.gitignore = .gitignore
 		.jira\config.yml = .jira\config.yml
+		docker-compose.yml = docker-compose.yml
 		.github\workflows\dotnet.yml = .github\workflows\dotnet.yml
 		LICENSE = LICENSE
 		README.md = README.md
+		start.ps1 = start.ps1
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyVideoResume.ML.SentimentAnalysis", "MyVideoResume.ML.SentimentAnalysis\MyVideoResume.ML.SentimentAnalysis.csproj", "{CB4DBDFE-F708-4C30-B86B-23CA072678CF}"

@@ -19,12 +19,18 @@ public class TaskEntity : TaskItem
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public Guid Id { get; set; }
 
+    [ForeignKey("AssignedToUserId")]
     [DeleteBehavior(DeleteBehavior.NoAction)]
     public UserProfileEntity AssignedToUser { get; set; }
+    public Guid AssignedToUserId { get; set; }
 
+    [ForeignKey("CreatedByUserId")]
     [DeleteBehavior(DeleteBehavior.NoAction)]
-    public UserProfileEntity? CreatedByUser { get; set; } //System Created Tasks will not have an assigned created by User
+    public UserProfileEntity? CreatedByUser { get; set; }
+    public Guid? CreatedByUserId { get; set; }
 
+    [ForeignKey("CompanyProfileId")]
     [DeleteBehavior(DeleteBehavior.NoAction)]
     public CompanyProfileEntity? CompanyProfile { get; set; }
+    public Guid? CompanyProfileId { get; set; }
 }

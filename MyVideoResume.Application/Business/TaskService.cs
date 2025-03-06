@@ -29,7 +29,7 @@ public class TaskService
         try
         {
             //Lets confirm that the onboarding tasks don't exist
-            var onboardingTasks = _dataContext.Tasks.FirstOrDefault(x => x.TaskType == TaskType.Onboarding && x.AssignedToUserId == userId);
+            var onboardingTasks = _dataContext.Tasks.FirstOrDefault(x => x.TaskType == TaskType.Onboarding && x.AssignedToUserId.ToString() == userId);
             if (onboardingTasks == null)
             {
                 //Check if there is a Default Board
@@ -43,7 +43,7 @@ public class TaskService
                 TaskEntity taskProfile = new TaskEntity()
                 {
                     AssignedToUser = userProfile,
-                    AssignedToUserId = userId,
+                    AssignedToUserId = Guid.Parse(userId),
                     CreationDateTime = DateTime.UtcNow,
                     Start = DateTime.UtcNow,
                     Status = ActionItemStatus.ToDo,
@@ -58,7 +58,7 @@ public class TaskService
                 TaskEntity taskProfileSettings = new TaskEntity()
                 {
                     AssignedToUser = userProfile,
-                    AssignedToUserId = userId,
+                    AssignedToUserId = Guid.Parse(userId),
                     CreationDateTime = DateTime.UtcNow,
                     Start = DateTime.UtcNow,
                     Status = ActionItemStatus.ToDo,

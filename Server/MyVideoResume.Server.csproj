@@ -6,6 +6,8 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 		<ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
 		<Version>1.2.0.0</Version>
+		<UserSecretsId>ce67b6ee-56cd-456c-9ca4-9c15b0642e5a</UserSecretsId>
+		<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
 	</PropertyGroup>
 	<ItemGroup>
 		<PackageReference Include="AutoMapper" Version="14.0.0" />
@@ -19,6 +21,7 @@
 		<PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="8.6.0" />
 		<PackageReference Include="Microsoft.IdentityModel.Tokens" Version="8.6.0" />
 		<PackageReference Include="Microsoft.ML" Version="4.0.1" />
+		<PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.21.0" />
 		<PackageReference Include="Radzen.Blazor" Version="6.0.20" />
 		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="9.0.2" />
 		<PackageReference Include="Refit" Version="8.0.0" />
