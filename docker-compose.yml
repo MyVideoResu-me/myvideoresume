@@ -1,7 +1,7 @@
    version: '3.4'
 
    services:
-     blazorapp:
+     api:
        image: api
        build:
          context: .
@@ -11,13 +11,15 @@
        depends_on:
          - mssql
 
-     webassemblyapp:
+     app:
        image: app
        build:
          context: .
          dockerfile: Server/Dockerfile
        ports:
          - "5001:8080"
+       depends_on:
+        - api
 
      mssql:
        image: mcr.microsoft.com/mssql/server:2019-latest

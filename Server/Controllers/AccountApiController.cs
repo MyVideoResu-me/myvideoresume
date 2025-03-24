@@ -1,17 +1,9 @@
-﻿using DocumentFormat.OpenXml.Office2010.Excel;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MyVideoResume.Abstractions.Account.Profiles;
 using MyVideoResume.Abstractions.Core;
-using MyVideoResume.Abstractions.Job;
 using MyVideoResume.Application.Account;
 using MyVideoResume.Application.Job;
-using MyVideoResume.Application.Resume;
-using MyVideoResume.Data.Models;
-using MyVideoResume.Data.Models.Jobs;
-using MyVideoResume.Data.Models.Resume;
-using MyVideoResume.Documents;
-using MyVideoResume.Web.Common;
 using System.Security.Claims;
 
 namespace MyVideoResume.Server.Controllers;

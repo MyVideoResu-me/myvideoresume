@@ -7,12 +7,11 @@ using Radzen;
 using MyVideoResume.Data.Models;
 using MyVideoResume.Web.Common;
 using MyVideoResume.Abstractions.Core;
+using MyVideoResume.Extensions;
 using Microsoft.Extensions.Caching.Hybrid;
 using MyVideoResume.Data.Models.Account;
 using MyVideoResume.Abstractions.Account.Profiles;
 using MyVideoResume.Client.Pages.Shared.Security.Recaptcha;
-using MyVideoResume.Extensions;
-using System.Data;
 
 namespace MyVideoResume.Client.Services;
 
@@ -146,7 +145,7 @@ public partial class SecurityWebService : BaseWebService
                 var uri = new Uri($"{_navigationManager.BaseUri}api/account/userprofile");
                 var response = await _httpClient.GetAsync(uri);
                 result = await response.ReadAsync<ResponseResult<UserProfileDTO>>();
-
+                    
                 if (result.ErrorMessage.HasValue() || result.Result == null)
                     throw new NullReferenceException();
 

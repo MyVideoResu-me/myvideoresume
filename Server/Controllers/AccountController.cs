@@ -5,14 +5,9 @@ using Microsoft.AspNetCore.Mvc;
 using MyVideoResume.Data.Models;
 using MyVideoResume.Application;
 using MyVideoResume.Services;
-using DocumentFormat.OpenXml.EMMA;
-using DocumentFormat.OpenXml.Spreadsheet;
 using MyVideoResume.Data.Models.Account;
 using MyVideoResume.Application.Account;
 using MyVideoResume.Abstractions.Core;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
-using System.Text;
 
 namespace MyVideoResume.Server.Controllers;
 

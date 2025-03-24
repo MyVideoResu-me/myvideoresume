@@ -13,6 +13,9 @@ using MyVideoResume.Web.Common;
 using MyVideoResume.Abstractions.Core;
 using MyVideoResume.Extensions;
 using Microsoft.AspNetCore.WebUtilities;
+using System.Net.Http.Json;
+using MyVideoResume.Client.Pages.App.Admin;
+using MyVideoResume.Data.Models;
 
 namespace MyVideoResume.Client.Pages.App.Account;
 
@@ -30,11 +33,16 @@ public partial class AccountSettings
     protected string error;
     protected bool errorVisible;
     protected bool successVisible;
+    protected IEnumerable<MyVideoResume.Data.Models.ApplicationUser> users;
+    protected RadzenDataGrid<MyVideoResume.Data.Models.ApplicationUser> grid0;
 
 
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
+
+        users = await Security.GetUsers();
+
 
         var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
 
@@ -74,6 +82,49 @@ public partial class AccountSettings
         jobPreferences = new JobPreferencesEntity();
     }
 
+    protected async Task AddClick()
+    {
+        await DialogService.OpenAsync<AddApplicationUser>("Add Application User");
+
+        users = await Security.GetUsers();
+    }
+
+    protected async Task ViewProfileDetails(ApplicationUser user)
+    {
+        await DialogService.OpenAsync<ViewProfileDetails>("View User", new Dictionary<string, object> { { "Id", user.Id } });
+    }
+
+
+    protected async Task RowSelect(MyVideoResume.Data.Models.ApplicationUser user)
+    {
+        await DialogService.OpenAsync<EditApplicationUser>("Edit Application User", new Dictionary<string, object> { { "Id", user.Id } });
+
+        users = await Security.GetUsers();
+    }
+
+    protected async Task DeleteClick(MyVideoResume.Data.Models.ApplicationUser user)
+    {
+        try
+        {
+            if (await DialogService.Confirm("Are you sure you want to delete this user?") == true)
+            {
+                await Security.DeleteUser($"{user.Id}");
+
+                users = await Security.GetUsers();
+            }
+        }
+        catch (Exception ex)
+        {
+            errorVisible = true;
+            error = ex.Message;
+        }
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        // Save the updated user profile data to the server
+        await Http.PutAsJsonAsync("api/userprofile", userProfile);
+    }
     protected async Task SaveSecurity()
     {
         isBusy = true;
