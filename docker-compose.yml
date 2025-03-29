@@ -1,0 +1,31 @@
+   version: '3.4'
+
+   services:
+     api:
+       image: api
+       build:
+         context: .
+         dockerfile: MyVideoResume.API/Dockerfile
+       ports:
+         - "5000:8080"
+       depends_on:
+         - mssql
+
+     app:
+       image: app
+       build:
+         context: .
+         dockerfile: Server/Dockerfile
+       ports:
+         - "5001:8080"
+       depends_on:
+        - api
+
+     mssql:
+       image: mcr.microsoft.com/mssql/server:2019-latest
+       environment:
+         SA_PASSWORD: "YourStrong!Passw0rd"
+         ACCEPT_EULA: "Y"
+       ports:
+         - "1433:1433"
+   

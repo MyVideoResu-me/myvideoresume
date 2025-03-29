@@ -11,6 +11,7 @@ using MyVideoResume.Data.Models.Account;
 using MyVideoResume.Data.Models.Account.Profiles;
 using MyVideoResume.Data.Models.Business;
 using MyVideoResume.Data.Models.Jobs;
+using MyVideoResume.Server.Data;
 
 namespace MyVideoResume.Application.Account;
 
@@ -23,6 +24,7 @@ public class AccountService
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly RoleManager<ApplicationRole> _roleManager;
     private readonly TaskService _taskService;
+    private readonly ApplicationIdentityDbContext _identityDbContext;
 
     public AccountService(DataContext dataContextService, ILogger<AccountService> logger, IMapper mapper, UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, TaskService taskService)
     {
@@ -32,6 +34,20 @@ public class AccountService
         this._userManager = userManager;
         this._roleManager = roleManager;
         this._taskService = taskService;
+    }
+
+    public async Task<ResponseResult<List<UserCompanyRoleAssociationEntity>>> GetCompanyUsers(string userId)
+    {
+
+        var result = new ResponseResult<List<UserCompanyRoleAssociationEntity>>();
+        //based upon the logged in User get the Company Profile then get all the users ba
+        var users = await _dataContext.CompanyUserAssociation.Where(z => z.UserId == userId).ToListAsync();
+
+        if (users.Any())
+        {
+            result.Result = users;
+        }
+        return result;
     }
 
     public async Task<List<string>> GetUserRoles(string userId)
@@ -114,7 +130,7 @@ public class AccountService
         try
         {
             //Check and see if there is an existing Company Association for this user
-            association = _dataContext.UserCompanyRolesAssociation.Include(x => x.UserProfile).FirstOrDefault(x => x.UserProfile.UserId == userId);
+            association = _dataContext.CompanyUserAssociation.Include(x => x.UserProfile).FirstOrDefault(x => x.UserProfile.UserId == userId);
 
             if (association != null)
             {
@@ -125,7 +141,7 @@ public class AccountService
                         association.InviteStatus = InviteStatus.Accepted;
                         association.UpdateDateTime = DateTime.UtcNow;
                         association.InviteStatusEndDateTime = DateTime.UtcNow;
-                        _dataContext.UserCompanyRolesAssociation.Update(association);
+                        _dataContext.CompanyUserAssociation.Update(association);
                     }
                 }
             }
@@ -153,7 +169,8 @@ public class AccountService
             //Check and see if this user is associated to the Company
             if (companyProfile.CompanyUsers == null || companyProfile.CompanyUsers.Count == 0) //First User association so lets create the array and add this user
             {
-                companyProfile.CompanyUsers = new List<UserProfileEntity>() { userProfile };
+                companyProfile.CompanyUsers = new List<UserCompanyRoleAssociationEntity>();
+                companyProfile.CompanyUsers.Add(association);
                 _dataContext.CompanyProfiles.Update(companyProfile);
             }
             else //There are users associated; validate they don't exist and add them.
@@ -161,7 +178,7 @@ public class AccountService
                 var found = companyProfile.CompanyUsers.FirstOrDefault(x => x.UserId == userProfile.UserId);
                 if (found == null)
                 {
-                    companyProfile.CompanyUsers.Add(userProfile);
+                    companyProfile.CompanyUsers.Add(association);
                     _dataContext.CompanyProfiles.Update(companyProfile);
                 }
             }
@@ -195,7 +212,7 @@ public class AccountService
         var profile = new UserCompanyRoleAssociationEntity();
         try
         {
-            profile = _dataContext.UserCompanyRolesAssociation.Include(x => x.UserProfile).FirstOrDefault(x => x.UserProfile.UserId == userId && x.InviteStatus == status);
+            profile = _dataContext.CompanyUserAssociation.Include(x => x.UserProfile).FirstOrDefault(x => x.UserProfile.UserId == userId && x.InviteStatus == status);
 
             if (profile == null)
             {
@@ -203,7 +220,7 @@ public class AccountService
 
                 //Associate the User to the Company and give the user Owner Rights
                 var association = profile = new UserCompanyRoleAssociationEntity() { CreationDateTime = DateTime.UtcNow, InviteStatusStartDateTime = DateTime.UtcNow, InviteStatus = status, UserId = userId, UserProfile = userProfile, CompanyProfile = companyProfile, RolesAssigned = roles };
-                _dataContext.UserCompanyRolesAssociation.Add(association);
+                _dataContext.CompanyUserAssociation.Add(association);
                 await _dataContext.SaveChangesAsync();
             }
         }

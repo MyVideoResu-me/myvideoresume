@@ -21,7 +21,7 @@ public static class Paths
     public const string Admin_BackgroundJobsPortal = "/Workers";
     public const string Admin_ApplicationUsers = "admin/application-users";
     public const string Admin_ApplicationRoles = "admin/application-roles";
-    public const string Profile_Settings = "/profile/settings";
+    public const string Profile_Settings = "/account/settings";
     public const string FeatureFlags_API = "api/featureflag";
     public const string Dashboard_View = "/dashboard";
     public const string Companies_View = "/companies";

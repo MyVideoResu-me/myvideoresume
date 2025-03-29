@@ -7,11 +7,14 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 		<ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
 		<Version>1.2.0.0</Version>
+		<UserSecretsId>9f90c1d9-7c1a-494b-8014-a5175a250e1c</UserSecretsId>
+		<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
 	</PropertyGroup>
 
 	<ItemGroup>
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.2" />
 		<PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.2" />
+		<PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.21.0" />
 		<PackageReference Include="Serilog" Version="4.2.0" />
 		<PackageReference Include="Serilog.AspNetCore" Version="9.0.0" />
 		<PackageReference Include="Serilog.Sinks.Async" Version="2.1.0" />
@@ -24,6 +27,10 @@
 	<ItemGroup>
 		<ProjectReference Include="..\MyVideoResume.Application\MyVideoResume.Application.csproj" />
 		<ProjectReference Include="..\MyVideoResume.Data\MyVideoResume.Data.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="Logs\" />
 	</ItemGroup>
 
 </Project>

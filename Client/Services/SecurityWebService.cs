@@ -7,12 +7,11 @@ using Radzen;
 using MyVideoResume.Data.Models;
 using MyVideoResume.Web.Common;
 using MyVideoResume.Abstractions.Core;
+using MyVideoResume.Extensions;
 using Microsoft.Extensions.Caching.Hybrid;
 using MyVideoResume.Data.Models.Account;
 using MyVideoResume.Abstractions.Account.Profiles;
 using MyVideoResume.Client.Pages.Shared.Security.Recaptcha;
-using MyVideoResume.Extensions;
-using System.Data;
 
 namespace MyVideoResume.Client.Services;
 
@@ -60,7 +59,7 @@ public partial class SecurityWebService : BaseWebService
 
         if (userId != null && User?.Id != userId)
         {
-            User = await GetUserById(userId);
+            User = await ReadUser(userId);
         }
 
         return IsAuthenticated();
@@ -105,10 +104,11 @@ public partial class SecurityWebService : BaseWebService
             {
                 return false;
             }
-
-            var rolesFound = await _cache.GetOrCreateAsync(CacheKeys.UserRoles, async (x) =>
+            var id = Principal.FindFirstValue(ClaimTypes.NameIdentifier);
+            var key = $"{id}_{CacheKeys.UserRoles}";
+            var rolesFound = await _cache.GetOrCreateAsync(key, async (x) =>
             {
-                var uri = new Uri($"{_navigationManager.BaseUri}api/account/userroles");
+                var uri = new Uri($"{_navigationManager.BaseUri}api/account/user/roles");
                 var response = await _httpClient.GetAsync(uri);
                 var roles = await response.ReadAsync<List<string>>();
 
@@ -135,18 +135,21 @@ public partial class SecurityWebService : BaseWebService
         return Principal?.Identity.IsAuthenticated == false;
     }
 
+
+
     //GET USER PROFILE
     public async Task<ResponseResult<UserProfileDTO>> GetUserProfile()
     {
         var result = new ResponseResult<UserProfileDTO>();
         try
         {
-            var profile = await _cache.GetOrCreateAsync(CacheKeys.UserProfile, async (x) =>
+            var id = Principal.FindFirstValue(ClaimTypes.NameIdentifier);
+            var profile = await _cache.GetOrCreateAsync(id, async (x) =>
             {
                 var uri = new Uri($"{_navigationManager.BaseUri}api/account/userprofile");
                 var response = await _httpClient.GetAsync(uri);
                 result = await response.ReadAsync<ResponseResult<UserProfileDTO>>();
-
+                    
                 if (result.ErrorMessage.HasValue() || result.Result == null)
                     throw new NullReferenceException();
 
@@ -163,7 +166,8 @@ public partial class SecurityWebService : BaseWebService
 
         return result;
     }
-    public async Task<ResponseResult<UserProfileDTO>> GetUserProfile(string userId)
+
+    public async Task<ResponseResult<UserProfileDTO>> GetSpecificUserProfile(string userId)
     {
         var result = new ResponseResult<UserProfileDTO>();
         try
@@ -195,9 +199,12 @@ public partial class SecurityWebService : BaseWebService
         var result = new ResponseResult<UserProfileDTO>();
         try
         {
-            await _cache.RemoveAsync(CacheKeys.UserProfile);
+            var id = Principal.FindFirstValue(ClaimTypes.NameIdentifier);
+
+
+            await _cache.RemoveAsync(id);
             await _cache.RemoveAsync(CacheKeys.UserRoles);
-            var userProfileResult = await _cache.GetOrCreateAsync(CacheKeys.UserProfile, async (x) =>
+            var userProfileResult = await _cache.GetOrCreateAsync(id, async (x) =>
             {
                 //Call API 
                 var uri = new Uri($"{_navigationManager.BaseUri}api/account/userprofile/updaterole");
@@ -224,6 +231,34 @@ public partial class SecurityWebService : BaseWebService
 
 
     //TODO: GET COMPANY PROFILE
+    public async Task<ResponseResult<List<UserCompanyRoleAssociationEntity>>> GetCompanyUsers()
+    {
+        var result = new ResponseResult<List<UserCompanyRoleAssociationEntity>>();
+        try
+        {
+            var id = Principal.FindFirstValue(ClaimTypes.NameIdentifier);
+            var key = $"{id}_CompanyUsers";
+            var profile = await _cache.GetOrCreateAsync(key, async (x) =>
+            {
+                var uri = new Uri($"{_navigationManager.BaseUri}api/account/CompanyUsers");
+                var response = await _httpClient.GetAsync(uri);
+                result = await response.ReadAsync<ResponseResult<List<UserCompanyRoleAssociationEntity>>>();
+
+                if (result.ErrorMessage.HasValue() || result.Result == null)
+                    throw new NullReferenceException();
+
+                return result;
+            });
+
+            result = profile;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.Message, ex);
+            result.ErrorMessage = ex.Message;
+        }
+        return result;
+    }
 
 
     public async Task<ApplicationAuthenticationState> GetAuthenticationStateAsync()
@@ -308,7 +343,7 @@ public partial class SecurityWebService : BaseWebService
         return await _httpClient.DeleteAsync(uri);
     }
 
-    public async Task<ApplicationUser> GetUserById(string id)
+    public async Task<ApplicationUser> ReadUser(string id)
     {
         try
         {
@@ -344,6 +379,7 @@ public partial class SecurityWebService : BaseWebService
 
         return await response.ReadAsync<ApplicationUser>();
     }
+
     public async Task ChangePassword(string oldPassword, string newPassword)
     {
         var uri = new Uri($"{_navigationManager.BaseUri}Account/ChangePassword");

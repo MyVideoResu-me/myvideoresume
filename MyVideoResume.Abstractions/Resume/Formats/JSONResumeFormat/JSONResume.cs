@@ -46,18 +46,21 @@ public static class ResumeExtensions
             sb.AppendLine("## Work Experience");
             foreach (var work in resume.Work)
             {
-                sb.AppendLine($"### {work.Position} at {work.Name}");
-                sb.AppendLine($"{work.StartDate} - {work.EndDate}");
-                sb.AppendLine(work.Summary);
-                if (work.Highlights != null && work.Highlights.Any())
+                if (!string.IsNullOrEmpty(work.Name))
                 {
-                    sb.AppendLine("#### Highlights");
-                    foreach (var highlight in work.Highlights)
+                    sb.AppendLine($"### {work.Position} at {work.Name}");
+                    sb.AppendLine($"{work.StartDate} - {work.EndDate}");
+                    sb.AppendLine(work.Summary);
+                    if (work.Highlights != null && work.Highlights.Any())
                     {
-                        sb.AppendLine($"- {highlight}");
+                        sb.AppendLine("#### Highlights");
+                        foreach (var highlight in work.Highlights)
+                        {
+                            sb.AppendLine($"- {highlight}");
+                        }
                     }
+                    sb.AppendLine();
                 }
-                sb.AppendLine();
             }
         }
 
@@ -155,18 +158,21 @@ public static class ResumeExtensions
             sb.AppendLine("## Skills");
             foreach (var skill in resume.Skills)
             {
-                sb.AppendLine($"### {skill.Name}");
-                if (!string.IsNullOrEmpty(skill.Level))
-                    sb.AppendLine($"Level: {skill.Level}");
-                if (skill.Keywords != null && skill.Keywords.Any())
+                if (!string.IsNullOrEmpty(skill.Name))
                 {
-                    sb.AppendLine("#### Keywords");
-                    foreach (var keyword in skill.Keywords)
+                    sb.AppendLine($"### {skill.Name}");
+                    if (!string.IsNullOrEmpty(skill.Level))
+                        sb.AppendLine($"Level: {skill.Level}");
+                    if (skill.Keywords != null && skill.Keywords.Any())
                     {
-                        sb.AppendLine($"- {keyword}");
+                        sb.AppendLine("#### Keywords");
+                        foreach (var keyword in skill.Keywords)
+                        {
+                            sb.AppendLine($"- {keyword}");
+                        }
                     }
+                    sb.AppendLine();
                 }
-                sb.AppendLine();
             }
         }
 

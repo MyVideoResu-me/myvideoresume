@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace MyVideoResume.Abstractions.Core;
 
+
 public enum DisplayPrivacy
 {
     [Description("Visible to Public")]
@@ -521,7 +522,10 @@ public enum ResumeType
 
 public enum ErrorCodes
 {
-    SystemError,
-    NoResume,
-    JobError,
+    SystemError = 0,
+    InValidUser = 1,
+    InValidSecurityCode = 2,
+    AccountUnconfirmed = 10,
+    NoResume = 20,
+    JobError = 30
 }

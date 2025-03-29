@@ -22,7 +22,7 @@ public class CompanyProfileEntity : BusinessProfile
     public UserProfileEntity UserProfile { get; set; } //User Who Created the Company
 
     [DeleteBehavior(DeleteBehavior.NoAction)]
-    public List<UserProfileEntity> CompanyUsers{ get; set; } //All The users associated with the Company
+    public List<UserCompanyRoleAssociationEntity> CompanyUsers { get; set; } //All The users associated with the Company
 
     public AddressEntity? MailingAddress { get; set; }
 

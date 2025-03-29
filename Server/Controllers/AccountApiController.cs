@@ -1,17 +1,14 @@
-﻿using DocumentFormat.OpenXml.Office2010.Excel;
+﻿using DocumentFormat.OpenXml.InkML;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OData.Query;
+using Microsoft.AspNetCore.OData.Results;
 using MyVideoResume.Abstractions.Account.Profiles;
 using MyVideoResume.Abstractions.Core;
-using MyVideoResume.Abstractions.Job;
 using MyVideoResume.Application.Account;
 using MyVideoResume.Application.Job;
-using MyVideoResume.Application.Resume;
 using MyVideoResume.Data.Models;
-using MyVideoResume.Data.Models.Jobs;
-using MyVideoResume.Data.Models.Resume;
-using MyVideoResume.Documents;
-using MyVideoResume.Web.Common;
+using MyVideoResume.Data.Models.Account;
 using System.Security.Claims;
 
 namespace MyVideoResume.Server.Controllers;
@@ -31,6 +28,42 @@ public partial class AccountApiController : ControllerBase
     }
 
     [Authorize]
+    [HttpGet("user/roles")]
+    public async Task<ActionResult<List<string>>> UserRoles()
+    {
+        var result = new List<string>();
+        try
+        {
+            var id = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            result = await _accountService.GetUserRoles(id);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.Message, ex);
+        }
+        return result;
+    }
+
+    [EnableQuery]
+    [HttpGet("CompanyUsers")]
+    public async Task<ResponseResult<List<UserCompanyRoleAssociationEntity>>> GetCompanyUsers()
+    {
+        var result = new ResponseResult<List<UserCompanyRoleAssociationEntity>>();
+        try
+        {
+            var loggedInUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            result = await _accountService.GetCompanyUsers(loggedInUserId);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.Message, ex);
+        }
+
+        return result;
+    }
+
+    #region User Profiles
+    [Authorize]
     [HttpGet("userprofile")]
     public async Task<ActionResult<ResponseResult<UserProfileDTO>>> Userprofile()
     {
@@ -47,24 +80,6 @@ public partial class AccountApiController : ControllerBase
         }
         return result;
     }
-
-    [Authorize]
-    [HttpGet("userroles")]
-    public async Task<ActionResult<List<string>>> UserRoles()
-    {
-        var result = new List<string>();
-        try
-        {
-            var id = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            result = await _accountService.GetUserRoles(id);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex.Message, ex);
-        }
-        return result;
-    }
-
 
     [Authorize]
     [HttpGet("userprofile/{userId}")]
@@ -100,4 +115,5 @@ public partial class AccountApiController : ControllerBase
         }
         return result;
     }
+    #endregion
 }

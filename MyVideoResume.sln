@@ -10,9 +10,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		.gitignore = .gitignore
 		.jira\config.yml = .jira\config.yml
+		docker-compose.yml = docker-compose.yml
 		.github\workflows\dotnet.yml = .github\workflows\dotnet.yml
 		LICENSE = LICENSE
 		README.md = README.md
+		start.ps1 = start.ps1
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyVideoResume.ML.SentimentAnalysis", "MyVideoResume.ML.SentimentAnalysis\MyVideoResume.ML.SentimentAnalysis.csproj", "{CB4DBDFE-F708-4C30-B86B-23CA072678CF}"
@@ -42,6 +44,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyVideoResume.API", "MyVideoResume.API\MyVideoResume.API.csproj", "{FEC0D5D3-6091-6783-A306-C39B047E0AC7}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyVideoResume.Tests", "MyVideoResume.Tests\MyVideoResume.Tests.csproj", "{DCEABD5C-786E-49E1-BDDC-ADB83D7C61D7}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Chrome Plugin", "Chrome Plugin", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "App", "App", "{788BB6BB-6C11-4DE4-BC7F-AA262500A6D8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -110,6 +116,8 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
+		{98666C88-9201-476C-8C7A-FCA409858315} = {788BB6BB-6C11-4DE4-BC7F-AA262500A6D8}
+		{452D620A-8D93-4AC2-A6D5-A27928792913} = {788BB6BB-6C11-4DE4-BC7F-AA262500A6D8}
 		{CB4DBDFE-F708-4C30-B86B-23CA072678CF} = {D88FA3F1-D0EF-4DF8-9AB6-83487F87931D}
 		{D88FA3F1-D0EF-4DF8-9AB6-83487F87931D} = {CE9FC5A1-34C1-42DC-9523-0895D4CCA068}
 		{25EC4A39-DFB0-472C-83E3-1F7F705CFDAB} = {CE9FC5A1-34C1-42DC-9523-0895D4CCA068}
@@ -121,6 +129,7 @@ Global
 		{CFF8BCA8-C7DB-A47D-975F-64FBA4EEBE0E} = {CE9FC5A1-34C1-42DC-9523-0895D4CCA068}
 		{BBB99908-4A61-4319-81D9-47E32EF5059D} = {CE9FC5A1-34C1-42DC-9523-0895D4CCA068}
 		{D34D4510-27A8-47AF-A8CB-EE8205396A0E} = {CE9FC5A1-34C1-42DC-9523-0895D4CCA068}
+		{FEC0D5D3-6091-6783-A306-C39B047E0AC7} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C40737A8-E03A-4EFD-8B5A-8013DA6AB507}

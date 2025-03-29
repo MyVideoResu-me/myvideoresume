@@ -43,7 +43,7 @@ public partial class ChromeController : ControllerBase
         try
         {
             var tempresult = await _processor.ProcessChromeExtensionRequest(id, jobChromeRequest);
-            if (!tempresult.ErrorMessage.HasValue())
+            if (!tempresult.ErrorMessage.HasValue() && tempresult.Result != null)
             {
                 result.Result = new ChromeResponse
                 {

@@ -26,7 +26,7 @@ public partial class EditApplicationUser
     {
         await base.OnInitializedAsync();
 
-        user = await Security.GetUserById($"{Id}");
+        user = await Security.ReadUser($"{Id}");
 
         userRoles = user.Roles.Select(role => role.Id);
 

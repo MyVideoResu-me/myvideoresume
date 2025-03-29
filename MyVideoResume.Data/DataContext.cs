@@ -10,7 +10,7 @@ using MyVideoResume.Data.Models.Account.Profiles;
 using MyVideoResume.Data.Models.Queues;
 using MyVideoResume.Data.Models.Business.Tasks;
 using MyVideoResume.Data.Models.DataCollection;
-using MyVideoResume.Data.Models.Business;
+using MyVideoResume.Data.Models.Account;
 
 namespace MyVideoResume.Data;
 
@@ -47,7 +47,7 @@ public partial class DataContext : DbContext
     }
     public DbSet<UserProfileEntity> UserProfiles { get; set; } = default!;
     public DbSet<CompanyProfileEntity> CompanyProfiles { get; set; } = default!;
-    public DbSet<UserCompanyRoleAssociationEntity> UserCompanyRolesAssociation { get; set; } = default!;
+    public DbSet<UserCompanyRoleAssociationEntity> CompanyUserAssociation { get; set; } = default!;
 
     public DbSet<AddressEntity> Addresses { get; set; } = default!;
 
