@@ -11,7 +11,7 @@
     </RadzenRow>
     <RadzenRow>
         <RadzenColumn SizeSM=12 SizeXL="12" Size="11">
-            <RadzenTabs SelectedIndex=@tabSelected>
+            <RadzenTabs SelectedIndex=@tabSelected Change=@OnChange>
                 <Tabs>
                     <RadzenTabsItem Text="Profile">
                         <RadzenTemplateForm Method="post" Submit="@SaveUserProfile" TItem="UserProfileDTO" Data="@userProfile">
@@ -152,11 +152,11 @@
                                 <RadzenColumn SizeMD="12">
                                     <RadzenAlert Size="AlertSize.Large" Shade="Shade.Light" AlertStyle="AlertStyle.Danger" Variant="Variant.Flat" Title="Cannot delete user" Visible="@errorVisible">@error</RadzenAlert>
                                     <RadzenDataGrid AllowFiltering="true" AllowPaging="true" ShowPagingSummary="true" PageSizeOptions=@(new int[]{5, 10, 20, 30}) AllowSorting="true" Data="@users"
-                                                    TItem="MyVideoResume.Data.Models.ApplicationUser" RowSelect="@RowSelect">
+                                                    TItem="MyVideoResume.Data.Models.Account.UserCompanyRoleAssociationEntity" RowSelect="@RowSelect">
                                         <Columns>
-                                            <RadzenDataGridColumn TItem="MyVideoResume.Data.Models.ApplicationUser" Property="UserName" Title="User Name" />
-                                            <RadzenDataGridColumn TItem="MyVideoResume.Data.Models.ApplicationUser" Property="Email" Title="Email" />
-                                            <RadzenDataGridColumn TItem="MyVideoResume.Data.Models.ApplicationUser" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Width="100px">
+                                            <RadzenDataGridColumn TItem="MyVideoResume.Data.Models.Account.UserCompanyRoleAssociationEntity" Property="UserName" Title="User Name" />
+                                            <RadzenDataGridColumn TItem="MyVideoResume.Data.Models.Account.UserCompanyRoleAssociationEntity" Property="Email" Title="Email" />
+                                            <RadzenDataGridColumn TItem="MyVideoResume.Data.Models.Account.UserCompanyRoleAssociationEntity" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Width="100px">
                                                 <Template Context="user">
                                                     <RadzenButton ButtonStyle="ButtonStyle.Secondary" Icon="edit" Size="ButtonSize.Small"
                                                                   Variant="Variant.Flat" Shade="Shade.Lighter" Click="@(() => RowSelect(user))" @onclick:stopPropagation="true" />

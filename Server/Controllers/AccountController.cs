@@ -11,12 +11,6 @@ using MyVideoResume.Abstractions.Core;
 
 namespace MyVideoResume.Server.Controllers;
 
-public enum ErrorCodes
-{
-    InValidUser = 0,
-    AccountUnconfirmed = 1,
-    InValidSecurityCode = 3
-}
 
 [Route("Account/[action]")]
 public partial class AccountController : Controller

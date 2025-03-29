@@ -16,6 +16,7 @@ using Microsoft.AspNetCore.WebUtilities;
 using System.Net.Http.Json;
 using MyVideoResume.Client.Pages.App.Admin;
 using MyVideoResume.Data.Models;
+using MyVideoResume.Data.Models.Account;
 
 namespace MyVideoResume.Client.Pages.App.Account;
 
@@ -33,16 +34,35 @@ public partial class AccountSettings
     protected string error;
     protected bool errorVisible;
     protected bool successVisible;
-    protected IEnumerable<MyVideoResume.Data.Models.ApplicationUser> users;
+    protected List<UserCompanyRoleAssociationEntity> users;
     protected RadzenDataGrid<MyVideoResume.Data.Models.ApplicationUser> grid0;
 
+
+    protected async Task OnChange(int index)
+    {
+        if (index == 1)
+        {
+            await GetUsers();
+        }
+    }
+
+    private async Task GetUsers()
+    {
+
+        var result = await Security.GetCompanyUsers();
+        if (result.ErrorMessage.HasValue())
+        {
+            ShowErrorNotification("Error", result.ErrorMessage);
+        }
+        else
+        {
+            users = result.Result;
+        }
+    }
 
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
-
-        users = await Security.GetUsers();
-
 
         var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
 
@@ -59,7 +79,7 @@ public partial class AccountSettings
             }
         }
 
-        user = await Security.GetUserById($"{Security.User.Id}");
+        user = await Security.ReadUser($"{Security.User.Id}");
         var result = await Security.GetUserProfile();
         if (!result.ErrorMessage.HasValue())
         {
@@ -86,23 +106,23 @@ public partial class AccountSettings
     {
         await DialogService.OpenAsync<AddApplicationUser>("Add Application User");
 
-        users = await Security.GetUsers();
+        await GetUsers();
     }
 
-    protected async Task ViewProfileDetails(ApplicationUser user)
+    protected async Task ViewProfileDetails(MyVideoResume.Data.Models.Account.UserCompanyRoleAssociationEntity user)
     {
         await DialogService.OpenAsync<ViewProfileDetails>("View User", new Dictionary<string, object> { { "Id", user.Id } });
     }
 
 
-    protected async Task RowSelect(MyVideoResume.Data.Models.ApplicationUser user)
+    protected async Task RowSelect(MyVideoResume.Data.Models.Account.UserCompanyRoleAssociationEntity user)
     {
         await DialogService.OpenAsync<EditApplicationUser>("Edit Application User", new Dictionary<string, object> { { "Id", user.Id } });
 
-        users = await Security.GetUsers();
+        await GetUsers();
     }
 
-    protected async Task DeleteClick(MyVideoResume.Data.Models.ApplicationUser user)
+    protected async Task DeleteClick(MyVideoResume.Data.Models.Account.UserCompanyRoleAssociationEntity user)
     {
         try
         {
@@ -110,7 +130,7 @@ public partial class AccountSettings
             {
                 await Security.DeleteUser($"{user.Id}");
 
-                users = await Security.GetUsers();
+                await GetUsers();
             }
         }
         catch (Exception ex)

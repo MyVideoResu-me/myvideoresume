@@ -25,7 +25,7 @@ public partial class ViewProfileDetails
     {
         await base.OnInitializedAsync();
 
-        var result = await Security.GetUserProfile($"{Id}");
+        var result = await Security.GetSpecificUserProfile($"{Id}");
         if (!result.ErrorMessage.HasValue())
             userProfile = result.Result;
     }

@@ -106,7 +106,7 @@ public partial class JobService
     {
         var result = new ResponseResult<JobItemEntity>();
 
-        var user = await _dataContext.UserCompanyRolesAssociation.Include(x => x.UserProfile).Include(x => x.CompanyProfile).FirstOrDefaultAsync(x => x.UserProfile.UserId == userId);
+        var user = await _dataContext.CompanyUserAssociation.Include(x => x.UserProfile).Include(x => x.CompanyProfile).FirstOrDefaultAsync(x => x.UserProfile.UserId == userId);
 
         if (user != null)
         {

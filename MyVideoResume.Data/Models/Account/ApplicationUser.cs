@@ -35,4 +35,5 @@ public partial class ApplicationUser : IdentityUser
     }
 
     public ICollection<ApplicationRole> Roles { get; set; }
+
 }

@@ -4,7 +4,7 @@ using MyVideoResume.Data.Models.Account.Profiles;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace MyVideoResume.Data.Models.Business;
+namespace MyVideoResume.Data.Models.Account;
 
 [Table("UserCompanyRolesAssociation")]
 public class UserCompanyRoleAssociationEntity: CommonBase
@@ -15,7 +15,8 @@ public class UserCompanyRoleAssociationEntity: CommonBase
 
     public string UserId { get; set; } //User who created the Entry
 
-    public InviteStatus InviteStatus { get; set; }
+    public InviteStatus InviteStatus { get; set; } //Could be an Owner.
+
     public DateTime? InviteStatusStartDateTime { get; set; }
     public DateTime? InviteStatusEndDateTime { get; set; }
 
