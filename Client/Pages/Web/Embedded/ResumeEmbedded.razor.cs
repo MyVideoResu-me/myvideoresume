@@ -8,12 +8,13 @@ using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.Web.Virtualization;
 using Microsoft.JSInterop;
 using MyVideoResume.Abstractions.Resume;
+using MyVideoResume.Client.Pages.App.People.Resumes;
 using MyVideoResume.Client.Services;
 using MyVideoResume.Data.Models.Resume;
 using Radzen;
 using Radzen.Blazor;
 
-namespace MyVideoResume.Client.Pages.App.People.Resumes;
+namespace MyVideoResume.Client.Pages.Web.Embedded;
 
 public partial class ResumeEmbedded
 {
@@ -39,13 +40,15 @@ public partial class ResumeEmbedded
         try
         {
             Resume = await ResumeWebService.GetResume(Slug);
-            IsResumeDeleted = Resume.DeletedDateTime.HasValue;
-            if (IsResumeDeleted)
+            if (Resume != null)
             {
-                ResumePageTitle = $"MyVideoResu.ME - Resume - Not Available";
-            }
-            else
-            {
+                IsResumeDeleted = Resume.DeletedDateTime.HasValue;
+                if (IsResumeDeleted)
+                {
+                    ResumePageTitle = $"MyVideoResu.ME - Resume - Not Available";
+                }
+                else
+                {
                     ResumePageTitle = $"MyVideoResu.ME - Resume - {Resume.MetaResume.Basics.Name}";
                     if (Resume.ResumeTemplate != null)
                     {
@@ -53,6 +56,11 @@ public partial class ResumeEmbedded
                         ComponentParameters = new Dictionary<string, object>() { { "resume", Resume } };
                     }
                     StateHasChanged();
+                }
+            }
+            else
+            {
+                Resume = new ResumeInformationDTO();
             }
         }
         catch (Exception ex)
