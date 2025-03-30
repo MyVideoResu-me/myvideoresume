@@ -100,19 +100,19 @@ public class BaseComponent : LayoutComponentBase
 
     public void NavigateToLogin(string redirectPath)
     {
-        NavigationManager.NavigateTo(NavigateToLoginPath(redirectPath));
+        NavigationManager.NavigateTo(NavigateToLoginPath(redirectPath), true, true);
     }
 
     public string NavigateToLoginPath(string redirectPath) { return $"login?redirectUrl={redirectPath}"; }
 
     public void NavigateTo(string path)
     {
-        NavigationManager.NavigateTo(path);
+        NavigationManager.NavigateTo(path, true, true);
     }
 
     public void NavigateTo(string path, string parameter)
     {
-        NavigationManager.NavigateTo($"{path}/{parameter}");
+        NavigationManager.NavigateTo($"{path}/{parameter}", true, true);
     }
 
     public Type ResolveComponent(string componentName, string namespacevalue)
