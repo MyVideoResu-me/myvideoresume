@@ -14,4 +14,11 @@ namespace MyVideoResume.Client.Pages.Web;
 
 public partial class TermsOfUse
 {
+    [Inject] protected NavigationManager Navigation { get; set; }
+    protected override void OnInitialized()
+    {
+        // External URL to redirect to
+        string externalUrl = "https://myvideoresu.me/insights/terms-of-use";
+        Navigation.NavigateTo(externalUrl, true); // true forces the full page reload
+    }
 }

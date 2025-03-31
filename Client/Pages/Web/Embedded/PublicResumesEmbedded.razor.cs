@@ -1,3 +1,4 @@
+using System.Net.Http;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -6,19 +7,20 @@ using Microsoft.AspNetCore.Components.Routing;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.Web.Virtualization;
 using Microsoft.JSInterop;
+using MyVideoResume.Abstractions.Resume;
+using MyVideoResume.Client.Services;
+using MyVideoResume.Data.Models.Resume;
 using Radzen;
 using Radzen.Blazor;
-using System.Net.Http.Json;
 
-namespace MyVideoResume.Client.Pages.Web;
+namespace MyVideoResume.Client.Pages.Web.Embedded;
 
-public partial class WorkWithUs
+public partial class PublicResumesEmbedded
 {
-    [Inject] protected NavigationManager Navigation { get; set; }
-    protected override void OnInitialized()
+    public string ResumePageTitle { get; set; } = "Public Resumes";
+
+    protected override async Task OnInitializedAsync()
     {
-        // External URL to redirect to
-        string externalUrl = "https://myvideoresu.me/contact-us";
-        Navigation.NavigateTo(externalUrl, true); // true forces the full page reload
+        await base.OnInitializedAsync();
     }
 }
