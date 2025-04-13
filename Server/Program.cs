@@ -30,10 +30,9 @@ using MyVideoResume.Client.Pages.Shared.Security.Recaptcha;
 using MyVideoResume.Application.Job.BackgroundProcessing;
 using MyVideoResume.Application.Payments;
 using Stripe;
-using MyVideoResume.Application.Business;
-using DocumentFormat.OpenXml.Office2016.Drawing.ChartDrawing;
 using MyVideoResume.Application.DataCollection;
 using UAParser;
+using MyVideoResume.Application.Productivity;
 
 var builder = WebApplication.CreateBuilder(args);
 //Logging
@@ -110,7 +109,7 @@ builder.Services.AddScoped<JobService>();
 builder.Services.AddScoped<ResumeWebService>();
 builder.Services.AddSingleton<IResumePromptEngine, ResumePromptEngine>();
 builder.Services.AddScoped<ResumeService>();
-builder.Services.AddScoped<TaskService>();
+builder.Services.AddScoped<ProductivityService>();
 builder.Services.AddScoped<MatchService>();
 builder.Services.AddSingleton<ResumeBackgroundJobService>();
 builder.Services.AddSingleton<JobQueueProcessor>();
@@ -121,9 +120,9 @@ builder.Services.AddScoped<FeatureFlagClientService>();
 builder.Services.AddScoped<FeatureFlagWebService>();
 builder.Services.AddScoped<SecurityWebService>();
 builder.Services.AddScoped<DashboardWebService>();
-builder.Services.AddScoped<TaskWebService>();
+builder.Services.AddScoped<ProductivityWebService>();
 builder.Services.AddScoped<MatchWebService>();
-builder.Services.AddScoped<InboxWebService>();
+builder.Services.AddScoped<NotificationWebService>();
 builder.Services.AddHttpClient("MyVideoResume").ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler { UseCookies = true }).AddHeaderPropagation(o => o.Headers.Add("Cookie"));
 builder.Services.AddHeaderPropagation(o => o.Headers.Add("Cookie"));
 builder.Services.AddAuthentication();
@@ -161,7 +160,7 @@ builder.Services.AddControllers().AddOData(o =>
 });
 builder.Services.AddScoped<AuthenticationStateProvider, ApplicationAuthenticationStateProvider>();
 
-builder.Services.AddWorkers(builder.Configuration.GetConnectionString("Workers"));
+builder.Services.AddWorkers(builder.Configuration);
 
 var mapperConfiguration = new MapperConfiguration(configuration =>
 {
@@ -179,7 +178,8 @@ builder.Host.UseSerilog();
 var app = builder.Build();
 app.Use(async (context, next) =>
 {
-    context.Response.OnStarting(state => {
+    context.Response.OnStarting(state =>
+    {
         var httpcontext = (HttpContext)state;
         httpcontext.Response.Headers.Remove("Content-Security-Policy");
         httpcontext.Response.Headers.Add("Content-Security-Policy", "frame-ancestors hirefractionaltalent.com *.hirefractionaltalent.com https:;");
@@ -212,7 +212,7 @@ app.UseStaticFiles();
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseAntiforgery();
-app.UseWorkers();
+app.UseWorkers(builder.Configuration);
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode()
     .AddInteractiveWebAssemblyRenderMode()

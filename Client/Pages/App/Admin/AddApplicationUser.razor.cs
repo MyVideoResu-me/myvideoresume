@@ -32,7 +32,7 @@ public partial class AddApplicationUser
         try
         {
             user.Roles = roles.Where(role => userRoles.Contains(role.Id)).ToList();
-            await Security.CreateUser(user);
+            await Security.CreateApplicationUser(user);
             DialogService.Close(null);
         }
         catch (Exception ex)

@@ -3,12 +3,14 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
 using Microsoft.AspNetCore.OData.Results;
+using MyVideoResume.Abstractions.Account.Preferences;
 using MyVideoResume.Abstractions.Account.Profiles;
 using MyVideoResume.Abstractions.Core;
 using MyVideoResume.Application.Account;
 using MyVideoResume.Application.Job;
 using MyVideoResume.Data.Models;
 using MyVideoResume.Data.Models.Account;
+using MyVideoResume.Data.Models.Account.Preferences;
 using System.Security.Claims;
 
 namespace MyVideoResume.Server.Controllers;
@@ -26,6 +28,34 @@ public partial class AccountApiController : ControllerBase
         _logger = logger;
         _accountService = accountService;
     }
+
+    #region Preferences
+    [HttpGet("preferences/job")]
+    public JobPreferencesEntity GetJobPreferences()
+    {
+        var id = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        return null;
+    }
+
+    [HttpPost("preferences/job")]
+    public JobPreferencesEntity SaveJobPreferences([FromBody] JobPreferences preferences)
+    {
+        var id = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        return null;
+    }
+
+    [HttpGet("preferences/job/{userId}")]
+    public JobPreferencesEntity GetJobPreferences(string userId)
+    {
+        return null;
+    }
+
+    [HttpPost("preferences/job/{userId}")]
+    public JobPreferencesEntity SaveJobPreferences(string userId, [FromBody] JobPreferences preferences)
+    {
+        return null;
+    }
+    #endregion
 
     [Authorize]
     [HttpGet("user/roles")]

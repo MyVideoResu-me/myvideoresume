@@ -26,7 +26,7 @@ public partial class EditApplicationUser
     {
         await base.OnInitializedAsync();
 
-        user = await Security.ReadUser($"{Id}");
+        user = await Security.ReadApplicationUser($"{Id}");
 
         userRoles = user.Roles.Select(role => role.Id);
 
@@ -38,7 +38,7 @@ public partial class EditApplicationUser
         try
         {
             user.Roles = roles.Where(role => userRoles.Contains(role.Id)).ToList();
-            await Security.UpdateUser($"{Id}", user);
+            await Security.UpdateApplicationUser($"{Id}", user);
             DialogService.Close(null);
         }
         catch (Exception ex)

@@ -4,13 +4,12 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using MyVideoResume.Abstractions.Account.Profiles;
 using MyVideoResume.Abstractions.Core;
-using MyVideoResume.Application.Business;
+using MyVideoResume.Application.Productivity;
 using MyVideoResume.Data;
 using MyVideoResume.Data.Models;
 using MyVideoResume.Data.Models.Account;
+using MyVideoResume.Data.Models.Account.Preferences;
 using MyVideoResume.Data.Models.Account.Profiles;
-using MyVideoResume.Data.Models.Business;
-using MyVideoResume.Data.Models.Jobs;
 using MyVideoResume.Server.Data;
 
 namespace MyVideoResume.Application.Account;
@@ -23,17 +22,17 @@ public class AccountService
     private readonly ILogger<AccountService> _logger;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly RoleManager<ApplicationRole> _roleManager;
-    private readonly TaskService _taskService;
+    private readonly ProductivityService _productivityService;
     private readonly ApplicationIdentityDbContext _identityDbContext;
 
-    public AccountService(DataContext dataContextService, ILogger<AccountService> logger, IMapper mapper, UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, TaskService taskService)
+    public AccountService(DataContext dataContextService, ILogger<AccountService> logger, IMapper mapper, UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, ProductivityService productivityService)
     {
         this._dataContext = dataContextService;
         this._logger = logger;
         this._mapper = mapper;
         this._userManager = userManager;
         this._roleManager = roleManager;
-        this._taskService = taskService;
+        this._productivityService = productivityService;
     }
 
     public async Task<ResponseResult<List<UserCompanyRoleAssociationEntity>>> GetCompanyUsers(string userId)
@@ -204,7 +203,7 @@ public class AccountService
         var association = await this.CreateCompanyProfile(userId, userProfile);
 
         //Let's Create the Onboarding Tasks
-        var tasks = await _taskService.CreateOnboardingTasks(userId, association.UserProfile, association.CompanyProfile);
+        var tasks = await _productivityService.CreateOnboardingTasks(userId, association.UserProfile, association.CompanyProfile);
     }
 
     public async Task<UserCompanyRoleAssociationEntity> CreateUserCompanyRoleAssociation(string userId, UserProfileEntity userProfile, CompanyProfileEntity companyProfile, InviteStatus status, List<MyVideoResumeRoles> roles)

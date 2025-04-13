@@ -12,40 +12,49 @@ namespace MyVideoResume.Workers;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddWorkers(this IServiceCollection services, string workerConnectionString)
+    public static IServiceCollection AddWorkers(this IServiceCollection services, IConfiguration configuration)
     {
-
-        services.TryAddSingleton<IBackgroundJobFactory>(x => new CustomBackgroundJobFactory(
+        bool backgroundWorkersEnabled = configuration.GetValue<bool>("BackgroundJobsEnabled");
+        if ((backgroundWorkersEnabled))
+        {
+            var workerConnectionString = configuration.GetConnectionString("Workers");
+            
+            services.TryAddSingleton<IBackgroundJobFactory>(x => new CustomBackgroundJobFactory(
                         new BackgroundJobFactory(x.GetRequiredService<IJobFilterProvider>())));
 
-        services.TryAddSingleton<IBackgroundJobPerformer>(x => new CustomBackgroundJobPerformer(
-            new BackgroundJobPerformer(
-                x.GetRequiredService<IJobFilterProvider>(),
-                x.GetRequiredService<JobActivator>(),
-                TaskScheduler.Default)));
+            services.TryAddSingleton<IBackgroundJobPerformer>(x => new CustomBackgroundJobPerformer(
+                new BackgroundJobPerformer(
+                    x.GetRequiredService<IJobFilterProvider>(),
+                    x.GetRequiredService<JobActivator>(),
+                    TaskScheduler.Default)));
 
-        services.TryAddSingleton<IBackgroundJobStateChanger>(x => new CustomBackgroundJobStateChanger(
-                new BackgroundJobStateChanger(x.GetRequiredService<IJobFilterProvider>())));
+            services.TryAddSingleton<IBackgroundJobStateChanger>(x => new CustomBackgroundJobStateChanger(
+                    new BackgroundJobStateChanger(x.GetRequiredService<IJobFilterProvider>())));
 
-        
-        services.AddHangfire(configuration => configuration
-                .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
-                .UseSimpleAssemblyNameTypeSerializer()
-                .UseRecommendedSerializerSettings()
-                .UseSqlServerStorage(workerConnectionString));
 
-        services.AddHostedService<RecurringJobsService>();
-        services.AddHangfireServer();
+            services.AddHangfire(configuration => configuration
+                    .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
+                    .UseSimpleAssemblyNameTypeSerializer()
+                    .UseRecommendedSerializerSettings()
+                    .UseSqlServerStorage(workerConnectionString));
 
+            services.AddHostedService<RecurringJobsService>();
+            services.AddHangfireServer();
+        }
         return services;
     }
 
-    public static IApplicationBuilder UseWorkers(this IApplicationBuilder app)
+    public static IApplicationBuilder UseWorkers(this IApplicationBuilder app, IConfiguration configuration)
     {
-        app.UseHangfireDashboard(Paths.Admin_BackgroundJobsPortal, new DashboardOptions
+        bool backgroundWorkersEnabled = configuration.GetValue<bool>("BackgroundJobsEnabled");
+        if ((backgroundWorkersEnabled))
         {
-            Authorization = new[] { new MyAuthorizationFilter() }
-        });
+            app.UseHangfireDashboard(Paths.Admin_BackgroundJobsPortal, new DashboardOptions
+            {
+                Authorization = new[] { new MyAuthorizationFilter() }
+            });
+
+        }
 
         return app;
     }

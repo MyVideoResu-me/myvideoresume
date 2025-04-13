@@ -10,7 +10,7 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using MyVideoResume.Application;
 using MyVideoResume.Application.Account;
-using MyVideoResume.Application.Business;
+using MyVideoResume.Application.Productivity;
 using MyVideoResume.Data;
 using MyVideoResume.Data.Models;
 using MyVideoResume.Data.Models.Account;
@@ -53,7 +53,7 @@ namespace MyVideoResume.Server.Controllers.Tests
             loggerMock = new Mock<ILogger<AccountController>>();
             emailServiceMock = new Mock<IEmailService>();
             configurationMock = new Mock<IConfiguration>();
-            accountServiceMock = new Mock<AccountService>(new Mock<DataContext>().Object, new Mock<ILogger<AccountService>>().Object, new Mock<IMapper>().Object, userManagerMock.Object, roleManagerMock.Object, new Mock<TaskService>(new Mock<DataContext>().Object, new Mock<ILogger<AccountService>>().Object, new Mock<IMapper>().Object).Object);
+            accountServiceMock = new Mock<AccountService>(new Mock<DataContext>().Object, new Mock<ILogger<AccountService>>().Object, new Mock<IMapper>().Object, userManagerMock.Object, roleManagerMock.Object, new Mock<ProductivityService>(new Mock<DataContext>().Object, new Mock<ILogger<AccountService>>().Object, new Mock<IMapper>().Object).Object);
 
             controller = new AccountController(envMock.Object, signInManagerMock.Object, userManagerMock.Object, roleManagerMock.Object, loggerMock.Object, emailServiceMock.Object, new Mock<DataContextService>(new Mock<DataContext>().Object, new Mock<NavigationManager>().Object).Object, configurationMock.Object, accountServiceMock.Object);
         }

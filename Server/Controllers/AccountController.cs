@@ -161,6 +161,7 @@ If you didn't request this code, you can safely ignore this email. Someone else 
 
         return Redirect("~/");
     }
+
     [HttpPost]
     [Authorize]
     public async Task<IActionResult> ChangePassword(string oldPassword, string newPassword)

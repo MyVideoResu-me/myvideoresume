@@ -14,9 +14,9 @@ using MyVideoResume.Documents;
 using MyVideoResume.Application.Account;
 using AutoMapper;
 using MyVideoResume.Mapper;
-using MyVideoResume.Application.Business;
 using MyVideoResume.Application.Resume;
 using MyVideoResume.Application;
+using MyVideoResume.Application.Productivity;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -83,7 +83,7 @@ builder.Services.AddAuthentication(options =>
 });
 
 builder.Services.AddScoped<ResumeService>();
-builder.Services.AddScoped<TaskService>();
+builder.Services.AddScoped<ProductivityService>();
 builder.Services.AddScoped<MatchService>();
 builder.Services.AddScoped<AccountService>();
 builder.Services.AddScoped<DocumentProcessor>();

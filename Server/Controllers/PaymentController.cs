@@ -2,9 +2,9 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
-using MyVideoResume.Abstractions.Business.Tasks;
 using MyVideoResume.Abstractions.Core;
 using MyVideoResume.Abstractions.Job;
+using MyVideoResume.Abstractions.Productivity;
 using MyVideoResume.Application.Job;
 using MyVideoResume.Application.Payments;
 using MyVideoResume.Application.Resume;

@@ -13,12 +13,14 @@
     </RadzenColumn>
 </RadzenRow>
 @code {
+    [Inject] AccountWebService AccountSettingsWebService { get; set; }
+
     [Parameter]
     public UserProfileDTO Profile { get; set; }
 
     protected async Task UpdateProfileSelection(MyVideoResumeRoles role)
     {
-        var result = await Security.UpdateUserProfileRole(Profile, role);
+        var result = await AccountSettingsWebService.UserProfileUpdateRole(Profile, role);
         if (result.ErrorMessage.HasValue())
         {
             ShowErrorNotification("Error", "Failed To Update Role");

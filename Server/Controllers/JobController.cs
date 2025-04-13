@@ -1,10 +1,12 @@
 ﻿using DocumentFormat.OpenXml.Office2010.Excel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using MyVideoResume.Abstractions.Account;
 using MyVideoResume.Abstractions.Core;
 using MyVideoResume.Abstractions.Job;
 using MyVideoResume.Application.Job;
 using MyVideoResume.Application.Resume;
+using MyVideoResume.Data.Models.Account.Profiles;
 using MyVideoResume.Data.Models.Jobs;
 using MyVideoResume.Data.Models.Resume;
 using MyVideoResume.Documents;
@@ -31,17 +33,7 @@ public partial class JobController : ControllerBase
         _documentProcessor = documentProcessor;
     }
 
-    [HttpGet("getjobpreferences/{userId}")]
-    public JobPreferencesEntity GetJobPreferences(string userId)
-    {
-        return null;
-    }
 
-    [HttpPost("savejobpreferences/{userId}")]
-    public JobPreferencesEntity SaveJobPreferences(string userId, [FromBody] JobPreferences preferences)
-    {
-        return null;
-    }
 
     [HttpGet("{id}")]
     [Authorize]

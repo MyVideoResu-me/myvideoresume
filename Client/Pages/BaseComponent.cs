@@ -14,27 +14,19 @@ namespace MyVideoResume.Client.Pages;
 
 public class BaseComponent : LayoutComponentBase
 {
-    [Inject] protected FeatureFlagClientService FeatureFlagService { get; set; }
-
-    [Inject] protected MenuService MenuService { get; set; }
-
+    [Inject] protected IJSRuntime JSRuntime { get; set; }
     [Inject] protected AuthenticationStateProvider AuthenticationStateProvider { get; set; }
-
     [Inject] protected HttpClient Http { get; set; }
-
     [Inject] protected NavigationManager NavigationManager { get; set; }
 
-    [Inject] protected IJSRuntime JSRuntime { get; set; }
-
     [Inject] protected DialogService DialogService { get; set; }
-
     [Inject] protected TooltipService TooltipService { get; set; }
-
     [Inject] protected ContextMenuService ContextMenuService { get; set; }
-
     [Inject] protected NotificationService NotificationService { get; set; }
-
     [Inject] protected SecurityWebService Security { get; set; }
+    [Inject] protected AccountWebService Account { get; set; }
+    [Inject] protected FeatureFlagClientService FeatureFlagService { get; set; }
+    [Inject] protected MenuService MenuService { get; set; }
 
     public async Task<dynamic> ShowUnAuthorizedNoClose(string returnPath)
     {

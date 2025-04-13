@@ -1,0 +1,40 @@
+﻿@inherits PeopleActionsPanel
+
+<RadzenSplitButton Variant="Variant.Flat" ButtonStyle="ButtonStyle.Primary" Click=@(args => OpenActions(args, Item)) Text="Actions" Icon="cycle">
+    <ChildContent>
+        <RadzenSplitButtonItem Text="View" Value="view" Icon="preview" Visible=@(!DisableView) />
+        <RadzenSplitButtonItem Text="Edit" Value="edit" Icon="edit" Visible=@(DisplayItem(Item) && FeatureFlagService.IsResumeBuilderEnabled) />
+        <RadzenSplitButtonItem Text="Delete" Value="delete" Icon="delete" Visible=@DisplayItem(Item) />
+    </ChildContent>
+</RadzenSplitButton>
+
+
+@code
+{
+    async Task OpenActions(RadzenSplitButtonItem args, UserProfileDTO item)
+    {
+        if (args != null)
+            switch (args.Value)
+            {
+                case "edit":
+                    await EditAction(item);
+                    break;
+                case "view":
+                    await ViewAction(item);
+                    break;
+                case "delete":
+                    await DeleteAction(item);
+                    break;
+                default:
+                    break;
+            }
+        else
+            await OpenActionPanel(item);
+    }
+    protected async Task OpenActionPanel(UserProfileDTO item)
+    {
+        var result = await DialogService.OpenAsync("Actions", ds =>
+    @<PeopleActionsPanel Item=@item DisableView=@DisableView Deleted=@Deleted></PeopleActionsPanel>
+                                                                                                                                                                                          );
+    }
+}

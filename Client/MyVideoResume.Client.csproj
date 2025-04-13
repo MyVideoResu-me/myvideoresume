@@ -49,7 +49,4 @@
 	  <Compile Update="..\Server\Models\ApplicationUser.Custom.cs" Link="Models\ApplicationUser.Custom.cs" />
 	  <Compile Update="..\Server\Models\CommonBase.cs" Link="Models\CommonBase.cs" />
 	</ItemGroup>
-	<ItemGroup>
-	  <Folder Include="Pages\App\Companies\Recruiter\" />
-	</ItemGroup>
 </Project>

@@ -27,4 +27,14 @@ public class UserCompanyRoleAssociationEntity: CommonBase
     public CompanyProfileEntity CompanyProfile { get; set; }
 
     public List<MyVideoResumeRoles> RolesAssigned { get; set; }
+
+    public DateTime? TermsOfUseAgreementAcceptedDateTime { get; set; }
+    public string? TermsOfUserAgreementVersion { get; set; }
+
+    public bool IsPaidAccount { get; set; }
+    public DateTime? IsPaidAccountDateTime { get; set; }
+    public double? PaidPurchasePrice { get; set; }
+    public DateTime? PaidPurchaseDateTime { get; set; }
+    public AccountUsageType? AccountUsageType { get; set; }
+
 }
