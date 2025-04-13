@@ -103,6 +103,8 @@ builder.Services.AddSingleton<IEmailService, EmailService>();
 builder.Services.AddSingleton<IEmailService, ZohoEmailService>();
 #endif
 
+builder.Services.AddScoped<AccountWebService>();
+builder.Services.AddScoped<CompanyWebService>();
 builder.Services.AddScoped<JobWebService>();
 builder.Services.AddSingleton<IJobPromptEngine, JobPromptEngine>();
 builder.Services.AddScoped<JobService>();
