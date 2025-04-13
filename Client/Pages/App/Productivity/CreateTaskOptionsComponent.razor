@@ -9,7 +9,6 @@
 </div>
 
 @code {
-    [Inject] public FeatureFlagClientService Service { get; set; }
     [Parameter] public EventCallback<string> Created { get; set; }
     protected override async Task OnInitializedAsync()
     {

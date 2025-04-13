@@ -10,7 +10,7 @@
 @using MyVideoResume.Data.Models.Resume
 @inherits BaseComponent
 
-<RadzenSteps Change="@OnChange" @ref=@Steps Style="width:100%">
+<RadzenSteps Change="@OnChange" @ref=@Steps SelectedIndex=@SelectedStep Style="width:100%">
     <Steps>
         <RadzenStepsItem Text="Add Resume">
             <RadzenRow Style="width:100%">
@@ -68,6 +68,7 @@
     public string MatchContent { get; set; }
     public float MatchScore { get; set; }
     public RadzenSteps Steps { get; set; }
+    public int SelectedStep { get; set; } = 0;
     public bool Busy { get; set; }
     public bool ShowMatchProcessingError { get; set; } = false;
 
@@ -75,7 +76,7 @@
     {
         if (!Content.HasValue())
         {
-            Steps.SelectedIndex = 0;
+            SelectedStep = 0;
         }
     }
 
@@ -94,7 +95,7 @@
             else
             {
                 ShowMatchProcessingError = false;
-                Steps.SelectedIndex = 2;
+                SelectedStep = 2;
                 var matchResult = result.Result;
                 if (matchResult != null)
                 {

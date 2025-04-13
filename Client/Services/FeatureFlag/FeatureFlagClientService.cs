@@ -10,7 +10,7 @@ public partial class FeatureFlagClientService
     public FeatureFlagClientService(FeatureFlagWebService service)
     {
         Service = service;
-        Init();
+        _ = Init();
     }
     protected async Task Init()
     {

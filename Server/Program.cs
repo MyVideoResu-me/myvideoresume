@@ -177,28 +177,57 @@ builder.Services.AddHybridCache();
 
 builder.Host.UseSerilog();
 
+//builder.Services.AddEndpointsApiExplorer();
+//builder.Services.AddSwaggerGen(options =>
+//{
+//    options.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
+//    {
+//        Title = "MyVideoResume API",
+//        Version = "v1",
+//        Description = "API documentation for MyVideoResume.Server"
+//    });
+
+//    // Optional: Add XML comments for better documentation
+//    var xmlFile = $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.xml";
+//    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+//    if (System.IO.File.Exists(xmlPath))
+//    {
+//        options.IncludeXmlComments(xmlPath);
+//    }
+//});
+
+
 var app = builder.Build();
-app.Use(async (context, next) =>
-{
-    context.Response.OnStarting(state =>
-    {
-        var httpcontext = (HttpContext)state;
-        httpcontext.Response.Headers.Remove("Content-Security-Policy");
-        httpcontext.Response.Headers.Add("Content-Security-Policy", "frame-ancestors hirefractionaltalent.com *.hirefractionaltalent.com https:;");
-        return Task.CompletedTask;
-    }, context);
-    await next();
-});
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.UseWebAssemblyDebugging();
+    //app.UseSwagger();
+    app.UseSwaggerUI(static options => { options.SwaggerEndpoint("/openapi/v1.json", "My API V1"); });
+    //app.UseSwaggerUI(options =>
+    //{
+    //    options.SwaggerEndpoint("/swagger/v1/swagger.json", "MyVideoResume API v1");
+    //    options.RoutePrefix = "swagger"; // Swagger UI will be available at /swagger
+    //});
+
     app.MapOpenApi();
     app.MapScalarApiReference();
+    app.UseWebAssemblyDebugging();
 }
 else
 {
+    app.Use(async (context, next) =>
+    {
+        context.Response.OnStarting(state =>
+        {
+            var httpcontext = (HttpContext)state;
+            httpcontext.Response.Headers.Remove("Content-Security-Policy");
+            httpcontext.Response.Headers.Add("Content-Security-Policy", "frame-ancestors hirefractionaltalent.com *.hirefractionaltalent.com https:;");
+            return Task.CompletedTask;
+        }, context);
+        await next();
+    });
+
     app.UseExceptionHandler("/Error", createScopeForErrors: true);
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
