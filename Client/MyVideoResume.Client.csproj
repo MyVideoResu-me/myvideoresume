@@ -17,21 +17,23 @@
 		<PackageReference Include="BlazorTemplater" Version="1.5.1" />
 		<PackageReference Include="Markdig" Version="0.40.0" />
 		<PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="6.0.0" />
-		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="9.0.2" />
-		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Authentication" Version="9.0.2" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="9.0.4" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Authentication" Version="9.0.4" />
 		<PackageReference Include="Microsoft.AspNetCore.Http" Version="2.3.0" />
 		<PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.3.0" />
-		<PackageReference Include="Microsoft.Extensions.Caching.Hybrid" Version="9.1.0-preview.1.25064.3" />
-		<PackageReference Include="Microsoft.Extensions.Http" Version="9.0.2" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.4" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.4" />
+		<PackageReference Include="Microsoft.Extensions.Caching.Hybrid" Version="9.4.0" />
+		<PackageReference Include="Microsoft.Extensions.Http" Version="9.0.4" />
 		<PackageReference Include="System.Linq.Dynamic.Core" Version="1.6.0.2" />
-		<PackageReference Include="System.Net.Http.Json" Version="9.0.2" />
-		<PackageReference Include="Radzen.Blazor" Version="6.0.20" />
+		<PackageReference Include="System.Net.Http.Json" Version="9.0.4" />
+		<PackageReference Include="Radzen.Blazor" Version="6.5.2" />
 		<Compile Include="../Server/Models/**/*.cs" />
 		<Content Remove="Pages\App\People\Resumes\ResumeComponentx.razor" />
-		<PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="9.0.2" />
+		<PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="9.0.4" />
 		<PackageReference Include="System.Private.Uri" Version="4.3.2" />
-		<PackageReference Include="System.Security.Cryptography.Pkcs" Version="9.0.2" />
-		<PackageReference Include="System.Security.Cryptography.Xml" Version="9.0.2" />
+		<PackageReference Include="System.Security.Cryptography.Pkcs" Version="9.0.4" />
+		<PackageReference Include="System.Security.Cryptography.Xml" Version="9.0.4" />
 	</ItemGroup>
 	<ItemGroup>
 		<ServiceWorker Include="../Server/wwwroot/service-worker.js" PublishedContent="../Server/wwwroot/service-worker.published.js" />
