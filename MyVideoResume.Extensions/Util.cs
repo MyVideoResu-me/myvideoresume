@@ -57,6 +57,18 @@ public static class Extensions
         return new SortedList<string, string>(y);
     }
 
+    public static SortedList<int, string> ToSortedListInt<TEnum>(this TEnum enumValue) where TEnum : Enum
+    {
+        var sortedList = new SortedList<int, string>();
+
+        foreach (var value in Enum.GetValues(typeof(TEnum)))
+        {
+            sortedList.Add((int)value, value.ToString());
+        }
+
+        return sortedList;
+    }
+
     public static string GenerateSHA256Hash(this string input)
     {
         // Create a SHA256 hash object

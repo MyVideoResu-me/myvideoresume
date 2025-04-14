@@ -1,8 +1,6 @@
 using Microsoft.AspNetCore.Components;
 using Radzen;
 using Radzen.Blazor;
-using MyVideoResume.Data.Models.Jobs;
-using MyVideoResume.Abstractions.Account.Profiles;
 using MyVideoResume.Abstractions.Core;
 using MyVideoResume.Extensions;
 using Microsoft.AspNetCore.WebUtilities;
@@ -11,7 +9,6 @@ using MyVideoResume.Client.Pages.App.Admin;
 using MyVideoResume.Data.Models.Account;
 using MyVideoResume.Data.Models;
 using MyVideoResume.Abstractions.Account;
-using MyVideoResume.Client.Services;
 
 namespace MyVideoResume.Client.Pages.App.Account;
 
@@ -28,7 +25,10 @@ public partial class AccountSettings
     protected bool successVisible;
     protected List<UserCompanyRoleAssociationEntity> users;
     protected RadzenDataGrid<ApplicationUser> grid0;
-    public AccountSettingsDTO Settings { get; set; }
+    public AccountSettingsDTO Settings { get; set; } = new AccountSettingsDTO();
+    SortedList<string, string> DisplayPrivacyOptions = DisplayPrivacy.ToPublic.ToSortedList();
+    public string DisplayPrivacyOptionSelected { get; set; } = DisplayPrivacy.ToPublic.ToString();
+
 
     protected override async Task OnInitializedAsync()
     {
@@ -49,10 +49,12 @@ public partial class AccountSettings
             }
         }
 
-        var result = await Account.AccountSettingsRead($"{Security.User.Id}");
+        var result = await Account.AccountSettingsRead();
         if (!result.ErrorMessage.HasValue())
         {
             Settings = result.Result;
+
+            DisplayPrivacyOptionSelected = Settings.Privacy_ShowProfile.Value.ToString();
 
             //if the RoleSelect is null then they navigated directly here...
             //So we need to set a default and allow them to change it.
@@ -81,7 +83,7 @@ public partial class AccountSettings
 
     private async Task GetUsers()
     {
-        var result = await Account.GetCompanyUsers();
+        var result = await Account.AccountUsers();
         if (result.ErrorMessage.HasValue())
         {
             ShowErrorNotification("Error", result.ErrorMessage);
@@ -162,15 +164,18 @@ public partial class AccountSettings
                 roleSelected = MyVideoResumeRoles.Recruiter;
 
             Settings.RoleSelected = roleSelected;
-            //var result = await Account.UserProfileUpdateRole(Settings, roleSelected);
-            //if (result.ErrorMessage.HasValue())
-            //{
-            //    ShowErrorNotification("Error", "Error Saving");
-            //}
-            //else
-            //{
-            //    ShowSuccessNotification("Success", "Saved Profile");
-            //}
+
+            Settings.Privacy_ShowProfile = Enum.Parse<DisplayPrivacy>(DisplayPrivacyOptionSelected);
+
+            var result = await Account.UserProfileUpdate(Settings.CreateUserProfile());
+            if (result.ErrorMessage.HasValue())
+            {
+                ShowErrorNotification("Error", "Error Saving");
+            }
+            else
+            {
+                ShowSuccessNotification("Success", "Saved Profile");
+            }
         }
         catch (Exception ex)
         {
@@ -182,7 +187,10 @@ public partial class AccountSettings
     protected async Task SavePreferences()
     {
         isBusy = true;
-        try { }
+        try
+        {
+            await SaveUserProfile();
+        }
         catch (Exception ex)
         {
 

@@ -23,15 +23,23 @@ public partial class AccountWebService : BaseWebService
         this._securityWebService = securityWebService;
     }
 
-    //Get Account Settings
-    public async Task<ResponseResult<AccountSettingsDTO>> AccountSettingsRead(string accountId)
+    #region Settings
+    public async Task<ResponseResult<AccountSettingsDTO>> AccountSettingsRead()
     {
-        var x = new ResponseResult<AccountSettingsDTO>();
+        var result = new ResponseResult<AccountSettingsDTO>();
+        var id = _securityWebService.Principal.FindFirstValue(ClaimTypes.NameIdentifier);
+        var uri = new Uri($"{_navigationManager.BaseUri}api/account/settings");
+        var response = await _httpClient.GetAsync(uri);
+        result = await response.ReadAsync<ResponseResult<AccountSettingsDTO>>();
 
-        return x;
+        if (result.ErrorMessage.HasValue() || result.Result == null)
+            throw new NullReferenceException();
+
+        return result;
     }
+    #endregion
 
-    //GET USER PROFILE
+    #region User Profile
     public async Task<ResponseResult<UserProfileDTO>> UserProfileRead()
     {
         var result = new ResponseResult<UserProfileDTO>();
@@ -40,7 +48,7 @@ public partial class AccountWebService : BaseWebService
             var id = _securityWebService.Principal.FindFirstValue(ClaimTypes.NameIdentifier);
             var profile = await _cache.GetOrCreateAsync(id, async (x) =>
             {
-                var uri = new Uri($"{_navigationManager.BaseUri}api/account/userprofile");
+                var uri = new Uri($"{_navigationManager.BaseUri}api/account/user/profile");
                 var response = await _httpClient.GetAsync(uri);
                 result = await response.ReadAsync<ResponseResult<UserProfileDTO>>();
 
@@ -68,7 +76,7 @@ public partial class AccountWebService : BaseWebService
         {
             var profile = await _cache.GetOrCreateAsync(userId, async (x) =>
             {
-                var uri = new Uri($"{_navigationManager.BaseUri}api/account/userprofile/{userId}");
+                var uri = new Uri($"{_navigationManager.BaseUri}api/account/user/profile/{userId}");
                 var response = await _httpClient.GetAsync(uri);
                 result = await response.ReadAsync<ResponseResult<UserProfileDTO>>();
 
@@ -88,7 +96,7 @@ public partial class AccountWebService : BaseWebService
         return result;
     }
 
-    public async Task<ResponseResult<UserProfileDTO>> UserProfileUpdate(AccountSettingsDTO profile)
+    public async Task<ResponseResult<UserProfileDTO>> UserProfileUpdate(UserProfileDTO profile)
     {
         var result = new ResponseResult<UserProfileDTO>();
         try
@@ -99,47 +107,13 @@ public partial class AccountWebService : BaseWebService
             var userProfileResult = await _cache.GetOrCreateAsync(id, async (x) =>
             {
                 //Call API 
-                var uri = $"{_navigationManager.BaseUri}api/account/userprofile/update";
-                var response = await _httpClient.PostAsJsonAsync<AccountSettingsDTO>(uri, profile);
-                result = await response.ReadAsync<ResponseResult<UserProfileDTO>>();
-                if (result.ErrorMessage.HasValue() || result.Result == null)
-                    throw new NullReferenceException();
-                return result;
-            });
-            result = userProfileResult;
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex.Message, ex);
-            result.ErrorMessage = ex.Message;
-        }
-        return result;
-    }
-
-    public async Task<ResponseResult<UserProfileDTO>> UserProfileUpdateRole(UserProfileDTO profile, MyVideoResumeRoles role)
-    {
-        var result = new ResponseResult<UserProfileDTO>();
-        try
-        {
-            var id = _securityWebService.Principal.FindFirstValue(ClaimTypes.NameIdentifier);
-
-
-            await _cache.RemoveAsync(id);
-            await _cache.RemoveAsync(CacheKeys.UserRoles);
-            var userProfileResult = await _cache.GetOrCreateAsync(id, async (x) =>
-            {
-                //Call API 
-                var uri = $"{_navigationManager.BaseUri}api/account/userprofile/updaterole";
-                profile.RoleSelected = role;
+                var uri = $"{_navigationManager.BaseUri}api/account/user/profile";
                 var response = await _httpClient.PostAsJsonAsync<UserProfileDTO>(uri, profile);
                 result = await response.ReadAsync<ResponseResult<UserProfileDTO>>();
-
                 if (result.ErrorMessage.HasValue() || result.Result == null)
                     throw new NullReferenceException();
-
                 return result;
             });
-
             result = userProfileResult;
         }
         catch (Exception ex)
@@ -147,13 +121,11 @@ public partial class AccountWebService : BaseWebService
             _logger.LogError(ex.Message, ex);
             result.ErrorMessage = ex.Message;
         }
-
         return result;
     }
+    #endregion
 
-
-    //TODO: GET COMPANY PROFILE
-    public async Task<ResponseResult<List<UserCompanyRoleAssociationEntity>>> GetCompanyUsers()
+    public async Task<ResponseResult<List<UserCompanyRoleAssociationEntity>>> AccountUsers()
     {
         var result = new ResponseResult<List<UserCompanyRoleAssociationEntity>>();
         try
@@ -162,7 +134,7 @@ public partial class AccountWebService : BaseWebService
             var key = $"{id}_CompanyUsers";
             var profile = await _cache.GetOrCreateAsync(key, async (x) =>
             {
-                var uri = new Uri($"{_navigationManager.BaseUri}api/account/CompanyUsers");
+                var uri = new Uri($"{_navigationManager.BaseUri}api/account/users");
                 var response = await _httpClient.GetAsync(uri);
                 result = await response.ReadAsync<ResponseResult<List<UserCompanyRoleAssociationEntity>>>();
 

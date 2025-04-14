@@ -1,4 +1,3 @@
-@using MyVideoResume.Abstractions.Account.Profiles
 @attribute [Route(Paths.Profile_Settings)]
 @attribute [Authorize]
 @inherits BaseComponent
@@ -31,42 +30,22 @@
                                     <RadzenStack Gap="1rem">
                                         <RadzenRow AlignItems="AlignItems.Center">
                                             <RadzenColumn Size="12" SizeMD="4">
-                                                <RadzenLabel Text="Name" Component="Name" />
+                                                <RadzenLabel Text="First Name" Component="Name" />
                                             </RadzenColumn>
                                             <RadzenColumn Size="12" SizeMD="8">
-                                                <RadzenTextBox Style="width: 100%;" Name="Name" />
+                                                <RadzenTextBox Style="width: 100%;" Name="Name" @bind-Value=@Settings.FirstName />
+                                            </RadzenColumn>
+                                        </RadzenRow>
+                                        <RadzenRow AlignItems="AlignItems.Center">
+                                            <RadzenColumn Size="12" SizeMD="4">
+                                                <RadzenLabel Text="Last Name" Component="Name" />
+                                            </RadzenColumn>
+                                            <RadzenColumn Size="12" SizeMD="8">
+                                                <RadzenTextBox Style="width: 100%;" Name="Name" @bind-Value=@Settings.LastName />
                                             </RadzenColumn>
                                         </RadzenRow>
                                     </RadzenStack>
                                 </RadzenFieldset>
-                                <RadzenFieldset Text="Details" Variant="Variant.Outlined">
-@*                                     <div>
-                                        <label for="firstName">First Name:</label>
-                                        <InputText id="firstName" @bind-Value="userProfile.FirstName" />
-                                    </div>
-
-                                    <div>
-                                        <label for="lastName">Last Name:</label>
-                                        <InputText id="lastName" @bind-Value="userProfile.LastName" />
-                                    </div>
-
-                                    <div>
-                                        <label for="dateOfBirth">Date of Birth:</label>
-                                        <InputDate id="dateOfBirth" @bind-Value="userProfile.DateOfBirth" />
-                                    </div> *@
-
-@*                                     <div>
-                                        <label for="phones">Phones:</label>
-                                        <InputText id="phones" @bind-Value="userProfile.Phones" />
-                                    </div>
-
-                                    <div>
-                                        <label for="emails">Emails:</label>
-                                        <InputText id="emails" @bind-Value="userProfile.Emails" />
-                                    </div> *@
-
-                                </RadzenFieldset>
-
                             </RadzenStack>
                             <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End">
                                 <RadzenButton ButtonType="ButtonType.Submit" IsBusy=@isBusy BusyText="Processing..." Text="Save" Variant="Variant.Flat" />
@@ -75,47 +54,25 @@
 
                     </RadzenTabsItem>
                     <RadzenTabsItem Text="Preferences">
-                        Job Preferences
- @*
-                        <RadzenTemplateForm Method="post" Submit="@FormSubmit" TItem="MyVideoResume.Data.Models.ApplicationUser" Data="@user"
-                                            Visible="@(user != null)">
-                            <RadzenAlert Size="AlertSize.Large" Shade="Shade.Light" AlertStyle="AlertStyle.Danger" Variant="Variant.Flat" Title="Cannot change password" Visible="@errorVisible">@error</RadzenAlert>
-                            <RadzenAlert Size="AlertSize.Large" Shade="Shade.Light" AlertStyle="AlertStyle.Success" Variant="Variant.Flat" Visible="@successVisible">
-                                Your password has been changed.
-                            </RadzenAlert>
-
+                        <RadzenTemplateForm Method="post" Submit="@SavePreferences" TItem="AccountSettingsDTO" Data="@Settings">
                             <RadzenStack style="margin-bottom: 1rem;">
-                                <RadzenFormField Text="Old Password" Variant="Variant.Outlined">
-                                    <ChildContent>
-                                        <RadzenPassword @bind-Value="@oldPassword" style="display: block; width: 100%" Name="OldPassword" />
-                                    </ChildContent>
-                                    <Helper>
-                                        <RadzenRequiredValidator Component="OldPassword" Text="Enter your current password" />
-                                    </Helper>
-                                </RadzenFormField>
-                                <RadzenFormField Text="New Password" Variant="Variant.Outlined">
-                                    <ChildContent>
-                                        <RadzenPassword @bind-Value="@newPassword" style="display: block; width: 100%" Name="NewPassword" />
-                                    </ChildContent>
-                                    <Helper>
-                                        <RadzenRequiredValidator Component="NewPassword" Text="Enter your new password" />
-                                    </Helper>
-                                </RadzenFormField>
-                                <RadzenFormField Text="Confirm Password" Variant="Variant.Outlined">
-                                    <ChildContent>
-                                        <RadzenPassword @bind-Value="@confirmPassword" style="display: block; width: 100%" Name="ConfirmPassword" />
-                                    </ChildContent>
-                                    <Helper>
-                                        <RadzenRequiredValidator Component="ConfirmPassword" Text="Confirm your new password" />
-                                        <RadzenCompareValidator Component="ConfirmPassword" Text="Passwords should be the same" Value="@newPassword" />
-                                    </Helper>
-                                </RadzenFormField>
+                                <RadzenFieldset Text="Profile Preferences" Variant="Variant.Outlined">
+                                    <RadzenStack Gap="1rem">
+                                        <RadzenRow AlignItems="AlignItems.Center">
+                                            <RadzenColumn Size="12" SizeMD="4">
+                                                <RadzenLabel Text="Profile Visibility" Component="ShowProfile" />
+                                            </RadzenColumn>
+                                            <RadzenColumn Size="12" SizeMD="8">
+                                                <RadzenDropDown AllowClear=false TValue="string" @bind-Value=@DisplayPrivacyOptionSelected Data=@DisplayPrivacyOptions TextProperty="Value" ValueProperty="Key"></RadzenDropDown>
+                                            </RadzenColumn>
+                                        </RadzenRow>
+                                    </RadzenStack>
+                                </RadzenFieldset>
                             </RadzenStack>
                             <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End">
-                                <RadzenButton ButtonType="ButtonType.Submit" Text="Change password" Variant="Variant.Flat" />
+                                <RadzenButton ButtonType="ButtonType.Submit" IsBusy=@isBusy BusyText="Processing..." Text="Save" Variant="Variant.Flat" />
                             </RadzenStack>
                         </RadzenTemplateForm>
-                        *@
                     </RadzenTabsItem>
                     <RadzenTabsItem Text="Security">
                         Show table of users;
@@ -278,42 +235,43 @@
 
 @code {
 
-    private async Task ShowModalSavePassword() { 
+    private async Task ShowModalSavePassword()
+    {
         var result = await DialogService.OpenAsync("Update Password", ds =>
     @<RadzenTemplateForm Method="post" Submit="@SaveSecurity" TItem="MyVideoResume.Abstractions.Account.AccountSettingsDTO" Data="@Settings"
-                            Visible="@(Settings != null)">
-            <RadzenAlert Size="AlertSize.Large" Shade="Shade.Light" AlertStyle="AlertStyle.Danger" Variant="Variant.Flat" Title="Cannot change password" Visible="@errorVisible">@error</RadzenAlert>
-            <RadzenAlert Size="AlertSize.Large" Shade="Shade.Light" AlertStyle="AlertStyle.Success" Variant="Variant.Flat" Visible="@successVisible">Your password has been changed.</RadzenAlert>
-            <RadzenStack style="margin-bottom: 1rem;">
-                <RadzenFormField Text="Old Password" Variant="Variant.Outlined">
-                    <ChildContent>
-                        <RadzenPassword @bind-Value="@oldPassword" style="display: block; width: 100%" Name="OldPassword" />
-                    </ChildContent>
-                    <Helper>
-                        <RadzenRequiredValidator Component="OldPassword" Text="Enter your current password" />
-                    </Helper>
-                </RadzenFormField>
-                <RadzenFormField Text="New Password" Variant="Variant.Outlined">
-                    <ChildContent>
-                        <RadzenPassword @bind-Value="@newPassword" style="display: block; width: 100%" Name="NewPassword" />
-                    </ChildContent>
-                    <Helper>
-                        <RadzenRequiredValidator Component="NewPassword" Text="Enter your new password" />
-                    </Helper>
-                </RadzenFormField>
-                <RadzenFormField Text="Confirm Password" Variant="Variant.Outlined">
-                    <ChildContent>
-                        <RadzenPassword @bind-Value="@confirmPassword" style="display: block; width: 100%" Name="ConfirmPassword" />
-                    </ChildContent>
-                    <Helper>
-                        <RadzenRequiredValidator Component="ConfirmPassword" Text="Confirm your new password" />
-                        <RadzenCompareValidator Component="ConfirmPassword" Text="Passwords should be the same" Value="@newPassword" />
-                    </Helper>
-                </RadzenFormField>
-            </RadzenStack>
-            <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End">
-                <RadzenButton ButtonType="ButtonType.Submit" Text="Change password" Variant="Variant.Flat" />
-            </RadzenStack>
-        </RadzenTemplateForm>    );
+                             Visible="@(Settings != null)">
+        <RadzenAlert Size="AlertSize.Large" Shade="Shade.Light" AlertStyle="AlertStyle.Danger" Variant="Variant.Flat" Title="Cannot change password" Visible="@errorVisible">@error</RadzenAlert>
+        <RadzenAlert Size="AlertSize.Large" Shade="Shade.Light" AlertStyle="AlertStyle.Success" Variant="Variant.Flat" Visible="@successVisible">Your password has been changed.</RadzenAlert>
+        <RadzenStack style="margin-bottom: 1rem;">
+            <RadzenFormField Text="Old Password" Variant="Variant.Outlined">
+                <ChildContent>
+                    <RadzenPassword @bind-Value="@oldPassword" style="display: block; width: 100%" Name="OldPassword" />
+                </ChildContent>
+                <Helper>
+                    <RadzenRequiredValidator Component="OldPassword" Text="Enter your current password" />
+                </Helper>
+            </RadzenFormField>
+            <RadzenFormField Text="New Password" Variant="Variant.Outlined">
+                <ChildContent>
+                    <RadzenPassword @bind-Value="@newPassword" style="display: block; width: 100%" Name="NewPassword" />
+                </ChildContent>
+                <Helper>
+                    <RadzenRequiredValidator Component="NewPassword" Text="Enter your new password" />
+                </Helper>
+            </RadzenFormField>
+            <RadzenFormField Text="Confirm Password" Variant="Variant.Outlined">
+                <ChildContent>
+                    <RadzenPassword @bind-Value="@confirmPassword" style="display: block; width: 100%" Name="ConfirmPassword" />
+                </ChildContent>
+                <Helper>
+                    <RadzenRequiredValidator Component="ConfirmPassword" Text="Confirm your new password" />
+                    <RadzenCompareValidator Component="ConfirmPassword" Text="Passwords should be the same" Value="@newPassword" />
+                </Helper>
+            </RadzenFormField>
+        </RadzenStack>
+        <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End">
+            <RadzenButton ButtonType="ButtonType.Submit" Text="Change password" Variant="Variant.Flat" />
+        </RadzenStack>
+    </RadzenTemplateForm>    );
     }
 }

@@ -15,6 +15,8 @@ namespace MyVideoResume.Abstractions.Account;
 //- BillingInfo
 public class AccountSettingsDTO
 {
+    //protected ApplicationUser user;
+    //protected UserProfileDTO userProfile;
     public string Id { get; set; }
 
     public string FirstName { get; set; }
@@ -53,8 +55,35 @@ public class AccountSettingsDTO
     //Reset the password will be a request email. 
 
 
-    //protected ApplicationUser user;
-    //protected UserProfileDTO userProfile;
     //protected JobPreferencesEntity jobPreferences;
 
+    public UserProfileDTO CreateUserProfile()
+    {
+        var result = new UserProfileDTO()
+        {
+            AccountType = this.AccountType,
+            AccountUsageType = this.AccountUsageType,
+            //CreationDateTime = this.creat
+            DateOfBirth = this.DateOfBirth,
+            Emails = new List<Email>() { new Email() { Value = this.Email } },
+            Id = this.Id,
+            FirstName = this.FirstName,
+            LastName = this.LastName,
+            IsPaidAccount = this.IsPaidAccount,
+            IsPaidAccountDateTime = this.IsPaidAccountDateTime,
+            IsRoleSelected = this.IsRoleSelected,
+            IsRoleSelectedDateTime = this.IsRoleSelectedDateTime,
+            RoleSelected = this.RoleSelected,
+            PaidPurchasePrice = this.PaidPurchasePrice,
+            PaidPurchaseDateTime = this.PaidPurchaseDateTime,
+            Privacy_ShowProfile = this.Privacy_ShowProfile,
+            Privacy_ShowProfileContactDetails = this.Privacy_ShowProfileContactDetails,
+            ProfileStatus = this.ProfileStatus,
+            ProfileStatusDataTime = this.ProfileStatusDataTime,
+            TermsOfUseAgreementAcceptedDateTime = this.TermsOfUseAgreementAcceptedDateTime,
+            TermsOfUserAgreementVersion = this.TermsOfUserAgreementVersion,
+            UserId = this.Id,
+        };
+        return result;
+    }
 }

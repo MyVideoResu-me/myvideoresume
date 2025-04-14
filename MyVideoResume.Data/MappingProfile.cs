@@ -9,7 +9,7 @@ public partial class MappingProfile : Profile
 {
     public MappingProfile()
     {
-        CreateMap<UserProfileDTO, UserProfileEntity>();
+        CreateMap<UserProfileDTO, UserProfileEntity>().ForMember(dest => dest.Id, opt => opt.Ignore());
         CreateMap<JSONResume, ExportJSONResume>();
         CreateMap<Basics, ExportBasics>();
         CreateMap<Work, ExportWork>();
