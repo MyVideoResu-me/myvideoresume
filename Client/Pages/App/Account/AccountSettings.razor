@@ -1,6 +1,7 @@
 @attribute [Route(Paths.Profile_Settings)]
 @attribute [Authorize]
 @inherits BaseComponent
+@layout MainLayout
 <PageTitle>Account Settings</PageTitle>
 <RadzenStack>
     <RadzenRow AlignItems="AlignItems.Center">
@@ -67,6 +68,17 @@
                                             </RadzenColumn>
                                         </RadzenRow>
                                     </RadzenStack>
+                                    <RadzenStack Gap="1rem">
+                                        <RadzenRow AlignItems="AlignItems.Center">
+                                            <RadzenColumn Size="12" SizeMD="4">
+                                                <RadzenLabel Text="Contact Information Visibility" Component="ShowContactInfo" />
+                                            </RadzenColumn>
+                                            <RadzenColumn Size="12" SizeMD="8">
+                                                <RadzenDropDown AllowClear=false TValue="string" @bind-Value=@DisplayPrivacyOptionContactDetailsSelected Data=@DisplayPrivacyOptions TextProperty="Value" ValueProperty="Key"></RadzenDropDown>
+                                            </RadzenColumn>
+                                        </RadzenRow>
+                                    </RadzenStack>
+
                                 </RadzenFieldset>
                             </RadzenStack>
                             <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End">

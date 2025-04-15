@@ -1,10 +1,10 @@
-﻿@using MyVideoResume.Abstractions.Job
-@inherits PeopleBaseComponent
+﻿@inherits PeopleBaseComponent
 <RadzenPanel>
     <RadzenButton style="margin: 5px" Text="View" Icon="preview" Visible=@(!DisableView) Click=@(()=>ViewAction(Item)) />
     <RadzenButton style="margin: 5px" Text="Edit" Icon="edit" Visible=@(DisplayItem(Item) && FeatureFlagService.IsResumeBuilderEnabled) Click=@(()=>EditAction(Item)) />
     <RadzenButton style="margin: 5px" Text="Delete" Icon="delete" Visible=@DisplayItem(Item) Click=@(()=>DeleteAction(Item)) />
 </RadzenPanel>
+
 @code
 {
     [Parameter] public UserProfileDTO Item { get; set; }

@@ -28,6 +28,7 @@ public partial class AccountSettings
     public AccountSettingsDTO Settings { get; set; } = new AccountSettingsDTO();
     SortedList<string, string> DisplayPrivacyOptions = DisplayPrivacy.ToPublic.ToSortedList();
     public string DisplayPrivacyOptionSelected { get; set; } = DisplayPrivacy.ToPublic.ToString();
+    public string DisplayPrivacyOptionContactDetailsSelected { get; set; } = DisplayPrivacy.ToPublic.ToString();
 
 
     protected override async Task OnInitializedAsync()
@@ -55,6 +56,7 @@ public partial class AccountSettings
             Settings = result.Result;
 
             DisplayPrivacyOptionSelected = Settings.Privacy_ShowProfile.Value.ToString();
+            DisplayPrivacyOptionContactDetailsSelected = Settings.Privacy_ShowProfileContactDetails.Value.ToString();
 
             //if the RoleSelect is null then they navigated directly here...
             //So we need to set a default and allow them to change it.
@@ -166,6 +168,7 @@ public partial class AccountSettings
             Settings.RoleSelected = roleSelected;
 
             Settings.Privacy_ShowProfile = Enum.Parse<DisplayPrivacy>(DisplayPrivacyOptionSelected);
+            Settings.Privacy_ShowProfileContactDetails = Enum.Parse<DisplayPrivacy>(DisplayPrivacyOptionContactDetailsSelected);
 
             var result = await Account.UserProfileUpdate(Settings.CreateUserProfile());
             if (result.ErrorMessage.HasValue())
@@ -174,7 +177,7 @@ public partial class AccountSettings
             }
             else
             {
-                ShowSuccessNotification("Success", "Saved Profile");
+                ShowSuccessNotification("Success", "Saved Account Settings");
             }
         }
         catch (Exception ex)
