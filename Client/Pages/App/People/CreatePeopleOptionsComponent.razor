@@ -12,6 +12,7 @@
 </div>
 
 @code {
+    [Parameter] public EventCallback<string> Created { get; set; }
     [Inject] public FeatureFlagClientService Service { get; set; }
     [Parameter] public EventCallback<string> JobCreated { get; set; }
     protected override async Task OnInitializedAsync()
