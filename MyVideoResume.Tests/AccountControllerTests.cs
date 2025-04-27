@@ -10,7 +10,7 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using MyVideoResume.Application;
 using MyVideoResume.Application.Account;
-using MyVideoResume.Application.Business;
+using MyVideoResume.Application.Productivity;
 using MyVideoResume.Data;
 using MyVideoResume.Data.Models;
 using MyVideoResume.Data.Models.Account;
@@ -33,6 +33,19 @@ namespace MyVideoResume.Server.Controllers.Tests
 
         public AccountControllerTests()
         {
+            // Mock dependencies for ProductivityService
+            var dataContextMock = new Mock<DataContext>();
+            var loggerMock = new Mock<ILogger<ProductivityService>>();
+            var mapperMock = new Mock<IMapper>();
+
+            // Create a mock for ProductivityService with valid constructor arguments
+            var productivityServiceMock = new Mock<ProductivityService>(
+                dataContextMock.Object,
+                loggerMock.Object,
+                mapperMock.Object
+            );
+
+            // Other mocks
             signInManagerMock = new Mock<SignInManager<ApplicationUser>>(
                 new Mock<UserManager<ApplicationUser>>(
                     new Mock<IUserStore<ApplicationUser>>().Object,
@@ -50,12 +63,31 @@ namespace MyVideoResume.Server.Controllers.Tests
                 null, null, null, null);
 
             envMock = new Mock<IWebHostEnvironment>();
-            loggerMock = new Mock<ILogger<AccountController>>();
+            var loggerAccountMock = new Mock<ILogger<AccountController>>();
             emailServiceMock = new Mock<IEmailService>();
             configurationMock = new Mock<IConfiguration>();
-            accountServiceMock = new Mock<AccountService>(new Mock<DataContext>().Object, new Mock<ILogger<AccountService>>().Object, new Mock<IMapper>().Object, userManagerMock.Object, roleManagerMock.Object, new Mock<TaskService>(new Mock<DataContext>().Object, new Mock<ILogger<AccountService>>().Object, new Mock<IMapper>().Object).Object);
 
-            controller = new AccountController(envMock.Object, signInManagerMock.Object, userManagerMock.Object, roleManagerMock.Object, loggerMock.Object, emailServiceMock.Object, new Mock<DataContextService>(new Mock<DataContext>().Object, new Mock<NavigationManager>().Object).Object, configurationMock.Object, accountServiceMock.Object);
+            // Pass the mock ProductivityService to AccountService
+            accountServiceMock = new Mock<AccountService>(
+                dataContextMock.Object,
+                new Mock<ILogger<AccountService>>().Object,
+                mapperMock.Object,
+                userManagerMock.Object,
+                roleManagerMock.Object,
+                productivityServiceMock.Object // Use the mock here
+            );
+
+            controller = new AccountController(
+                envMock.Object,
+                signInManagerMock.Object,
+                userManagerMock.Object,
+                roleManagerMock.Object,
+                loggerAccountMock.Object,
+                emailServiceMock.Object,
+                new Mock<DataContextService>(dataContextMock.Object, new Mock<NavigationManager>().Object).Object,
+                configurationMock.Object,
+                accountServiceMock.Object
+            );
         }
 
         [Fact]

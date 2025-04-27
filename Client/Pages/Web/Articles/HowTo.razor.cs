@@ -10,8 +10,15 @@ using Radzen;
 using Radzen.Blazor;
 using System.Net.Http.Json;
 
-namespace MyVideoResume.Client.Pages.Web;
+namespace MyVideoResume.Client.Pages.Web.Articles;
 
-public partial class About
+public partial class HowTo
 {
+    [Inject] protected NavigationManager Navigation { get; set; }
+    protected override void OnInitialized()
+    {
+        // External URL to redirect to
+        string externalUrl = "https://myvideoresu.me/insights";
+        Navigation.NavigateTo(externalUrl, true); // true forces the full page reload
+    }    
 }

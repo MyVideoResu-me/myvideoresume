@@ -30,10 +30,9 @@ using MyVideoResume.Client.Pages.Shared.Security.Recaptcha;
 using MyVideoResume.Application.Job.BackgroundProcessing;
 using MyVideoResume.Application.Payments;
 using Stripe;
-using MyVideoResume.Application.Business;
-using DocumentFormat.OpenXml.Office2016.Drawing.ChartDrawing;
 using MyVideoResume.Application.DataCollection;
 using UAParser;
+using MyVideoResume.Application.Productivity;
 
 var builder = WebApplication.CreateBuilder(args);
 //Logging
@@ -104,13 +103,15 @@ builder.Services.AddSingleton<IEmailService, EmailService>();
 builder.Services.AddSingleton<IEmailService, ZohoEmailService>();
 #endif
 
+builder.Services.AddScoped<AccountWebService>();
+builder.Services.AddScoped<CompanyWebService>();
 builder.Services.AddScoped<JobWebService>();
 builder.Services.AddSingleton<IJobPromptEngine, JobPromptEngine>();
 builder.Services.AddScoped<JobService>();
 builder.Services.AddScoped<ResumeWebService>();
 builder.Services.AddSingleton<IResumePromptEngine, ResumePromptEngine>();
 builder.Services.AddScoped<ResumeService>();
-builder.Services.AddScoped<TaskService>();
+builder.Services.AddScoped<ProductivityService>();
 builder.Services.AddScoped<MatchService>();
 builder.Services.AddSingleton<ResumeBackgroundJobService>();
 builder.Services.AddSingleton<JobQueueProcessor>();
@@ -121,9 +122,9 @@ builder.Services.AddScoped<FeatureFlagClientService>();
 builder.Services.AddScoped<FeatureFlagWebService>();
 builder.Services.AddScoped<SecurityWebService>();
 builder.Services.AddScoped<DashboardWebService>();
-builder.Services.AddScoped<TaskWebService>();
+builder.Services.AddScoped<ProductivityWebService>();
 builder.Services.AddScoped<MatchWebService>();
-builder.Services.AddScoped<InboxWebService>();
+builder.Services.AddScoped<NotificationWebService>();
 builder.Services.AddHttpClient("MyVideoResume").ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler { UseCookies = true }).AddHeaderPropagation(o => o.Headers.Add("Cookie"));
 builder.Services.AddHeaderPropagation(o => o.Headers.Add("Cookie"));
 builder.Services.AddAuthentication();
@@ -161,7 +162,7 @@ builder.Services.AddControllers().AddOData(o =>
 });
 builder.Services.AddScoped<AuthenticationStateProvider, ApplicationAuthenticationStateProvider>();
 
-builder.Services.AddWorkers(builder.Configuration.GetConnectionString("Workers"));
+builder.Services.AddWorkers(builder.Configuration);
 
 var mapperConfiguration = new MapperConfiguration(configuration =>
 {
@@ -176,27 +177,57 @@ builder.Services.AddHybridCache();
 
 builder.Host.UseSerilog();
 
+//builder.Services.AddEndpointsApiExplorer();
+//builder.Services.AddSwaggerGen(options =>
+//{
+//    options.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
+//    {
+//        Title = "MyVideoResume API",
+//        Version = "v1",
+//        Description = "API documentation for MyVideoResume.Server"
+//    });
+
+//    // Optional: Add XML comments for better documentation
+//    var xmlFile = $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.xml";
+//    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+//    if (System.IO.File.Exists(xmlPath))
+//    {
+//        options.IncludeXmlComments(xmlPath);
+//    }
+//});
+
+
 var app = builder.Build();
-app.Use(async (context, next) =>
-{
-    context.Response.OnStarting(state => {
-        var httpcontext = (HttpContext)state;
-        httpcontext.Response.Headers.Remove("Content-Security-Policy");
-        httpcontext.Response.Headers.Add("Content-Security-Policy", "frame-ancestors hirefractionaltalent.com *.hirefractionaltalent.com https:;");
-        return Task.CompletedTask;
-    }, context);
-    await next();
-});
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.UseWebAssemblyDebugging();
+    //app.UseSwagger();
+    app.UseSwaggerUI(static options => { options.SwaggerEndpoint("/openapi/v1.json", "My API V1"); });
+    //app.UseSwaggerUI(options =>
+    //{
+    //    options.SwaggerEndpoint("/swagger/v1/swagger.json", "MyVideoResume API v1");
+    //    options.RoutePrefix = "swagger"; // Swagger UI will be available at /swagger
+    //});
+
     app.MapOpenApi();
     app.MapScalarApiReference();
+    app.UseWebAssemblyDebugging();
 }
 else
 {
+    app.Use(async (context, next) =>
+    {
+        context.Response.OnStarting(state =>
+        {
+            var httpcontext = (HttpContext)state;
+            httpcontext.Response.Headers.Remove("Content-Security-Policy");
+            httpcontext.Response.Headers.Add("Content-Security-Policy", "frame-ancestors hirefractionaltalent.com *.hirefractionaltalent.com https:;");
+            return Task.CompletedTask;
+        }, context);
+        await next();
+    });
+
     app.UseExceptionHandler("/Error", createScopeForErrors: true);
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
@@ -212,7 +243,7 @@ app.UseStaticFiles();
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseAntiforgery();
-app.UseWorkers();
+app.UseWorkers(builder.Configuration);
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode()
     .AddInteractiveWebAssemblyRenderMode()

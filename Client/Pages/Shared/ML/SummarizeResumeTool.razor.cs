@@ -22,7 +22,7 @@ public partial class SummarizeResumeTool
 
     public string Result { get; set; } = "";
     public bool Busy { get; set; }
-    public string Resume { get; set; }
+    public string ResumeText { get; set; }
 
     private async Task SummarizeAsync()
     {
@@ -35,7 +35,7 @@ public partial class SummarizeResumeTool
             }
             else
             {
-                var r = await Service.Summarize(Resume);
+                var r = await Service.Summarize(ResumeText);
                 Result = Markdown.ToHtml(r.Result);
             }
         }
@@ -56,7 +56,7 @@ public partial class SummarizeResumeTool
     {
         try
         {
-            Resume = await localStorage.GetItemAsync<string>("textresume");
+            ResumeText = await localStorage.GetItemAsync<string>("textresume");
         }
         catch (InvalidOperationException ex)
         {

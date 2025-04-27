@@ -1,125 +1,0 @@
-@page "/tasks"@using MyVideoResume.Abstractions.Business
-@using MyVideoResume.Abstractions.Business.Tasks
-@using MyVideoResume.Data.Models.Business
-@using MyVideoResume.Data.Models.Business.Tasks
-@inherits AppBaseComponent<PageTitle>MyVideoResu.ME - Tasks</PageTitle><RadzenRow>    <RadzenColumn Size="11">        <CreateTaskOptionsComponent Created=@Created></CreateTaskOptionsComponent>
-        <RadzenText Text="Tasks" TextStyle="Radzen.Blazor.TextStyle.DisplayH2" TagName="Radzen.Blazor.TagName.Auto"></RadzenText>        <RadzenCard>            <AuthorizeView>                <Authorized>                    <RadzenDataGrid Visible=@ShowGrid Responsive=true AllowFiltering="false" AllowColumnResize="true" AllowAlternatingRows="false" FilterMode="FilterMode.Simple" AllowSorting="true" PageSize="5" AllowPaging="true" PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true" Data="@Items" ColumnWidth="300px" LogicalFilterOperator="LogicalFilterOperator.Or" SelectionMode="DataGridSelectionMode.Single" @bind-Value=@SelectedItems>                        <Columns>                            <RadzenDataGridColumn Width="50px" Title="#" Filterable="false" Sortable="false" TextAlign="TextAlign.Center">                                <Template Context="data">                                    @(Items.IndexOf(data) + 1)                                </Template>                            </RadzenDataGridColumn>                            <RadzenDataGridColumn Property="@nameof(TaskEntity.Text)" Title="Item" Frozen="true">                                <Template Context="data">                                    <div style=" max-width: 250px; "><RadzenText style="text-overflow:ellipsis; white-space: nowrap; overflow: hidden;" TextStyle="TextStyle.Body1" title="@(data.Text)">@(data.Text)</RadzenText></div>                                </Template>                            </RadzenDataGridColumn>                            <RadzenDataGridColumn Width="75px" Property="@nameof(TaskEntity.CreationDateTime)" Title="Date Created" Frozen="false" />                            <RadzenDataGridColumn Title="Actions" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Frozen="false">                                <Template Context="data">                                    <RadzenCard Style="background-color: white; padding: 0px !important; margin:0px !important; ">                                        <RadzenButton ButtonStyle="ButtonStyle.Danger" Variant="Variant.Text" Icon="delete" Text="Delete" Click=@(()=> Delete(data)) Visible=@DisplayItem(data) />                                        <RadzenButton ButtonStyle="ButtonStyle.Dark" Variant="Variant.Text" Icon="edit" Text="Edit" Visible=@DisplayItem(data) Click=@(()=> NavigateTo("jobs/builder", data.Id)) />                                        <RadzenButton ButtonStyle="ButtonStyle.Dark" Variant="Variant.Text" Icon="preview" Text="View" Click=@(()=> NavigateTo(Paths.Jobs_View, data.Id)) />                                    </RadzenCard>                                </Template>                            </RadzenDataGridColumn>@*                             <RadzenDataGridColumn Width="125px" Title="Tools" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Frozen="false">                                <Template Context="data">                                    <RadzenSplitButton Variant="Variant.Flat" ButtonStyle="ButtonStyle.Light" Click=@(args => OpenAITools(args, data)) Text="Tools" Icon="tools_ladder">                                        <ChildContent>                                            <RadzenSplitButtonItem Text="Job Match" Value="jobmatch" Icon="join_inner" />                                        </ChildContent>                                    </RadzenSplitButton>                                </Template>                            </RadzenDataGridColumn> *@                        </Columns>                    </RadzenDataGrid>                    @*                     <RadzenRow Visible=@ShowPreview>
-                        <JobDisplayPreviewComponent Items=@Items DeleteCompleted=@DeleteCompletedHandler></JobDisplayPreviewComponent>
-                    </RadzenRow>
- *@                </Authorized>                <NotAuthorized>                    <UnAuthorizedComponent Path=@Paths.Jobs_View></UnAuthorizedComponent>                </NotAuthorized>            </AuthorizeView>        </RadzenCard>    </RadzenColumn>
-</RadzenRow>@code {    [Inject] TaskWebService Service { get; set; }
-    public bool ShowGrid { get; set; } = true;
-    public bool ShowPreview { get { return !ShowGrid; } }
-    List<TaskDTO> Items { get; set; } = new List<TaskDTO>();
-    IList<TaskDTO> SelectedItems { get; set; } = new List<TaskDTO>();
-
-    public bool DisplayItem(TaskDTO item)
-    {
-        var result = false;
-        result = item.CreatedByUserId == Security.User.Id;
-        return result;
-    }
-
-    protected async Task Delete(TaskDTO item)
-    {
-        var result = new ResponseResult();
-        result = await Service.Delete(item.Id);
-        await ShowNotification(result);
-    }
-
-    private async Task ShowNotification(ResponseResult result)
-    {
-        if (result.ErrorMessage.HasValue())
-        {
-            ShowErrorNotification("Failed to Delete", string.Empty);
-        }
-        else
-        {
-            ShowSuccessNotification("Job Deleted", string.Empty);
-            Items = await Service.GetTasks();
-        }
-    }
-
-    async Task DeleteCompletedHandler(ResponseResult result)
-    {
-        await ShowNotification(result);
-    }
-
-
-    protected override async Task OnInitializedAsync()
-    {
-        await base.OnInitializedAsync();
-
-        if (Security.IsAuthenticated())
-            Items = await Service.GetTasks();
-    }
-
-    protected async Task Created(string result)
-    {
-        if (result.HasValue())
-            Items = await Service.GetTasks();
-    }
-
-    RadzenScheduler<AppointmentEntity> scheduler;
-    Dictionary<DateTime, string> events = new Dictionary<DateTime, string>();
-    Month startMonth = Month.January;
-
-    IList<AppointmentEntity> appointments = new List<AppointmentEntity>    {        new AppointmentEntity { Start = DateTime.Today.AddDays(-2), End = DateTime.Today.AddDays(-2), Text = "Birthday" },        new AppointmentEntity { Start = DateTime.Today.AddDays(-11), End = DateTime.Today.AddDays(-10), Text = "Day off" },        new AppointmentEntity { Start = DateTime.Today.AddDays(-10), End = DateTime.Today.AddDays(-8), Text = "Work from home" },        new AppointmentEntity { Start = DateTime.Today.AddHours(10), End = DateTime.Today.AddHours(12), Text = "Online meeting" },        new AppointmentEntity { Start = DateTime.Today.AddHours(10), End = DateTime.Today.AddHours(13), Text = "Skype call" },        new AppointmentEntity { Start = DateTime.Today.AddHours(14), End = DateTime.Today.AddHours(14).AddMinutes(30), Text = "Dentist appointment" },        new AppointmentEntity { Start = DateTime.Today.AddDays(1), End = DateTime.Today.AddDays(12), Text = "Vacation" },    };
-
-    void OnSlotRender(SchedulerSlotRenderEventArgs args)
-    {
-        // Highlight today in month view
-        if (args.View.Text == "Month" && args.Start.Date == DateTime.Today)
-        {
-            args.Attributes["style"] = "background: var(--rz-scheduler-highlight-background-color, rgba(255,220,40,.2));";
-        }
-
-        // Draw a line for new year if start month is not January
-        if ((args.View.Text == "Planner" || args.View.Text == "Timeline") && args.Start.Month == 12 && startMonth != Month.January)
-        {
-            args.Attributes["style"] = "border-bottom: thick double var(--rz-base-600);";
-        }
-    }
-
-    async Task OnSlotSelect(SchedulerSlotSelectEventArgs args)
-    {
- //       Logger.Log($"SlotSelect: Start={args.Start} End={args.End}");
-
-        if (args.View.Text != "Year")
-        {
-            AppointmentEntity data = await DialogService.OpenAsync<AddAppointmentPage>("Add Appointment",
-                new Dictionary<string, object> { { "Start", args.Start }, { "End", args.End } });
-
-            if (data != null)
-            {
-                appointments.Add(data);
-                // Either call the Reload method or reassign the Data property of the Scheduler
-                await scheduler.Reload();
-            }
-        }
-    }
-
-    async Task OnMonthSelect(SchedulerMonthSelectEventArgs args)
-    {
-   //     console.Log($"MonthSelect: MonthStart={args.MonthStart} AppointmentCount={args.Appointments.Count()}");
-        await Task.CompletedTask;
-    }
-
-    async Task OnAppointmentSelect(SchedulerAppointmentSelectEventArgs<AppointmentEntity> args)
-    {
-     //   console.Log($"AppointmentSelect: Appointment={args.Data.Text}");
-
-        await DialogService.OpenAsync<EditAppointmentPage>("Edit Appointment", new Dictionary<string, object> { { "Appointment", args.Data } });
-
-        await scheduler.Reload();
-    }
-
-    void OnAppointmentRender(SchedulerAppointmentRenderEventArgs<AppointmentEntity> args)
-    {
-        // Never call StateHasChanged in AppointmentRender - would lead to infinite loop
-
-        if (args.Data.Text == "Birthday")
-        {
-            args.Attributes["style"] = "background: red";
-        }
-    }}

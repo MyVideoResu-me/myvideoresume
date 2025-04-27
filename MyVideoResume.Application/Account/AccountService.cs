@@ -2,15 +2,16 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using MyVideoResume.Abstractions.Account;
 using MyVideoResume.Abstractions.Account.Profiles;
 using MyVideoResume.Abstractions.Core;
-using MyVideoResume.Application.Business;
+using MyVideoResume.Application.Productivity;
 using MyVideoResume.Data;
 using MyVideoResume.Data.Models;
 using MyVideoResume.Data.Models.Account;
+using MyVideoResume.Data.Models.Account.Preferences;
 using MyVideoResume.Data.Models.Account.Profiles;
-using MyVideoResume.Data.Models.Business;
-using MyVideoResume.Data.Models.Jobs;
+using MyVideoResume.Extensions;
 using MyVideoResume.Server.Data;
 
 namespace MyVideoResume.Application.Account;
@@ -23,50 +24,112 @@ public class AccountService
     private readonly ILogger<AccountService> _logger;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly RoleManager<ApplicationRole> _roleManager;
-    private readonly TaskService _taskService;
+    private readonly ProductivityService _productivityService;
     private readonly ApplicationIdentityDbContext _identityDbContext;
 
-    public AccountService(DataContext dataContextService, ILogger<AccountService> logger, IMapper mapper, UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, TaskService taskService)
+    public AccountService(DataContext dataContextService, ILogger<AccountService> logger, IMapper mapper, UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager, ProductivityService productivityService)
     {
         this._dataContext = dataContextService;
         this._logger = logger;
         this._mapper = mapper;
         this._userManager = userManager;
         this._roleManager = roleManager;
-        this._taskService = taskService;
+        this._productivityService = productivityService;
     }
-
-    public async Task<ResponseResult<List<UserCompanyRoleAssociationEntity>>> GetCompanyUsers(string userId)
+    #region Settings
+    public async Task<ResponseResult<AccountSettingsDTO>> AccountSettingsRead(string userId)
     {
+        var result = new ResponseResult<AccountSettingsDTO>();
+        var user = await _userManager.FindByIdAsync(userId);
+        var userProfile = await UserProfileRead(userId);
 
-        var result = new ResponseResult<List<UserCompanyRoleAssociationEntity>>();
-        //based upon the logged in User get the Company Profile then get all the users ba
-        var users = await _dataContext.CompanyUserAssociation.Where(z => z.UserId == userId).ToListAsync();
-
-        if (users.Any())
+        if (user == null || userProfile == null || (userProfile.ErrorMessage != null && userProfile.ErrorMessage.HasValue()))
         {
-            result.Result = users;
+            result.ErrorMessage = userProfile?.ErrorMessage;
+            return result;
         }
+        else
+        {
+            var accountSettings = new AccountSettingsDTO()
+            {
+                Id = user.Id,
+                FirstName = userProfile.Result.FirstName,
+                LastName = userProfile.Result.LastName,
+                Email = user.Email,
+                DateOfBirth = userProfile.Result.DateOfBirth,
+                IsRoleSelected = userProfile.Result.IsRoleSelected,
+                IsRoleSelectedDateTime = userProfile.Result.IsRoleSelectedDateTime,
+                ProfileStatus = userProfile.Result.ProfileStatus,
+                ProfileStatusDataTime = userProfile.Result.ProfileStatusDataTime,
+                RoleSelected = userProfile.Result.RoleSelected,
+                Privacy_ShowProfile = userProfile.Result.Privacy_ShowProfile,
+                Privacy_ShowProfileContactDetails = userProfile.Result.Privacy_ShowProfileContactDetails,
+                SocialProfiles = userProfile.Result.SocialProfiles,
+                TermsOfUseAgreementAcceptedDateTime = userProfile.Result.TermsOfUseAgreementAcceptedDateTime,
+                TermsOfUserAgreementVersion = userProfile.Result.TermsOfUserAgreementVersion,
+                IsPaidAccount = userProfile.Result.IsPaidAccount,
+                IsPaidAccountDateTime = userProfile.Result.IsPaidAccountDateTime,
+                PaidPurchasePrice = userProfile.Result.PaidPurchasePrice,
+                PaidPurchaseDateTime = userProfile.Result.PaidPurchaseDateTime,
+                AccountType = userProfile.Result.AccountType,
+                AccountUsageType = userProfile.Result.AccountUsageType,
+            };
+            result.Result = accountSettings;
+        }
+
         return result;
     }
+    #endregion
 
-    public async Task<List<string>> GetUserRoles(string userId)
-    {
-        var result = await _userManager.GetRolesAsync(await _userManager.FindByIdAsync(userId));
-        return result.ToList();
-    }
-
-    public async Task<ResponseResult<UserProfileDTO>> GetUserProfile(string userId)
+    #region User Profile
+    public async Task<ResponseResult<UserProfileDTO>> UserProfileRead(string userId)
     {
         var result = new ResponseResult<UserProfileDTO>();
 
-        var userProfile = _dataContext.UserProfiles.Where(z => z.UserId == userId).Select(x => new UserProfileDTO() { Id = x.Id.ToString(), UserId = x.UserId, IsPaidAccount = x.IsPaidAccount, IsRoleSelected = x.IsRoleSelected, IsRoleSelectedDateTime = x.IsRoleSelectedDateTime, CreationDateTime = x.CreationDateTime, FirstName = x.FirstName, LastName = x.LastName, TermsOfUseAgreementAcceptedDateTime = x.TermsOfUseAgreementAcceptedDateTime, TermsOfUserAgreementVersion = x.TermsOfUserAgreementVersion, RoleSelected = x.RoleSelected }).FirstOrDefault();
+        var userProfile = _dataContext.UserProfiles.Where(z => z.UserId == userId).Select(x => new UserProfileDTO()
+        {
+            Id = x.Id.ToString(),
+            UserId = x.UserId,
+            IsPaidAccount = x.IsPaidAccount,
+            IsRoleSelected = x.IsRoleSelected,
+            IsRoleSelectedDateTime = x.IsRoleSelectedDateTime,
+            CreationDateTime = x.CreationDateTime,
+            FirstName = x.FirstName,
+            LastName = x.LastName,
+            TermsOfUseAgreementAcceptedDateTime = x.TermsOfUseAgreementAcceptedDateTime,
+            TermsOfUserAgreementVersion = x.TermsOfUserAgreementVersion,
+            RoleSelected = x.RoleSelected,
+            Privacy_ShowProfile = x.Privacy_ShowProfile,
+            Privacy_ShowProfileContactDetails = x.Privacy_ShowProfileContactDetails
+        }).FirstOrDefault();
         result.Result = userProfile;
 
         return result;
     }
+    public async Task<UserProfileEntity> UserProfileCreate(string userId)
+    {
+        var profile = new UserProfileEntity();
+        try
+        {
+            profile = _dataContext.UserProfiles.FirstOrDefault(x => x.UserId == userId);
+            if (profile == null)
+            {
+                var jobPreferences = new JobPreferencesEntity() { UserId = userId, CreationDateTime = DateTime.UtcNow, UpdateDateTime = DateTime.UtcNow };
+                _dataContext.JobPreferences.Add(jobPreferences);
+                profile = new UserProfileEntity() { FirstName = string.Empty, SocialProfiles = new List<string>(), LastName = string.Empty, UserId = userId, CreationDateTime = DateTime.UtcNow, UpdateDateTime = DateTime.UtcNow, JobPreferences = jobPreferences };
+                _dataContext.UserProfiles.Add(profile);
+                await _dataContext.SaveChangesAsync();
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.Message, ex);
+            throw;
+        }
 
-    public async Task<ResponseResult<UserProfileDTO>> UpdateUserProfileRole(UserProfileDTO profileRequest, string userId)
+        return profile;
+    }
+    public async Task<ResponseResult<UserProfileDTO>> UserProfileUpdate(UserProfileDTO profileRequest, string userId)
     {
         var result = new ResponseResult<UserProfileDTO>();
         //Verify its the same USER...
@@ -98,32 +161,9 @@ public class AccountService
 
         return result;
     }
+    #endregion
 
-
-    public async Task<UserProfileEntity> CreateUserProfile(string userId)
-    {
-        var profile = new UserProfileEntity();
-        try
-        {
-            profile = _dataContext.UserProfiles.FirstOrDefault(x => x.UserId == userId);
-            if (profile == null)
-            {
-                var jobPreferences = new JobPreferencesEntity() { UserId = userId, CreationDateTime = DateTime.UtcNow, UpdateDateTime = DateTime.UtcNow };
-                _dataContext.JobPreferences.Add(jobPreferences);
-                profile = new UserProfileEntity() { FirstName = string.Empty, SocialProfiles = new List<string>(), LastName = string.Empty, UserId = userId, CreationDateTime = DateTime.UtcNow, UpdateDateTime = DateTime.UtcNow, JobPreferences = jobPreferences };
-                _dataContext.UserProfiles.Add(profile);
-                await _dataContext.SaveChangesAsync();
-            }
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex.Message, ex);
-            throw;
-        }
-
-        return profile;
-    }
-
+    #region Company Profile
     public async Task<UserCompanyRoleAssociationEntity> CreateCompanyProfile(string userId, UserProfileEntity userProfile)
     {
         var association = new UserCompanyRoleAssociationEntity();
@@ -194,17 +234,33 @@ public class AccountService
 
         return association;
     }
+    #endregion
+
+    #region Account 
+    public async Task<ResponseResult<List<UserCompanyRoleAssociationEntity>>> AccountUsers(string userId)
+    {
+
+        var result = new ResponseResult<List<UserCompanyRoleAssociationEntity>>();
+        //based upon the logged in User get the Company Profile then get all the users ba
+        var users = await _dataContext.CompanyUserAssociation.Where(z => z.UserId == userId).ToListAsync();
+
+        if (users.Any())
+        {
+            result.Result = users;
+        }
+        return result;
+    }
 
     public async Task CreateAccount(string userId)
     {
         //Create the User's Profile if it doesn't exist
-        var userProfile = await this.CreateUserProfile(userId);
+        var userProfile = await this.UserProfileCreate(userId);
 
         //Create a Company Profile and Associate it with the userProfile (checks to see if there is already a Company Role assignment invite; if it exists then return that company)
         var association = await this.CreateCompanyProfile(userId, userProfile);
 
         //Let's Create the Onboarding Tasks
-        var tasks = await _taskService.CreateOnboardingTasks(userId, association.UserProfile, association.CompanyProfile);
+        var tasks = await _productivityService.CreateOnboardingTasks(userId, association.UserProfile, association.CompanyProfile);
     }
 
     public async Task<UserCompanyRoleAssociationEntity> CreateUserCompanyRoleAssociation(string userId, UserProfileEntity userProfile, CompanyProfileEntity companyProfile, InviteStatus status, List<MyVideoResumeRoles> roles)
@@ -219,8 +275,13 @@ public class AccountService
                 var dateTime = DateTime.UtcNow;
 
                 //Associate the User to the Company and give the user Owner Rights
-                var association = profile = new UserCompanyRoleAssociationEntity() { CreationDateTime = DateTime.UtcNow, InviteStatusStartDateTime = DateTime.UtcNow, InviteStatus = status, UserId = userId, UserProfile = userProfile, CompanyProfile = companyProfile, RolesAssigned = roles };
-                _dataContext.CompanyUserAssociation.Add(association);
+                profile = new UserCompanyRoleAssociationEntity() { CreationDateTime = DateTime.UtcNow, InviteStatusStartDateTime = DateTime.UtcNow, InviteStatus = status, UserId = userId, UserProfile = userProfile, CompanyProfile = companyProfile, RolesAssigned = roles };
+                if (status == InviteStatus.Owner)
+                {
+                    profile.InviteStatusEndDateTime = DateTime.UtcNow;
+                }
+
+                _dataContext.CompanyUserAssociation.Add(profile);
                 await _dataContext.SaveChangesAsync();
             }
         }
@@ -232,5 +293,12 @@ public class AccountService
 
         return profile;
     }
+    #endregion
 
+    //TODO: Move to a Security Service
+    public async Task<List<string>> UserRolesRead(string userId)
+    {
+        var result = await _userManager.GetRolesAsync(await _userManager.FindByIdAsync(userId));
+        return result.ToList();
+    }
 }

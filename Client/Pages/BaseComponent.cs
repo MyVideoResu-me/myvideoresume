@@ -14,27 +14,19 @@ namespace MyVideoResume.Client.Pages;
 
 public class BaseComponent : LayoutComponentBase
 {
-    [Inject] protected FeatureFlagClientService FeatureFlagService { get; set; }
-
-    [Inject] protected MenuService MenuService { get; set; }
-
+    [Inject] protected IJSRuntime JSRuntime { get; set; }
     [Inject] protected AuthenticationStateProvider AuthenticationStateProvider { get; set; }
-
     [Inject] protected HttpClient Http { get; set; }
-
     [Inject] protected NavigationManager NavigationManager { get; set; }
 
-    [Inject] protected IJSRuntime JSRuntime { get; set; }
-
     [Inject] protected DialogService DialogService { get; set; }
-
     [Inject] protected TooltipService TooltipService { get; set; }
-
     [Inject] protected ContextMenuService ContextMenuService { get; set; }
-
     [Inject] protected NotificationService NotificationService { get; set; }
-
     [Inject] protected SecurityWebService Security { get; set; }
+    [Inject] protected AccountWebService Account { get; set; }
+    [Inject] protected FeatureFlagClientService FeatureFlagService { get; set; }
+    [Inject] protected MenuService MenuService { get; set; }
 
     public async Task<dynamic> ShowUnAuthorizedNoClose(string returnPath)
     {
@@ -100,19 +92,19 @@ public class BaseComponent : LayoutComponentBase
 
     public void NavigateToLogin(string redirectPath)
     {
-        NavigationManager.NavigateTo(NavigateToLoginPath(redirectPath));
+        NavigationManager.NavigateTo(NavigateToLoginPath(redirectPath), true, true);
     }
 
     public string NavigateToLoginPath(string redirectPath) { return $"login?redirectUrl={redirectPath}"; }
 
     public void NavigateTo(string path)
     {
-        NavigationManager.NavigateTo(path);
+        NavigationManager.NavigateTo(path, true, true);
     }
 
     public void NavigateTo(string path, string parameter)
     {
-        NavigationManager.NavigateTo($"{path}/{parameter}");
+        NavigationManager.NavigateTo($"{path}/{parameter}", true, true);
     }
 
     public Type ResolveComponent(string componentName, string namespacevalue)

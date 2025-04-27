@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace MyVideoResume.Abstractions.Business;
 
-public class JobInboxItemDTO : InboxItemDTO
+public class JobInboxItemDTO : NotificationDTO
 {
     public string JobId { get; set; }
 }

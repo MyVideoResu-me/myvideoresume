@@ -1,17 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
-using MyVideoResume.Abstractions.Business.Tasks;
-using MyVideoResume.Abstractions.Core;
-using MyVideoResume.Data.Models.Account.Profiles;
-using MyVideoResume.Data.Models.Business.Tasks;
+﻿using MyVideoResume.Abstractions.Core;
 using MyVideoResume.Data.Models.Communications;
-using MyVideoResume.Data.Models.Resume;
-using System;
-using System.Collections.Generic;
+using MyVideoResume.Data.Models.Productivity;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MyVideoResume.Data.Models.Jobs;
 

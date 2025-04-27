@@ -487,7 +487,7 @@ public class ResumeService
                 var profile = _dataContext.UserProfiles.Include(x => x.ResumeItems).FirstOrDefault(x => x.UserId == userId);
                 if (profile == null)
                 {
-                    profile = await _accountService.CreateUserProfile(userId);
+                    profile = await _accountService.UserProfileCreate(userId);
                 }
                 if (profile.ResumeItems == null)
                     profile.ResumeItems = new List<ResumeInformationEntity>();

@@ -8,9 +8,10 @@ using MyVideoResume.Data.Models.Jobs;
 using MyVideoResume.Data.Models.MetaContent;
 using MyVideoResume.Data.Models.Account.Profiles;
 using MyVideoResume.Data.Models.Queues;
-using MyVideoResume.Data.Models.Business.Tasks;
 using MyVideoResume.Data.Models.DataCollection;
 using MyVideoResume.Data.Models.Account;
+using MyVideoResume.Data.Models.Account.Preferences;
+using MyVideoResume.Data.Models.Productivity;
 
 namespace MyVideoResume.Data;
 

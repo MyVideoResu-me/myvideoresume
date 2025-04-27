@@ -255,7 +255,7 @@ public enum TaskType
     Resume = 70,
 }
 
-public enum ActionItemStatus
+public enum ProductivityItemStatus
 {
     Planning,
     ToDo,
@@ -291,7 +291,8 @@ public enum AccountType
 public enum AccountUsageType
 {
     Individual,
-    Business
+    Business,
+    Employee
 }
 
 public enum JobOrigin

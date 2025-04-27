@@ -1,0 +1,53 @@
+﻿@inherits PeopleBaseComponent
+<RadzenPanel>
+    <RadzenButton style="margin: 5px" Text="View" Icon="preview" Visible=@(!DisableView) Click=@(()=>ViewAction(Item)) />
+    <RadzenButton style="margin: 5px" Text="Edit" Icon="edit" Visible=@(DisplayItem(Item) && FeatureFlagService.IsResumeBuilderEnabled) Click=@(()=>EditAction(Item)) />
+    <RadzenButton style="margin: 5px" Text="Delete" Icon="delete" Visible=@DisplayItem(Item) Click=@(()=>DeleteAction(Item)) />
+</RadzenPanel>
+
+@code
+{
+    [Parameter] public UserProfileDTO Item { get; set; }
+    [Parameter] public bool DisableView { get; set; } = false;
+    [Parameter] public EventCallback<ResponseResult> Deleted { get; set; }
+
+    public bool DisplayItem(UserProfileDTO item)
+    {
+        var result = false;
+        result = item.UserId == Security.User.Id;
+        return result;
+    }
+
+
+    protected async Task ViewAction(UserProfileDTO item)
+    {
+        NavigateTo("jobs", item.Id);
+    }
+
+    protected async Task EditAction(UserProfileDTO item)
+    {
+        NavigateTo("job/builder", item.Id);
+    }
+
+    protected async Task DeleteAction(UserProfileDTO item)
+    {
+        //Confirm Dialogue and if true then Delete...
+        var confirm = await DialogService.Confirm("Are you sure?", "Delete", new ConfirmOptions() { OkButtonText = "Yes", CancelButtonText = "No" });
+        if (confirm.HasValue && confirm.Value)
+        {
+            var result = new ResponseResult();
+            result = await Account.Delete(item.Id);
+            if (result.ErrorMessage.HasValue())
+            {
+                ShowErrorNotification("Failed to Delete", string.Empty);
+            }
+            else
+            {
+                ShowSuccessNotification("Resume Deleted", string.Empty);
+                if (Deleted.HasDelegate)
+                    await Deleted.InvokeAsync(result);
+            }
+        }
+        DialogService.Close();
+    }
+}

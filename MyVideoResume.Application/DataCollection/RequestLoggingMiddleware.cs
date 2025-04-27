@@ -18,6 +18,7 @@ using System.Collections.Specialized;
 using System.Web;
 using System.Reflection.Metadata;
 using MyVideoResume.Web.Common;
+using Microsoft.Extensions.Logging;
 
 namespace MyVideoResume.Application.DataCollection;
 
@@ -28,13 +29,15 @@ public class RequestLoggingMiddleware
     private readonly IRequestLogger _requestLogger;
     private readonly Parser _uaParser; // Instance of UAParser, created once per request
     private readonly IConfiguration _configuration;
+    private readonly ILogger<RequestLoggingMiddleware> _logger;
 
-    public RequestLoggingMiddleware(RequestDelegate next, IRequestLogger requestLogger, Parser uaParser, IConfiguration configuration)
+    public RequestLoggingMiddleware(RequestDelegate next, IRequestLogger requestLogger, Parser uaParser, IConfiguration configuration, ILogger<RequestLoggingMiddleware> logger)
     {
         _next = next;
         _requestLogger = requestLogger;
         _uaParser = uaParser; // Initialize the UAParser once per request
         _configuration = configuration;
+        _logger = logger;
     }
 
     public async Task InvokeAsync(HttpContext context)
@@ -48,7 +51,7 @@ public class RequestLoggingMiddleware
                 var request = context.Request;
                 var requestPath = request.Url();
 
-                if (!requestPath.Contains("/api/"))
+                if (!requestPath.Contains("/api/") && !requestPath.Contains("/swagger") && !requestPath.Contains("/openapi"))
                 {
                     DataCollectionTypes? dataCollectionType = null;
                     //TODO: add CompanyProfile, CompanyJobPage, Embedded pages.
@@ -109,15 +112,16 @@ public class RequestLoggingMiddleware
                     }
                 }
             }
+
+            // Continue processing the request
+            await _next(context);
         }
         catch (Exception ex)
         {
             // Log the error locally or use another logging system to track errors
             Console.WriteLine($"Error creating request log: {ex.Message}");
+            _logger.LogError(ex.Message, ex);
         }
-
-        // Continue processing the request
-        await _next(context);
     }
 
     private static string ExtractId(string requestPath, string[] prefixes)

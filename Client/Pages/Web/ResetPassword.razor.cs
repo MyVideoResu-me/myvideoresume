@@ -29,7 +29,7 @@ public partial class ResetPassword
         {
             isBusy = true;
 
-            await Security.ResetPassword(user.Email);
+            await Security.PasswordReset(user.Email);
 
             DialogService.Close(true);
         }

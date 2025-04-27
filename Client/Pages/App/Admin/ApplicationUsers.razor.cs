@@ -21,14 +21,14 @@ public partial class ApplicationUsers
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
-        users = await Security.GetUsers();
+        users = await Security.GetApplicationUsers();
     }
 
     protected async Task AddClick()
     {
         await DialogService.OpenAsync<AddApplicationUser>("Add Application User");
 
-        users = await Security.GetUsers();
+        users = await Security.GetApplicationUsers();
     }
 
     protected async Task ViewProfileDetails(ApplicationUser user)
@@ -41,7 +41,7 @@ public partial class ApplicationUsers
     {
         await DialogService.OpenAsync<EditApplicationUser>("Edit Application User", new Dictionary<string, object> { { "Id", user.Id } });
 
-        users = await Security.GetUsers();
+        users = await Security.GetApplicationUsers();
     }
 
     protected async Task DeleteClick(MyVideoResume.Data.Models.ApplicationUser user)
@@ -50,9 +50,9 @@ public partial class ApplicationUsers
         {
             if (await DialogService.Confirm("Are you sure you want to delete this user?") == true)
             {
-                await Security.DeleteUser($"{user.Id}");
+                await Security.DeleteApplicationUser($"{user.Id}");
 
-                users = await Security.GetUsers();
+                users = await Security.GetApplicationUsers();
             }
         }
         catch (Exception ex)

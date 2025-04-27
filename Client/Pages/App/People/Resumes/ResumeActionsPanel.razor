@@ -24,6 +24,8 @@
     {
         var result = false;
         result = item.UserId == Security.User.Id;
+        if (result)
+            DisableWatch = true;
         return result;
     }
 

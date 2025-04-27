@@ -74,7 +74,7 @@
             DialogService.Close();
             await OpenSentimentAnalysis(item);
             if (SentimentAnalysisProcessed.HasDelegate)
-                SentimentAnalysisProcessed.InvokeAsync(result);
+                await SentimentAnalysisProcessed.InvokeAsync(result);
         }
     }
 

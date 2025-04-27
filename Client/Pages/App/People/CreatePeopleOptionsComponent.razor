@@ -1,0 +1,82 @@
+﻿@inherits PeopleBaseComponent
+
+<div style="float:right" hidden=@Security.IsInRole(MyVideoResumeRoles.JobSeeker.ToString())>
+    <RadzenSplitButton Icon="add_circle" Click=@(args => OnClick(args)) Text="Create Job" ButtonStyle="ButtonStyle.Danger">
+        <ChildContent>
+@*             <RadzenSplitButtonItem Icon="public" Text="From Website" Value="url" />
+ *@            <RadzenSplitButtonItem Icon="picture_as_pdf" Text="Upload PDF" Value="pdf" />
+            <RadzenSplitButtonItem Icon="note_add" Text="Upload MS Word" Value="word" />
+            <RadzenSplitButtonItem Icon="construction" Text="Job Builder" Value="builder" Visible=@Service.IsJobBuilderEnabled />
+        </ChildContent>
+    </RadzenSplitButton>
+</div>
+
+@code {
+    [Parameter] public EventCallback<string> Created { get; set; }
+    [Inject] public FeatureFlagClientService Service { get; set; }
+    [Parameter] public EventCallback<string> JobCreated { get; set; }
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+    }
+
+    protected async Task OnClick(RadzenSplitButtonItem args)
+    {
+        if (Security.IsNotAuthenticated())
+        {
+            var param = new Dictionary<string, object>();
+            param.Add("Path", Paths.Jobs_View);
+            var result = await DialogService.OpenAsync<UnAuthorizedComponent>("Create Account", param);
+        }
+        else
+        {
+            if ((args == null || args?.Value == "builder") && Service.IsJobBuilderEnabled)
+            {
+                NavigateTo(Paths.Jobs_CreateNew);
+            }
+            else
+            {
+                //             if (args == null || args?.Value == "url")
+
+                //             {
+                //                 var result = await DialogService.OpenAsync("Create Job from Website URL", ds =>
+                // @<RadzenCard Variant="Variant.Outlined">
+                //     <CreateJobWebsiteWizard ></CreateJobWebsiteWizard>
+                // </RadzenCard>
+                //         );
+
+                //             }
+
+                if (args?.Value == "pdf" || args?.Value == "word")
+                {
+                    var result = await DialogService.OpenAsync("Upload File to Create Job", ds =>
+    @<RadzenCard Variant="Variant.Outlined">
+        <UploadToJsonComponent Url=@Paths.Jobs_API_CreateFromFile UploadCompleted=@UploadCompletedHandler></UploadToJsonComponent>
+    </RadzenCard>
+    );
+
+                    if (result == true)
+                    {
+                    }
+                }
+            }
+        }
+    }
+
+    async Task UploadCompletedHandler(string result)
+    {
+        if (!result.HasValue())
+        {
+            ShowErrorNotification("Failed Creating Job", string.Empty);
+        }
+        else
+        {
+            DialogService.Close();
+            ShowSuccessNotification("Job Created", string.Empty);
+        }
+
+        if (JobCreated.HasDelegate)
+            await JobCreated.InvokeAsync(result);
+
+    }
+}

@@ -1,9 +1,9 @@
 ﻿using DocumentFormat.OpenXml.Office2010.Excel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using MyVideoResume.Abstractions.Business.Tasks;
 using MyVideoResume.Abstractions.Core;
 using MyVideoResume.Abstractions.Job;
+using MyVideoResume.Abstractions.Productivity;
 using MyVideoResume.Application.Job;
 using MyVideoResume.Application.Resume;
 using MyVideoResume.Data.Models;

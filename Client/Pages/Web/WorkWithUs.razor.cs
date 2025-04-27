@@ -12,6 +12,13 @@ using System.Net.Http.Json;
 
 namespace MyVideoResume.Client.Pages.Web;
 
-public partial class About
+public partial class WorkWithUs
 {
+    [Inject] protected NavigationManager Navigation { get; set; }
+    protected override void OnInitialized()
+    {
+        // External URL to redirect to
+        string externalUrl = "https://myvideoresu.me/contact-us";
+        Navigation.NavigateTo(externalUrl, true); // true forces the full page reload
+    }
 }

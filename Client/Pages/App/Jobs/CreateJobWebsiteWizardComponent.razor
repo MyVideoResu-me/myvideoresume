@@ -5,7 +5,7 @@
 @using System.Text.Json
 @inherits BaseComponent
 
-<RadzenSteps Change="@OnChange" @ref=@Steps>
+<RadzenSteps Change="@OnChange" @ref=@Steps SelectedIndex=@SelectedStep>
     <Steps>
         <RadzenStepsItem Text="Add Job">
             <RadzenRow>
@@ -63,6 +63,7 @@
     public bool FailToLoadJob { get; set; } = false;
     public RadzenHtmlEditor Editor { get; set; }
     public RadzenSteps Steps { get; set; }
+    public int SelectedStep { get; set; } = 0;
     public bool Busy { get; set; }
     public bool ShowUrlError { get; set; } = false;
     public bool ShowMatchProcessingError { get; set; } = false;
@@ -77,7 +78,7 @@
                 if (result.ErrorMessage.HasValue())
                 {
                     FailToLoadJob = true;
-                    Steps.SelectedIndex = 1;
+                    SelectedStep = 1;
                 }
                 else
                 {
@@ -87,7 +88,7 @@
             }
             else
             {
-                Steps.SelectedIndex = 0;
+                SelectedStep = 0;
                 ShowUrlError = true;
             }
         }
@@ -118,7 +119,7 @@
             else
             {
                 ShowMatchProcessingError = false;
-                Steps.SelectedIndex = 3;
+                SelectedStep = 3;
                 var matchResponse = result.Result;
                 if (matchResponse != null)
                 {

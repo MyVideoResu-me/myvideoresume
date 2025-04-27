@@ -12,6 +12,7 @@ using MyVideoResume.Abstractions.Resume;
 using MyVideoResume.Application.Account;
 using MyVideoResume.Application.Resume;
 using MyVideoResume.Data;
+using MyVideoResume.Data.Models.Account.Preferences;
 using MyVideoResume.Data.Models.Jobs;
 using MyVideoResume.Data.Models.Resume;
 using MyVideoResume.Web.Common;

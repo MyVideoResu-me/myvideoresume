@@ -14,10 +14,12 @@ public class ApplicationAuthenticationStateProvider : AuthenticationStateProvide
 {
     private readonly SecurityWebService securityService;
     private ApplicationAuthenticationState authenticationState;
+    private ILogger<ApplicationAuthenticationStateProvider> _logger;
 
-    public ApplicationAuthenticationStateProvider(SecurityWebService securityService)
+    public ApplicationAuthenticationStateProvider(SecurityWebService securityService, ILogger<ApplicationAuthenticationStateProvider> logger)
     {
         this.securityService = securityService;
+        _logger = logger;
     }
 
     public override async Task<AuthenticationState> GetAuthenticationStateAsync()
@@ -35,6 +37,7 @@ public class ApplicationAuthenticationStateProvider : AuthenticationStateProvide
         }
         catch (HttpRequestException ex)
         {
+            _logger.LogError(ex.Message, ex);
         }
 
         var result = new AuthenticationState(new ClaimsPrincipal(identity));

@@ -1,6 +1,19 @@
 @inherits BaseComponent
 <RadzenComponents />
-<div style="padding: 20px">
-    @Body
-</div>
-<CopyrightInformation></CopyrightInformation>
+@Body
+<script>
+    // Function to intercept all link clicks inside the iframe
+    document.addEventListener('DOMContentLoaded', function() {
+      var links = document.getElementsByTagName('a');
+
+      for (var i = 0; i < links.length; i++) {
+        links[i].addEventListener('click', function(event) {
+          // Prevent the default link behavior
+          event.preventDefault();
+
+          // Send a message to the parent window to perform the redirection
+          window.parent.postMessage('redirectToLogin', 'https://myvideoresu.me');
+        });
+      }
+    });
+</script>

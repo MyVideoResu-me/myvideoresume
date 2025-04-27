@@ -15,7 +15,7 @@ public class AppBaseComponent : BaseComponent
 
         if (Security.IsAuthenticated())
         {
-            var response = await Security.GetUserProfile();
+            var response = await Account.UserProfileRead();
             if (response.ErrorMessage.HasValue())
                 ShowErrorNotification("Error", "Error Loading Profile");
             else

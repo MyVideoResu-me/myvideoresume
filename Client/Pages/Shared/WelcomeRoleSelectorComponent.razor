@@ -1,5 +1,4 @@
-﻿@using MyVideoResume.Abstractions.Account.Profiles
-@inherits BaseComponent
+﻿@inherits BaseComponent
 <RadzenRow>
     <RadzenColumn Size="12">
         <RadzenRow>
@@ -13,20 +12,22 @@
     </RadzenColumn>
 </RadzenRow>
 @code {
+
     [Parameter]
     public UserProfileDTO Profile { get; set; }
 
     protected async Task UpdateProfileSelection(MyVideoResumeRoles role)
     {
-        var result = await Security.UpdateUserProfileRole(Profile, role);
+        Profile.RoleSelected = role;
+        var result = await Account.UserProfileUpdate(Profile);
         if (result.ErrorMessage.HasValue())
         {
             ShowErrorNotification("Error", "Failed To Update Role");
         }
         else
         {
-            DialogService.Close();
             ShowSuccessNotification("Success", "Profile Updated with Selection");
+            DialogService.Close();
         }
     }
 }

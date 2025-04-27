@@ -509,6 +509,58 @@ namespace MyVideoResume.Data.Migrations.MyVideoResume
                     b.HasAnnotation("SqlServer:UseSqlOutputClause", false);
                 });
 
+            modelBuilder.Entity("MyVideoResume.Data.Models.Account.Preferences.JobPreferencesEntity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("CreationDateTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DeletedDateTime")
+                        .HasColumnType("datetime2");
+
+                    b.PrimitiveCollection<string>("EmploymentType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Industry")
+                        .HasColumnType("int");
+
+                    b.Property<float>("MinimumSalary")
+                        .HasColumnType("real");
+
+                    b.Property<int>("PaySchedule")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Seniority")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdateDateTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UserHandle")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.PrimitiveCollection<string>("WorkSetting")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("JobPreferences", t =>
+                        {
+                            t.HasTrigger("JobPreferences_Trigger");
+                        });
+
+                    b.HasAnnotation("SqlServer:UseSqlOutputClause", false);
+                });
+
             modelBuilder.Entity("MyVideoResume.Data.Models.Account.Profiles.CompanyProfileEntity", b =>
                 {
                     b.Property<Guid>("Id")
@@ -702,6 +754,9 @@ namespace MyVideoResume.Data.Migrations.MyVideoResume
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<int?>("AccountUsageType")
+                        .HasColumnType("int");
+
                     b.Property<Guid>("CompanyProfileId")
                         .HasColumnType("uniqueidentifier");
 
@@ -720,8 +775,26 @@ namespace MyVideoResume.Data.Migrations.MyVideoResume
                     b.Property<DateTime?>("InviteStatusStartDateTime")
                         .HasColumnType("datetime2");
 
+                    b.Property<bool>("IsPaidAccount")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("IsPaidAccountDateTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("PaidPurchaseDateTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<double?>("PaidPurchasePrice")
+                        .HasColumnType("float");
+
                     b.PrimitiveCollection<string>("RolesAssigned")
                         .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("TermsOfUseAgreementAcceptedDateTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("TermsOfUserAgreementVersion")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("UpdateDateTime")
@@ -815,130 +888,6 @@ namespace MyVideoResume.Data.Migrations.MyVideoResume
                     b.ToTable("Addresses", t =>
                         {
                             t.HasTrigger("Addresses_Trigger");
-                        });
-
-                    b.HasAnnotation("SqlServer:UseSqlOutputClause", false);
-                });
-
-            modelBuilder.Entity("MyVideoResume.Data.Models.Business.Tasks.BoardEntity", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("CompanyProfileId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("CreatedByUserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid>("CreatedByUserId1")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime?>("CreationDateTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("DeletedDateTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsDefault")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("UpdateDateTime")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CompanyProfileId");
-
-                    b.HasIndex("CreatedByUserId1");
-
-                    b.ToTable("Boards", t =>
-                        {
-                            t.HasTrigger("Boards_Trigger");
-                        });
-
-                    b.HasAnnotation("SqlServer:UseSqlOutputClause", false);
-                });
-
-            modelBuilder.Entity("MyVideoResume.Data.Models.Business.Tasks.TaskEntity", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int?>("ActionToTake")
-                        .HasColumnType("int");
-
-                    b.Property<Guid?>("ApplicantToJobEntityId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("AssignedToUserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("BoardEntityId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("CompanyProfileId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("CreatedByUserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime?>("CreationDateTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("DeletedDateTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("End")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("Start")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("SubTaskType")
-                        .HasColumnType("int");
-
-                    b.Property<int>("TaskType")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Text")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("UpdateDateTime")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ApplicantToJobEntityId");
-
-                    b.HasIndex("AssignedToUserId");
-
-                    b.HasIndex("BoardEntityId");
-
-                    b.HasIndex("CompanyProfileId");
-
-                    b.HasIndex("CreatedByUserId");
-
-                    b.ToTable("Tasks", t =>
-                        {
-                            t.HasTrigger("Tasks_Trigger");
                         });
 
                     b.HasAnnotation("SqlServer:UseSqlOutputClause", false);
@@ -1338,58 +1287,6 @@ namespace MyVideoResume.Data.Migrations.MyVideoResume
                     b.HasAnnotation("SqlServer:UseSqlOutputClause", false);
                 });
 
-            modelBuilder.Entity("MyVideoResume.Data.Models.Jobs.JobPreferencesEntity", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime?>("CreationDateTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("DeletedDateTime")
-                        .HasColumnType("datetime2");
-
-                    b.PrimitiveCollection<string>("EmploymentType")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Industry")
-                        .HasColumnType("int");
-
-                    b.Property<float>("MinimumSalary")
-                        .HasColumnType("real");
-
-                    b.Property<int>("PaySchedule")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Seniority")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("UpdateDateTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("UserHandle")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.PrimitiveCollection<string>("WorkSetting")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("JobPreferences", t =>
-                        {
-                            t.HasTrigger("JobPreferences_Trigger");
-                        });
-
-                    b.HasAnnotation("SqlServer:UseSqlOutputClause", false);
-                });
-
             modelBuilder.Entity("MyVideoResume.Data.Models.Jobs.JobWebsiteEntity", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1522,6 +1419,284 @@ namespace MyVideoResume.Data.Migrations.MyVideoResume
                     b.ToTable("MetaData", t =>
                         {
                             t.HasTrigger("MetaData_Trigger");
+                        });
+
+                    b.HasAnnotation("SqlServer:UseSqlOutputClause", false);
+                });
+
+            modelBuilder.Entity("MyVideoResume.Data.Models.Productivity.AppointmentEntity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int?>("ActionToTake")
+                        .HasColumnType("int");
+
+                    b.Property<string>("AssignedToUserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid?>("BoardEntityId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("CompanyProfileId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("CreatedByUserId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("CreationDateTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DeletedDateTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("End")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("LocationId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("Start")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("SubTaskType")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TaskType")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("UpdateDateTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("UserProfileId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BoardEntityId");
+
+                    b.HasIndex("CompanyProfileId");
+
+                    b.HasIndex("LocationId");
+
+                    b.HasIndex("UserProfileId");
+
+                    b.ToTable("Appointments", t =>
+                        {
+                            t.HasTrigger("Appointments_Trigger");
+                        });
+
+                    b.HasAnnotation("SqlServer:UseSqlOutputClause", false);
+                });
+
+            modelBuilder.Entity("MyVideoResume.Data.Models.Productivity.BoardEntity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("CompanyProfileId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("CreatedByUserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("CreatedByUserId1")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("CreationDateTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DeletedDateTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDefault")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("UpdateDateTime")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CompanyProfileId");
+
+                    b.HasIndex("CreatedByUserId1");
+
+                    b.ToTable("Boards", t =>
+                        {
+                            t.HasTrigger("Boards_Trigger");
+                        });
+
+                    b.HasAnnotation("SqlServer:UseSqlOutputClause", false);
+                });
+
+            modelBuilder.Entity("MyVideoResume.Data.Models.Productivity.ProjectEntity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int?>("ActionToTake")
+                        .HasColumnType("int");
+
+                    b.Property<string>("AssignedToUserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid?>("BoardEntityId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("CompanyProfileId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("CreatedByUserId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("CreationDateTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DeletedDateTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("End")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("Start")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("SubTaskType")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TaskType")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("UpdateDateTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("UserProfileId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BoardEntityId");
+
+                    b.HasIndex("CompanyProfileId");
+
+                    b.HasIndex("UserProfileId");
+
+                    b.ToTable("Projects", t =>
+                        {
+                            t.HasTrigger("Projects_Trigger");
+                        });
+
+                    b.HasAnnotation("SqlServer:UseSqlOutputClause", false);
+                });
+
+            modelBuilder.Entity("MyVideoResume.Data.Models.Productivity.TaskEntity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int?>("ActionToTake")
+                        .HasColumnType("int");
+
+                    b.Property<Guid?>("ApplicantToJobEntityId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("AssignedToUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("BoardEntityId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("CompanyProfileId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("CreatedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("CreationDateTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DeletedDateTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("End")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("ProjectEntityId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("Start")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("SubTaskType")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TaskType")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("UpdateDateTime")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ApplicantToJobEntityId");
+
+                    b.HasIndex("AssignedToUserId");
+
+                    b.HasIndex("BoardEntityId");
+
+                    b.HasIndex("CompanyProfileId");
+
+                    b.HasIndex("CreatedByUserId");
+
+                    b.HasIndex("ProjectEntityId");
+
+                    b.ToTable("Tasks", t =>
+                        {
+                            t.HasTrigger("Tasks_Trigger");
                         });
 
                     b.HasAnnotation("SqlServer:UseSqlOutputClause", false);
@@ -2070,12 +2245,12 @@ namespace MyVideoResume.Data.Migrations.MyVideoResume
                         .HasForeignKey("BillingAddressId")
                         .OnDelete(DeleteBehavior.NoAction);
 
-                    b.HasOne("MyVideoResume.Data.Models.Business.Tasks.BoardEntity", null)
+                    b.HasOne("MyVideoResume.Data.Models.Productivity.BoardEntity", null)
                         .WithMany("SharedWithUsers")
                         .HasForeignKey("BoardEntityId")
                         .OnDelete(DeleteBehavior.NoAction);
 
-                    b.HasOne("MyVideoResume.Data.Models.Jobs.JobPreferencesEntity", "JobPreferences")
+                    b.HasOne("MyVideoResume.Data.Models.Account.Preferences.JobPreferencesEntity", "JobPreferences")
                         .WithMany()
                         .HasForeignKey("JobPreferencesId")
                         .OnDelete(DeleteBehavior.NoAction)
@@ -2111,58 +2286,6 @@ namespace MyVideoResume.Data.Migrations.MyVideoResume
                         .WithMany("MailingAddresses")
                         .HasForeignKey("UserProfileEntityId")
                         .OnDelete(DeleteBehavior.NoAction);
-                });
-
-            modelBuilder.Entity("MyVideoResume.Data.Models.Business.Tasks.BoardEntity", b =>
-                {
-                    b.HasOne("MyVideoResume.Data.Models.Account.Profiles.CompanyProfileEntity", "CompanyProfile")
-                        .WithMany()
-                        .HasForeignKey("CompanyProfileId")
-                        .OnDelete(DeleteBehavior.NoAction);
-
-                    b.HasOne("MyVideoResume.Data.Models.Account.Profiles.UserProfileEntity", "CreatedByUser")
-                        .WithMany()
-                        .HasForeignKey("CreatedByUserId1")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("CompanyProfile");
-
-                    b.Navigation("CreatedByUser");
-                });
-
-            modelBuilder.Entity("MyVideoResume.Data.Models.Business.Tasks.TaskEntity", b =>
-                {
-                    b.HasOne("MyVideoResume.Data.Models.Jobs.ApplicantToJobEntity", null)
-                        .WithMany("Tasks")
-                        .HasForeignKey("ApplicantToJobEntityId");
-
-                    b.HasOne("MyVideoResume.Data.Models.Account.Profiles.UserProfileEntity", "AssignedToUser")
-                        .WithMany()
-                        .HasForeignKey("AssignedToUserId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("MyVideoResume.Data.Models.Business.Tasks.BoardEntity", null)
-                        .WithMany("Tasks")
-                        .HasForeignKey("BoardEntityId")
-                        .OnDelete(DeleteBehavior.NoAction);
-
-                    b.HasOne("MyVideoResume.Data.Models.Account.Profiles.CompanyProfileEntity", "CompanyProfile")
-                        .WithMany()
-                        .HasForeignKey("CompanyProfileId")
-                        .OnDelete(DeleteBehavior.NoAction);
-
-                    b.HasOne("MyVideoResume.Data.Models.Account.Profiles.UserProfileEntity", "CreatedByUser")
-                        .WithMany()
-                        .HasForeignKey("CreatedByUserId")
-                        .OnDelete(DeleteBehavior.NoAction);
-
-                    b.Navigation("AssignedToUser");
-
-                    b.Navigation("CompanyProfile");
-
-                    b.Navigation("CreatedByUser");
                 });
 
             modelBuilder.Entity("MyVideoResume.Data.Models.Communications.ActivityEntity", b =>
@@ -2250,6 +2373,114 @@ namespace MyVideoResume.Data.Migrations.MyVideoResume
                         .WithMany("MetaData")
                         .HasForeignKey("ResumeInformationEntityId")
                         .OnDelete(DeleteBehavior.NoAction);
+                });
+
+            modelBuilder.Entity("MyVideoResume.Data.Models.Productivity.AppointmentEntity", b =>
+                {
+                    b.HasOne("MyVideoResume.Data.Models.Productivity.BoardEntity", null)
+                        .WithMany("Appointments")
+                        .HasForeignKey("BoardEntityId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("MyVideoResume.Data.Models.Account.Profiles.CompanyProfileEntity", "CompanyProfile")
+                        .WithMany()
+                        .HasForeignKey("CompanyProfileId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("MyVideoResume.Data.Models.AddressEntity", "Location")
+                        .WithMany()
+                        .HasForeignKey("LocationId");
+
+                    b.HasOne("MyVideoResume.Data.Models.Account.Profiles.UserProfileEntity", "UserProfile")
+                        .WithMany()
+                        .HasForeignKey("UserProfileId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("CompanyProfile");
+
+                    b.Navigation("Location");
+
+                    b.Navigation("UserProfile");
+                });
+
+            modelBuilder.Entity("MyVideoResume.Data.Models.Productivity.BoardEntity", b =>
+                {
+                    b.HasOne("MyVideoResume.Data.Models.Account.Profiles.CompanyProfileEntity", "CompanyProfile")
+                        .WithMany()
+                        .HasForeignKey("CompanyProfileId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("MyVideoResume.Data.Models.Account.Profiles.UserProfileEntity", "CreatedByUser")
+                        .WithMany()
+                        .HasForeignKey("CreatedByUserId1")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("CompanyProfile");
+
+                    b.Navigation("CreatedByUser");
+                });
+
+            modelBuilder.Entity("MyVideoResume.Data.Models.Productivity.ProjectEntity", b =>
+                {
+                    b.HasOne("MyVideoResume.Data.Models.Productivity.BoardEntity", null)
+                        .WithMany("Projects")
+                        .HasForeignKey("BoardEntityId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("MyVideoResume.Data.Models.Account.Profiles.CompanyProfileEntity", "CompanyProfile")
+                        .WithMany()
+                        .HasForeignKey("CompanyProfileId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("MyVideoResume.Data.Models.Account.Profiles.UserProfileEntity", "UserProfile")
+                        .WithMany()
+                        .HasForeignKey("UserProfileId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("CompanyProfile");
+
+                    b.Navigation("UserProfile");
+                });
+
+            modelBuilder.Entity("MyVideoResume.Data.Models.Productivity.TaskEntity", b =>
+                {
+                    b.HasOne("MyVideoResume.Data.Models.Jobs.ApplicantToJobEntity", null)
+                        .WithMany("Tasks")
+                        .HasForeignKey("ApplicantToJobEntityId");
+
+                    b.HasOne("MyVideoResume.Data.Models.Account.Profiles.UserProfileEntity", "AssignedToUser")
+                        .WithMany()
+                        .HasForeignKey("AssignedToUserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("MyVideoResume.Data.Models.Productivity.BoardEntity", null)
+                        .WithMany("Tasks")
+                        .HasForeignKey("BoardEntityId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("MyVideoResume.Data.Models.Account.Profiles.CompanyProfileEntity", "CompanyProfile")
+                        .WithMany()
+                        .HasForeignKey("CompanyProfileId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("MyVideoResume.Data.Models.Account.Profiles.UserProfileEntity", "CreatedByUser")
+                        .WithMany()
+                        .HasForeignKey("CreatedByUserId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("MyVideoResume.Data.Models.Productivity.ProjectEntity", null)
+                        .WithMany("ToDos")
+                        .HasForeignKey("ProjectEntityId");
+
+                    b.Navigation("AssignedToUser");
+
+                    b.Navigation("CompanyProfile");
+
+                    b.Navigation("CreatedByUser");
                 });
 
             modelBuilder.Entity("MyVideoResume.Data.Models.Queues.QueueJobToJobEntity", b =>
@@ -2379,18 +2610,27 @@ namespace MyVideoResume.Data.Migrations.MyVideoResume
                     b.Navigation("ResumeItems");
                 });
 
-            modelBuilder.Entity("MyVideoResume.Data.Models.Business.Tasks.BoardEntity", b =>
-                {
-                    b.Navigation("SharedWithUsers");
-
-                    b.Navigation("Tasks");
-                });
-
             modelBuilder.Entity("MyVideoResume.Data.Models.Jobs.ApplicantToJobEntity", b =>
                 {
                     b.Navigation("Activities");
 
                     b.Navigation("Tasks");
+                });
+
+            modelBuilder.Entity("MyVideoResume.Data.Models.Productivity.BoardEntity", b =>
+                {
+                    b.Navigation("Appointments");
+
+                    b.Navigation("Projects");
+
+                    b.Navigation("SharedWithUsers");
+
+                    b.Navigation("Tasks");
+                });
+
+            modelBuilder.Entity("MyVideoResume.Data.Models.Productivity.ProjectEntity", b =>
+                {
+                    b.Navigation("ToDos");
                 });
 
             modelBuilder.Entity("MyVideoResume.Data.Models.Queues.QueueJobToJobEntity", b =>

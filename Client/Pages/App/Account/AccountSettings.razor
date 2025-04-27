@@ -1,7 +1,7 @@
-@using MyVideoResume.Abstractions.Account.Profiles
 @attribute [Route(Paths.Profile_Settings)]
 @attribute [Authorize]
 @inherits BaseComponent
+@layout MainLayout
 <PageTitle>Account Settings</PageTitle>
 <RadzenStack>
     <RadzenRow AlignItems="AlignItems.Center">
@@ -14,7 +14,7 @@
             <RadzenTabs SelectedIndex=@tabSelected Change=@OnChange>
                 <Tabs>
                     <RadzenTabsItem Text="Profile">
-                        <RadzenTemplateForm Method="post" Submit="@SaveUserProfile" TItem="UserProfileDTO" Data="@userProfile">
+                        <RadzenTemplateForm Method="post" Submit="@SaveUserProfile" TItem="AccountSettingsDTO" Data="@Settings">
                             <RadzenStack style="margin-bottom: 1rem;">
                                 <RadzenFieldset Text="Role" Variant="Variant.Outlined">
                                     <ChildContent>
@@ -31,107 +31,60 @@
                                     <RadzenStack Gap="1rem">
                                         <RadzenRow AlignItems="AlignItems.Center">
                                             <RadzenColumn Size="12" SizeMD="4">
-                                                <RadzenLabel Text="Name" Component="Name" />
+                                                <RadzenLabel Text="First Name" Component="Name" />
                                             </RadzenColumn>
                                             <RadzenColumn Size="12" SizeMD="8">
-                                                <RadzenTextBox Style="width: 100%;" Name="Name" />
+                                                <RadzenTextBox Style="width: 100%;" Name="Name" @bind-Value=@Settings.FirstName />
                                             </RadzenColumn>
                                         </RadzenRow>
-                                        <RadzenTabs SelectedIndex="0">
-                                            <Tabs>
-                                                <RadzenTabsItem Text="Billing Address">
-                                                    <RadzenStack>
-                                                        <RadzenRow AlignItems="AlignItems.Center">
-                                                            <RadzenColumn Size="12" SizeMD="4">
-                                                                <RadzenLabel Text="Country" Component="Country" />
-                                                            </RadzenColumn>
-@*                                                             <RadzenColumn Size="12" SizeMD="8">
-                                                                <RadzenDropDown @bind-Value="order.Country" Placeholder="USA" Data="@countries" Style="width: 100%;" TextProperty="Name" ValueProperty="Id" Name="Country">
-                                                                </RadzenDropDown>
-                                                            </RadzenColumn>
- *@                                                        </RadzenRow>
-                                                        <RadzenRow AlignItems="AlignItems.Center">
-                                                            <RadzenColumn Size="12" SizeMD="4">
-                                                                <RadzenLabel Text="City" Component="City" />
-                                                            </RadzenColumn>
-                                                            <RadzenColumn Size="12" SizeMD="8">
-                                                                <RadzenTextBox Style="width: 100%;" Name="City" />
-                                                            </RadzenColumn>
-                                                        </RadzenRow>
-                                                        <RadzenRow AlignItems="AlignItems.Center">
-                                                            <RadzenColumn Size="12" SizeMD="4">
-                                                                <RadzenLabel Text="Address Line 1" Component="Address1" />
-                                                            </RadzenColumn>
-                                                            <RadzenColumn Size="12" SizeMD="8">
-                                                                <RadzenTextBox Style="width: 100%;" Name="Address1" />
-                                                            </RadzenColumn>
-                                                        </RadzenRow>
-                                                        <RadzenRow AlignItems="AlignItems.Center">
-                                                            <RadzenColumn Size="12" SizeMD="4">
-                                                                <RadzenLabel Text="Address Line 2" Component="Address2" />
-                                                            </RadzenColumn>
-                                                            <RadzenColumn Size="12" SizeMD="8">
-                                                                <RadzenTextBox Style="width: 100%;" Name="Address2" />
-                                                            </RadzenColumn>
-                                                        </RadzenRow>
-                                                        <RadzenRow AlignItems="AlignItems.Center">
-                                                            <RadzenColumn Size="12" SizeMD="4">
-                                                                <RadzenLabel Text="State / Province / Region" Component="State" />
-                                                            </RadzenColumn>
-                                                            <RadzenColumn Size="12" SizeMD="8">
-                                                                <RadzenTextBox Style="width: 100%;" Name="State" />
-                                                            </RadzenColumn>
-                                                        </RadzenRow>
-                                                        <RadzenRow AlignItems="AlignItems.Center">
-                                                            <RadzenColumn Size="12" SizeMD="4">
-                                                                <RadzenLabel Text="Zip / Postal Code" Component="Zip" />
-                                                            </RadzenColumn>
-                                                            <RadzenColumn Size="12" SizeMD="8">
-                                                                <RadzenTextBox Style="width: 100%;" Name="Zip" />
-                                                            </RadzenColumn>
-                                                        </RadzenRow>
-                                                    </RadzenStack>
-                                                </RadzenTabsItem>
-                                                <RadzenTabsItem Text="Shipping Address">
-                                                </RadzenTabsItem>
-                                            </Tabs>
-                                        </RadzenTabs>
+                                        <RadzenRow AlignItems="AlignItems.Center">
+                                            <RadzenColumn Size="12" SizeMD="4">
+                                                <RadzenLabel Text="Last Name" Component="Name" />
+                                            </RadzenColumn>
+                                            <RadzenColumn Size="12" SizeMD="8">
+                                                <RadzenTextBox Style="width: 100%;" Name="Name" @bind-Value=@Settings.LastName />
+                                            </RadzenColumn>
+                                        </RadzenRow>
                                     </RadzenStack>
                                 </RadzenFieldset>
-                                <RadzenFieldset Text="Details" Variant="Variant.Outlined">
-@*                                     <div>
-                                        <label for="firstName">First Name:</label>
-                                        <InputText id="firstName" @bind-Value="userProfile.FirstName" />
-                                    </div>
-
-                                    <div>
-                                        <label for="lastName">Last Name:</label>
-                                        <InputText id="lastName" @bind-Value="userProfile.LastName" />
-                                    </div>
-
-                                    <div>
-                                        <label for="dateOfBirth">Date of Birth:</label>
-                                        <InputDate id="dateOfBirth" @bind-Value="userProfile.DateOfBirth" />
-                                    </div> *@
-
-@*                                     <div>
-                                        <label for="phones">Phones:</label>
-                                        <InputText id="phones" @bind-Value="userProfile.Phones" />
-                                    </div>
-
-                                    <div>
-                                        <label for="emails">Emails:</label>
-                                        <InputText id="emails" @bind-Value="userProfile.Emails" />
-                                    </div> *@
-
-                                </RadzenFieldset>
-
                             </RadzenStack>
                             <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End">
                                 <RadzenButton ButtonType="ButtonType.Submit" IsBusy=@isBusy BusyText="Processing..." Text="Save" Variant="Variant.Flat" />
                             </RadzenStack>
                         </RadzenTemplateForm>
 
+                    </RadzenTabsItem>
+                    <RadzenTabsItem Text="Preferences">
+                        <RadzenTemplateForm Method="post" Submit="@SavePreferences" TItem="AccountSettingsDTO" Data="@Settings">
+                            <RadzenStack style="margin-bottom: 1rem;">
+                                <RadzenFieldset Text="Profile Preferences" Variant="Variant.Outlined">
+                                    <RadzenStack Gap="1rem">
+                                        <RadzenRow AlignItems="AlignItems.Center">
+                                            <RadzenColumn Size="12" SizeMD="4">
+                                                <RadzenLabel Text="Profile Visibility" Component="ShowProfile" />
+                                            </RadzenColumn>
+                                            <RadzenColumn Size="12" SizeMD="8">
+                                                <RadzenDropDown AllowClear=false TValue="string" @bind-Value=@DisplayPrivacyOptionSelected Data=@DisplayPrivacyOptions TextProperty="Value" ValueProperty="Key"></RadzenDropDown>
+                                            </RadzenColumn>
+                                        </RadzenRow>
+                                    </RadzenStack>
+                                    <RadzenStack Gap="1rem">
+                                        <RadzenRow AlignItems="AlignItems.Center">
+                                            <RadzenColumn Size="12" SizeMD="4">
+                                                <RadzenLabel Text="Contact Information Visibility" Component="ShowContactInfo" />
+                                            </RadzenColumn>
+                                            <RadzenColumn Size="12" SizeMD="8">
+                                                <RadzenDropDown AllowClear=false TValue="string" @bind-Value=@DisplayPrivacyOptionContactDetailsSelected Data=@DisplayPrivacyOptions TextProperty="Value" ValueProperty="Key"></RadzenDropDown>
+                                            </RadzenColumn>
+                                        </RadzenRow>
+                                    </RadzenStack>
+
+                                </RadzenFieldset>
+                            </RadzenStack>
+                            <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End">
+                                <RadzenButton ButtonType="ButtonType.Submit" IsBusy=@isBusy BusyText="Processing..." Text="Save" Variant="Variant.Flat" />
+                            </RadzenStack>
+                        </RadzenTemplateForm>
                     </RadzenTabsItem>
                     <RadzenTabsItem Text="Security">
                         Show table of users;
@@ -154,10 +107,13 @@
                                     <RadzenDataGrid AllowFiltering="true" AllowPaging="true" ShowPagingSummary="true" PageSizeOptions=@(new int[]{5, 10, 20, 30}) AllowSorting="true" Data="@users"
                                                     TItem="MyVideoResume.Data.Models.Account.UserCompanyRoleAssociationEntity" RowSelect="@RowSelect">
                                         <Columns>
-                                            <RadzenDataGridColumn TItem="MyVideoResume.Data.Models.Account.UserCompanyRoleAssociationEntity" Property="UserName" Title="User Name" />
-                                            <RadzenDataGridColumn TItem="MyVideoResume.Data.Models.Account.UserCompanyRoleAssociationEntity" Property="Email" Title="Email" />
-                                            <RadzenDataGridColumn TItem="MyVideoResume.Data.Models.Account.UserCompanyRoleAssociationEntity" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Width="100px">
+                                            <RadzenDataGridColumn TItem="MyVideoResume.Data.Models.Account.UserCompanyRoleAssociationEntity" Property="InviteStatus" Title="Status" />
+                                            <RadzenDataGridColumn TItem="MyVideoResume.Data.Models.Account.UserCompanyRoleAssociationEntity" Property="InviteStatusStartDateTime" Title="Invitation Sent" />
+                                            <RadzenDataGridColumn TItem="MyVideoResume.Data.Models.Account.UserCompanyRoleAssociationEntity" Property="InviteStatusEndDateTime" Title="Invitation Accepted" />
+@*                                             <RadzenDataGridColumn TItem="MyVideoResume.Data.Models.Account.UserCompanyRoleAssociationEntity" Property="RolesAssigned" Title="Roles" />
+ *@                                            <RadzenDataGridColumn TItem="MyVideoResume.Data.Models.Account.UserCompanyRoleAssociationEntity" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Width="100px" Visible=@(users.Any(x => x.InviteStatus != InviteStatus.Owner))>
                                                 <Template Context="user">
+
                                                     <RadzenButton ButtonStyle="ButtonStyle.Secondary" Icon="edit" Size="ButtonSize.Small"
                                                                   Variant="Variant.Flat" Shade="Shade.Lighter" Click="@(() => RowSelect(user))" @onclick:stopPropagation="true" />
                                                     <RadzenButton ButtonStyle="ButtonStyle.Info" Icon="visibility" Size="ButtonSize.Small"
@@ -173,6 +129,67 @@
                         </RadzenStack>
                     </RadzenTabsItem>
                     <RadzenTabsItem Text="Billing / Plan">
+
+                        <RadzenTabs SelectedIndex="0">
+                            <Tabs>
+                                <RadzenTabsItem Text="Billing Address">
+                                    <RadzenStack>
+                                        <RadzenRow AlignItems="AlignItems.Center">
+                                            <RadzenColumn Size="12" SizeMD="4">
+                                                <RadzenLabel Text="Country" Component="Country" />
+                                            </RadzenColumn>
+@*                                                             <RadzenColumn Size="12" SizeMD="8">
+                                                                <RadzenDropDown @bind-Value="order.Country" Placeholder="USA" Data="@countries" Style="width: 100%;" TextProperty="Name" ValueProperty="Id" Name="Country">
+                                                                </RadzenDropDown>
+                                                            </RadzenColumn>
+ *@                                                        </RadzenRow>
+                                        <RadzenRow AlignItems="AlignItems.Center">
+                                            <RadzenColumn Size="12" SizeMD="4">
+                                                <RadzenLabel Text="City" Component="City" />
+                                            </RadzenColumn>
+                                            <RadzenColumn Size="12" SizeMD="8">
+                                                <RadzenTextBox Style="width: 100%;" Name="City" />
+                                            </RadzenColumn>
+                                        </RadzenRow>
+                                        <RadzenRow AlignItems="AlignItems.Center">
+                                            <RadzenColumn Size="12" SizeMD="4">
+                                                <RadzenLabel Text="Address Line 1" Component="Address1" />
+                                            </RadzenColumn>
+                                            <RadzenColumn Size="12" SizeMD="8">
+                                                <RadzenTextBox Style="width: 100%;" Name="Address1" />
+                                            </RadzenColumn>
+                                        </RadzenRow>
+                                        <RadzenRow AlignItems="AlignItems.Center">
+                                            <RadzenColumn Size="12" SizeMD="4">
+                                                <RadzenLabel Text="Address Line 2" Component="Address2" />
+                                            </RadzenColumn>
+                                            <RadzenColumn Size="12" SizeMD="8">
+                                                <RadzenTextBox Style="width: 100%;" Name="Address2" />
+                                            </RadzenColumn>
+                                        </RadzenRow>
+                                        <RadzenRow AlignItems="AlignItems.Center">
+                                            <RadzenColumn Size="12" SizeMD="4">
+                                                <RadzenLabel Text="State / Province / Region" Component="State" />
+                                            </RadzenColumn>
+                                            <RadzenColumn Size="12" SizeMD="8">
+                                                <RadzenTextBox Style="width: 100%;" Name="State" />
+                                            </RadzenColumn>
+                                        </RadzenRow>
+                                        <RadzenRow AlignItems="AlignItems.Center">
+                                            <RadzenColumn Size="12" SizeMD="4">
+                                                <RadzenLabel Text="Zip / Postal Code" Component="Zip" />
+                                            </RadzenColumn>
+                                            <RadzenColumn Size="12" SizeMD="8">
+                                                <RadzenTextBox Style="width: 100%;" Name="Zip" />
+                                            </RadzenColumn>
+                                        </RadzenRow>
+                                    </RadzenStack>
+                                </RadzenTabsItem>
+                                <RadzenTabsItem Text="Shipping Address">
+                                </RadzenTabsItem>
+                            </Tabs>
+                        </RadzenTabs>
+
                         Credit Card information
                         Billing Address
                         History of Transactions
@@ -230,42 +247,43 @@
 
 @code {
 
-    private async Task ShowModalSavePassword() { 
-        var result = await DialogService.OpenAsync("Upload File to Create Job", ds =>
-        @<RadzenTemplateForm Method="post" Submit="@SaveSecurity" TItem="MyVideoResume.Data.Models.ApplicationUser" Data="@user"
-                            Visible="@(user != null)">
-            <RadzenAlert Size="AlertSize.Large" Shade="Shade.Light" AlertStyle="AlertStyle.Danger" Variant="Variant.Flat" Title="Cannot change password" Visible="@errorVisible">@error</RadzenAlert>
-            <RadzenAlert Size="AlertSize.Large" Shade="Shade.Light" AlertStyle="AlertStyle.Success" Variant="Variant.Flat" Visible="@successVisible">Your password has been changed.</RadzenAlert>
-            <RadzenStack style="margin-bottom: 1rem;">
-                <RadzenFormField Text="Old Password" Variant="Variant.Outlined">
-                    <ChildContent>
-                        <RadzenPassword @bind-Value="@oldPassword" style="display: block; width: 100%" Name="OldPassword" />
-                    </ChildContent>
-                    <Helper>
-                        <RadzenRequiredValidator Component="OldPassword" Text="Enter your current password" />
-                    </Helper>
-                </RadzenFormField>
-                <RadzenFormField Text="New Password" Variant="Variant.Outlined">
-                    <ChildContent>
-                        <RadzenPassword @bind-Value="@newPassword" style="display: block; width: 100%" Name="NewPassword" />
-                    </ChildContent>
-                    <Helper>
-                        <RadzenRequiredValidator Component="NewPassword" Text="Enter your new password" />
-                    </Helper>
-                </RadzenFormField>
-                <RadzenFormField Text="Confirm Password" Variant="Variant.Outlined">
-                    <ChildContent>
-                        <RadzenPassword @bind-Value="@confirmPassword" style="display: block; width: 100%" Name="ConfirmPassword" />
-                    </ChildContent>
-                    <Helper>
-                        <RadzenRequiredValidator Component="ConfirmPassword" Text="Confirm your new password" />
-                        <RadzenCompareValidator Component="ConfirmPassword" Text="Passwords should be the same" Value="@newPassword" />
-                    </Helper>
-                </RadzenFormField>
-            </RadzenStack>
-            <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End">
-                <RadzenButton ButtonType="ButtonType.Submit" Text="Change password" Variant="Variant.Flat" />
-            </RadzenStack>
-        </RadzenTemplateForm>    );
+    private async Task ShowModalSavePassword()
+    {
+        var result = await DialogService.OpenAsync("Update Password", ds =>
+    @<RadzenTemplateForm Method="post" Submit="@SaveSecurity" TItem="MyVideoResume.Abstractions.Account.AccountSettingsDTO" Data="@Settings"
+                             Visible="@(Settings != null)">
+        <RadzenAlert Size="AlertSize.Large" Shade="Shade.Light" AlertStyle="AlertStyle.Danger" Variant="Variant.Flat" Title="Cannot change password" Visible="@errorVisible">@error</RadzenAlert>
+        <RadzenAlert Size="AlertSize.Large" Shade="Shade.Light" AlertStyle="AlertStyle.Success" Variant="Variant.Flat" Visible="@successVisible">Your password has been changed.</RadzenAlert>
+        <RadzenStack style="margin-bottom: 1rem;">
+            <RadzenFormField Text="Old Password" Variant="Variant.Outlined">
+                <ChildContent>
+                    <RadzenPassword @bind-Value="@oldPassword" style="display: block; width: 100%" Name="OldPassword" />
+                </ChildContent>
+                <Helper>
+                    <RadzenRequiredValidator Component="OldPassword" Text="Enter your current password" />
+                </Helper>
+            </RadzenFormField>
+            <RadzenFormField Text="New Password" Variant="Variant.Outlined">
+                <ChildContent>
+                    <RadzenPassword @bind-Value="@newPassword" style="display: block; width: 100%" Name="NewPassword" />
+                </ChildContent>
+                <Helper>
+                    <RadzenRequiredValidator Component="NewPassword" Text="Enter your new password" />
+                </Helper>
+            </RadzenFormField>
+            <RadzenFormField Text="Confirm Password" Variant="Variant.Outlined">
+                <ChildContent>
+                    <RadzenPassword @bind-Value="@confirmPassword" style="display: block; width: 100%" Name="ConfirmPassword" />
+                </ChildContent>
+                <Helper>
+                    <RadzenRequiredValidator Component="ConfirmPassword" Text="Confirm your new password" />
+                    <RadzenCompareValidator Component="ConfirmPassword" Text="Passwords should be the same" Value="@newPassword" />
+                </Helper>
+            </RadzenFormField>
+        </RadzenStack>
+        <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End">
+            <RadzenButton ButtonType="ButtonType.Submit" Text="Change password" Variant="Variant.Flat" />
+        </RadzenStack>
+    </RadzenTemplateForm>    );
     }
 }
