@@ -10,6 +10,9 @@
 
 @if (Resume != null && Resume.MetaResume != null)
 {
+    <HeadContent>
+        <meta name="description" content=@Resume.MetaResume.Basics?.Summary />
+    </HeadContent>
     <RadzenRow>
         <RadzenStack AlignItems="AlignItems.Normal" Orientation="Orientation.Vertical">
             <RadzenText Text=@Title() TextStyle="Radzen.Blazor.TextStyle.DisplayH2" TagName="Radzen.Blazor.TagName.Auto"></RadzenText>
