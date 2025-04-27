@@ -7,6 +7,11 @@ using System.Text;
 
 namespace MyVideoResume.Abstractions.Productivity;
 
-public class ProjectGroup: TaskItem, IProductivityItem
+public class ProjectGroupDTO : ProjectGroup, IProductivityItem
+{
+    public string Id { get; set; }
+}
+
+public class ProjectGroup: TaskItem
 {
 }

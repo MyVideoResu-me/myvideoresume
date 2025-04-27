@@ -13,7 +13,7 @@ public class TaskDTO : TaskItem, IProductivityItem
 
 }
 
-public class TaskItem : CommonBase, IProductivityItem
+public class TaskItem : CommonBase
 {
     //User who owns the Task
     public string? CreatedByUserId { get; set; }

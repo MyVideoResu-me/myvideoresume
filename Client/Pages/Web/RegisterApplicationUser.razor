@@ -1,7 +1,14 @@
-@page "/register-application-user"@inherits BaseComponent@attribute [Authorize]<PageTitle>Register</PageTitle>
+@page "/register-application-user"
+
+@inherits BaseComponent
+@attribute [Authorize]
+
+<PageTitle>Register</PageTitle>
 <RadzenRow>
     <RadzenColumn SizeMD="12">
-        <RadzenTemplateForm Data="@user" TItem="MyVideoResume.Data.Models.ApplicationUser"                            Visible="@(user != null)" Submit="@FormSubmit" InvalidSubmit=@OnInvalidSubmit>            <RadzenAlert Shade="Shade.Lighter" Variant="Variant.Flat" Size="AlertSize.Small" AlertStyle="AlertStyle.Danger" Visible="@errorVisible">@error</RadzenAlert>
+        <RadzenTemplateForm Data="@user" TItem="MyVideoResume.Data.Models.ApplicationUser"
+                            Visible="@(user != null)" Submit="@FormSubmit" InvalidSubmit=@OnInvalidSubmit>
+            <RadzenAlert Shade="Shade.Lighter" Variant="Variant.Flat" Size="AlertSize.Small" AlertStyle="AlertStyle.Danger" Visible="@errorVisible">@error</RadzenAlert>
 
             <RadzenStack style="margin-bottom: 1rem;">
                 <RadzenFormField Text="Email" Variant="Variant.Outlined">
@@ -9,19 +16,30 @@
                         <RadzenTextBox style="display: block; width: 100%" @bind-Value="@(user.Email)" Placeholder="Email" Name="UserName" />
                     </ChildContent>
                     <Helper>
-                        <RadzenRequiredValidator Component="UserName" Text="Email is required" />                        <RadzenEmailValidator Component="UserName" Text="Provide a valid email address. "  />                    </Helper>                </RadzenFormField>
+                        <RadzenRequiredValidator Component="UserName" Text="Email is required" />
+                        <RadzenEmailValidator Component="UserName" Text="Provide a valid email address. "  />
+                    </Helper>
+                </RadzenFormField>
                 <RadzenFormField Text="Password" Variant="Variant.Outlined">
                     <ChildContent>
                         <RadzenPassword @bind-Value="@(user.Password)" style="display: block; width: 100%" Name="Password" />
                     </ChildContent>
                     <Helper>
-                        <RadzenRequiredValidator Component="Password" Text="Password is required. " />                        <RadzenLengthValidator Component="Password" Min="5" Text="Password must be at least 5 characters. " />                    </Helper>                </RadzenFormField>
+                        <RadzenRequiredValidator Component="Password" Text="Password is required. " />
+                        <RadzenLengthValidator Component="Password" Min="5" Text="Password must be at least 5 characters. " />
+                    </Helper>
+                </RadzenFormField>
                 <RadzenFormField Text="Confirm Password" Variant="Variant.Outlined">
                     <ChildContent>
                         <RadzenPassword style="display: block; width: 100%" @bind-Value="@(user.ConfirmPassword)" Name="ConfirmPassword" />
                     </ChildContent>
                     <Helper>
-                        <RadzenRequiredValidator Component="ConfirmPassword" Text="Confirm Password is required. " />                        <RadzenCompareValidator Visible=@(!string.IsNullOrEmpty(user.ConfirmPassword)) Value=@user.Password Component="ConfirmPassword" Text="Passwords should be the same. " />                        <RadzenLengthValidator Component="ConfirmPassword" Min="5" Text="Confirm Password must be at least 5 characters. " />                    </Helper>                </RadzenFormField>            </RadzenStack>
+                        <RadzenRequiredValidator Component="ConfirmPassword" Text="Confirm Password is required. " />
+                        <RadzenCompareValidator Visible=@(!string.IsNullOrEmpty(user.ConfirmPassword)) Value=@user.Password Component="ConfirmPassword" Text="Passwords should be the same. " />
+                        <RadzenLengthValidator Component="ConfirmPassword" Min="5" Text="Confirm Password must be at least 5 characters. " />
+                    </Helper>
+                </RadzenFormField>
+            </RadzenStack>
             <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End">
                     <TermsOfUsePrivacyAgreement></TermsOfUsePrivacyAgreement>
                     <RadzenButton ButtonType="ButtonType.Submit" Text="Register" IsBusy="@IsBusy" BusyText="Registering ..." Variant="Variant.Flat" />
@@ -29,4 +47,4 @@
             </RadzenStack>
         </RadzenTemplateForm>
     </RadzenColumn>
-</RadzenRow>
+</RadzenRow>

@@ -7,47 +7,6 @@
 </RadzenPanel>
 @code
 {
-    [Parameter] public TaskDTO Item { get; set; }
+    [Parameter] public IProductivityItem Item { get; set; }
     [Parameter] public bool DisableView { get; set; } = false;
-    [Parameter] public EventCallback<ResponseResult> Deleted { get; set; }
-
-    public bool DisplayItem(TaskDTO item)
-    {
-        var result = false;
-        result = item.CreatedByUserId == Security.User.Id;
-        return result;
-    }
-
-
-    protected async Task ViewAction(TaskDTO item)
-    {
-        NavigateTo("jobs", item.Id);
-    }
-
-    protected async Task EditAction(TaskDTO item)
-    {
-        NavigateTo("job/builder", item.Id);
-    }
-
-    protected async Task DeleteAction(TaskDTO item)
-    {
-        //Confirm Dialogue and if true then Delete...
-        var confirm = await DialogService.Confirm("Are you sure?", "Delete", new ConfirmOptions() { OkButtonText = "Yes", CancelButtonText = "No" });
-        if (confirm.HasValue && confirm.Value)
-        {
-            var result = new ResponseResult();
-            result = await Service.TaskDelete(item.Id);
-            if (result.ErrorMessage.HasValue())
-            {
-                ShowErrorNotification("Failed to Delete", string.Empty);
-            }
-            else
-            {
-                ShowSuccessNotification("Resume Deleted", string.Empty);
-                if (Deleted.HasDelegate)
-                    await Deleted.InvokeAsync(result);
-            }
-        }
-        DialogService.Close();
-    }
 }

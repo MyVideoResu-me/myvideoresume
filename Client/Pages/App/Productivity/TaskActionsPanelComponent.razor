@@ -11,7 +11,7 @@
 
 @code
 {
-    async Task OpenActions(RadzenSplitButtonItem args, TaskDTO item)
+    async Task OpenActions(RadzenSplitButtonItem args, IProductivityItem item)
     {
         if (args != null)
             switch (args.Value)
@@ -31,7 +31,7 @@
         else
             await OpenActionPanel(item);
     }
-    protected async Task OpenActionPanel(TaskDTO item)
+    protected async Task OpenActionPanel(IProductivityItem item)
     {
         var result = await DialogService.OpenAsync("Actions", ds =>
     @<TaskActionsPanel Item=@item DisableView=@DisableView Deleted=@Deleted></TaskActionsPanel>

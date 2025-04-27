@@ -19,14 +19,14 @@ public partial class ProductivityWebService : BaseWebService
     }
 
     #region Tasks
-    public async Task<List<TaskDTO>> TasksRead() //Eventually Pass in a Filter Object
+    public async Task<List<IProductivityItem>> TasksRead() //Eventually Pass in a Filter Object
     {
-        var result = new List<TaskDTO> { };
+        var result = new List<IProductivityItem> { };
         try
         {
             var uri = new Uri($"{_navigationManager.BaseUri}{Paths.Tasks_API_View}");
             var response = await _httpClient.GetAsync(uri);
-            result = await response.ReadAsync<List<TaskDTO>>();
+            result = await response.ReadAsync<List<IProductivityItem>>();
         }
         catch (Exception ex)
         {
@@ -36,7 +36,7 @@ public partial class ProductivityWebService : BaseWebService
         return result;
     }
 
-    public async Task<TaskDTO> TaskReadById(string id)
+    public async Task<IProductivityItem> TaskReadById(string id)
     {
         var result = new TaskDTO();
         try
@@ -70,9 +70,9 @@ public partial class ProductivityWebService : BaseWebService
         return result;
     }
 
-    public async Task<ResponseResult<TaskDTO>> TaskSave(TaskDTO item)
+    public async Task<ResponseResult<IProductivityItem>> TaskSave(TaskDTO item)
     {
-        var r = new ResponseResult<TaskDTO>();
+        var r = new ResponseResult<IProductivityItem>();
         try
         {
             var uri = new Uri($"{_navigationManager.BaseUri}{Paths.Tasks_API_Save}");
@@ -80,7 +80,7 @@ public partial class ProductivityWebService : BaseWebService
             var jsonText = JsonSerializer.Serialize(item);
 
             var response = await _httpClient.PostAsJsonAsync<string>(uri, jsonText);
-            r = await response.ReadAsync<ResponseResult<TaskDTO>>();
+            r = await response.ReadAsync<ResponseResult<IProductivityItem>>();
         }
         catch (Exception ex)
         {

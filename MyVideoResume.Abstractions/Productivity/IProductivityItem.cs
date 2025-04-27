@@ -9,6 +9,8 @@ namespace MyVideoResume.Abstractions.Productivity;
 
 public interface IProductivityItem
 {
+    public string Id { get; set; }
+
     string Text { get; set; }
     string? Description { get; set; }
 

@@ -25,29 +25,12 @@
         {
             if (args == null || args?.Value == "ai")
             {
-                var result = await DialogService.OpenAsync("Upload File to Create Job", ds =>
-    @<RadzenCard Variant="Variant.Outlined">
-        <UploadToJsonComponent Url=@Paths.Jobs_API_CreateFromFile UploadCompleted=@UploadCompletedHandler></UploadToJsonComponent>
-    </RadzenCard>
-    );
+    //             var result = await DialogService.OpenAsync("Upload File to Create Job", ds =>
+    // @<RadzenCard Variant="Variant.Outlined">
+    //     <UploadToJsonComponent Url=@Paths.Jobs_API_CreateFromFile UploadCompleted=@UploadCompletedHandler></UploadToJsonComponent>
+    // </RadzenCard>
+    // );
             }
         }
-    }
-
-    async Task UploadCompletedHandler(string result)
-    {
-        if (!result.HasValue())
-        {
-            ShowErrorNotification("Failed Creating Job", string.Empty);
-        }
-        else
-        {
-            DialogService.Close();
-            ShowSuccessNotification("Job Created", string.Empty);
-        }
-
-        if (Created.HasDelegate)
-            await Created.InvokeAsync(result);
-
     }
 }
