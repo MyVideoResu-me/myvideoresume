@@ -7,12 +7,16 @@
 
 @if (Item != null)
 {
+    <HeadContent>
+        <meta name="description" content=@Item.Description />
+    </HeadContent>
+
     <RadzenRow>
         <RadzenColumn Style="max-width: 100%">
             @if (Security.User.Id == Item.UserId)
             {
                 <div style="float: right; padding-right: 35px">
-                    <JobActionsPanelComponent DisableView="true" Item=@Item ></JobActionsPanelComponent>
+                    <JobActionsPanelComponent DisableView="true" Item=@Item></JobActionsPanelComponent>
                 </div>
             }
         </RadzenColumn>
@@ -114,7 +118,7 @@
         //If we're not a recruiter then we are a job seeker. Have we applied to this position? Are we a good match?
         //TODO: Send The UserID and JobID to the server to check if the user has applied to this job.
         //This will return the existing application if it exists.
-        return Security.IsRecruiter();    
+        return Security.IsRecruiter();
     }
 
     protected void ApplyToJob()

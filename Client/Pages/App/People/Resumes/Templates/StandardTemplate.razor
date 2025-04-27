@@ -11,6 +11,9 @@
 
 @if (Resume != null && Resume.MetaResume != null)
 {
+    <HeadContent>
+        <meta name="description" content=@Resume.MetaResume.Basics?.Summary />
+    </HeadContent>
     <RadzenRow>
         <RadzenColumn Style="max-width: 100%">
             <div style="float: right; padding-right: 35px">

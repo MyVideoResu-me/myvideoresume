@@ -6,8 +6,12 @@
 
 
 <PageTitle>@ResumePageTitle</PageTitle>
+
 @if (IsResumeDeleted)
 {
+    <HeadContent>
+        <meta name="description" content="View, Manage, Track Resumes. Network and connect." />
+    </HeadContent>
     <RadzenRow>
         <RadzenColumn Size="12">
             <RadzenText Text="No Longer Available" TextStyle="Radzen.Blazor.TextStyle.DisplayH1" TagName="Radzen.Blazor.TagName.Auto"></RadzenText>
