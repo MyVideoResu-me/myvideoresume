@@ -70,7 +70,6 @@
             }
             else
             {
-                ShowSuccessNotification("Resume Deleted", string.Empty);
                 if (Deleted.HasDelegate)
                     await Deleted.InvokeAsync(result);
             }
