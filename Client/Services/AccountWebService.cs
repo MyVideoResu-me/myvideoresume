@@ -9,6 +9,7 @@ using System.Security.Claims;
 using MyVideoResume.Abstractions.Account;
 using Microsoft.Extensions.Caching.Hybrid;
 using MyVideoResume.Extensions;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace MyVideoResume.Client.Services;
 
@@ -104,6 +105,8 @@ public partial class AccountWebService : BaseWebService
             var id = _securityWebService.Principal.FindFirstValue(ClaimTypes.NameIdentifier);
             await _cache.RemoveAsync(id);
             await _cache.RemoveAsync(CacheKeys.UserRoles);
+            await _cache.RemoveAsync($"{id}_{CacheKeys.UserRoles}");
+
             var userProfileResult = await _cache.GetOrCreateAsync(id, async (x) =>
             {
                 //Call API 

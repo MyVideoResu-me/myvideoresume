@@ -53,19 +53,23 @@ public partial class SecurityWebService : BaseWebService
     }
     public bool IsInRole(params string[] roles)
     {
-        return Task.Run(async () => await IsInRoleAsync(roles)).Result;
+        var result = Task.Run(async () => await IsInRoleAsync(roles)).Result;
+        return result;
     }
     public bool IsJobSeeker()
     {
-        return Task.Run(async () => await IsInRoleAsync(Constants.JobSeeker)).Result;
+        var result = Task.Run(async () => await IsInRoleAsync(Constants.JobSeeker)).Result;
+        return result;
     }
     public bool IsRecruiter()
     {
-        return Task.Run(async () => await IsInRoleAsync(Constants.Recruiter)).Result;
+        var result = Task.Run(async () => await IsInRoleAsync(Constants.Recruiter)).Result;
+        return result;
     }
     public bool IsAdmin()
     {
-        return Task.Run(async () => await IsInRoleAsync(Constants.Admin)).Result;
+        var result = Task.Run(async () => await IsInRoleAsync(Constants.Admin)).Result;
+        return result;
     }
     public async Task<bool> IsInRoleAsync(params string[] roles)
     {

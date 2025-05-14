@@ -16,7 +16,7 @@
                         <AuthorizeView>
                             <Authorized>
                                 <RadzenMenuItem Icon="add_circle">
-                                    <RadzenMenuItem Text="Create Job" Path=@Paths.Jobs_View Icon="note_add" Visible="@Security.IsJobSeeker()"></RadzenMenuItem>
+                                    <RadzenMenuItem Text="Create Job" Path=@Paths.Jobs_View Icon="note_add" Visible="@Security.IsRecruiter()"></RadzenMenuItem>
                                     <RadzenMenuItem Text="Create Resume" Path=@Paths.Resume_View Icon="video_call" Visible="@Security.IsInRole(Constants.JobSeeker, Constants.Recruiter)"></RadzenMenuItem>
                                 </RadzenMenuItem>
                             </Authorized>

@@ -145,11 +145,13 @@ public class AccountService
                 await _dataContext.SaveChangesAsync();
 
                 //We need to assign the User the selected role.
-                var user = await _userManager.FindByIdAsync(userId);
-                await _userManager.RemoveFromRoleAsync(user, Enum.GetName(MyVideoResumeRoles.Recruiter));
-                await _userManager.RemoveFromRoleAsync(user, Enum.GetName(MyVideoResumeRoles.JobSeeker));
-                await _userManager.AddToRoleAsync(user, Enum.GetName(profileRequest.RoleSelected.Value));
-                //var userRoles = _userManager.GetRolesAsync(user);
+                ApplicationUser? user = await ProcessRoles(profileRequest, userId);
+
+                var userRolesCurrent = await _userManager.GetRolesAsync(user);
+
+                //Sometimes the remove roles fails (horrible design Microsoft).
+                if (userRolesCurrent.Contains(Enum.GetName(MyVideoResumeRoles.Recruiter)) && userRolesCurrent.Contains(Enum.GetName(MyVideoResumeRoles.JobSeeker)))
+                    await ProcessRoles(profileRequest, userId);
 
                 //Add Tasks
                 //await _taskService.UpdateTasksByRole();
@@ -160,6 +162,20 @@ public class AccountService
         }
 
         return result;
+    }
+
+    private async Task<ApplicationUser?> ProcessRoles(UserProfileDTO profileRequest, string userId)
+    {
+        var user = await _userManager.FindByIdAsync(userId);
+
+        var userRoles = new List<string>() { Enum.GetName(MyVideoResumeRoles.Recruiter), Enum.GetName(MyVideoResumeRoles.JobSeeker) };
+        if (userRoles.Any())
+        {
+            await _userManager.RemoveFromRolesAsync(user, userRoles);
+        }
+
+        await _userManager.AddToRoleAsync(user, Enum.GetName(profileRequest.RoleSelected.Value));
+        return user;
     }
     #endregion
 

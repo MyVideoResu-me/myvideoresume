@@ -4,31 +4,31 @@
 @using MyVideoResume.Abstractions.Resume.Formats.JSONResumeFormat
 @using MyVideoResume.Data.Models.Resume
 @inherits BaseComponent
-@inject ResumeWebService Service
+@inject JobWebService Service
 
 <RadzenCard style="background-color:white;">
-    <RadzenCard class="rz-shadow-0 rz-border-radius-0" style="margin: 5px calc(-1 * var(--rz-card-padding));background-color:white; cursor: pointer" @onclick=@(()=> NavigateTo("resumes", ResumeItem.Id.ToString()))>
+    <RadzenCard class="rz-shadow-0 rz-border-radius-0" style="margin: 5px calc(-1 * var(--rz-card-padding));background-color:white; cursor: pointer" @onclick=@(()=> NavigateTo("resumes", Item.Id.ToString()))>
         <RadzenStack Orientation="Orientation.Vertical" JustifyContent="JustifyContent.Start" Gap="0">
             <RadzenText style="color: #262526" TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-4 rz-mb-0">Name</RadzenText>
-            <div style=" max-width: 250px; "><RadzenText style="color: #262526; text-overflow:ellipsis; white-space: nowrap; overflow: hidden;" TextStyle="TextStyle.H3" title="@(ResumeItem.Title)">@(ResumeItem.Title)</RadzenText></div>
+            <div style=" max-width: 250px; "><RadzenText style="color: #262526; text-overflow:ellipsis; white-space: nowrap; overflow: hidden;" TextStyle="TextStyle.H3" title="@(Item.Title)">@(Item.Title)</RadzenText></div>
             <RadzenText Visible=@DisplayItem() style="color: #262526" TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-2 rz-my-0">ID</RadzenText>
-            <RadzenText Visible=@DisplayItem() style="color: #262526" TextStyle="TextStyle.Body1">@(ResumeItem.Id)</RadzenText>
+            <RadzenText Visible=@DisplayItem() style="color: #262526" TextStyle="TextStyle.Body1">@(Item.Id)</RadzenText>
             <RadzenText style="color: #262526" TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-2 rz-my-0">Creation</RadzenText>
-            <RadzenText style="color: #262526" TextStyle="TextStyle.Body1"><b>@(ResumeItem.CreationDateTimeFormatted)</b></RadzenText>
+            <RadzenText style="color: #262526" TextStyle="TextStyle.Body1"><b>@(Item.CreationDateTimeFormatted)</b></RadzenText>
         </RadzenStack>
     </RadzenCard>
-    <RadzenCard class="rz-shadow-0 rz-border-radius-0" style="margin: 5px calc(-1 * var(--rz-card-padding)); background-color: #0e44cc; cursor: pointer" @onclick=@(()=> NavigateTo("resumes", ResumeItem.Id.ToString()))>
+    <RadzenCard class="rz-shadow-0 rz-border-radius-0" style="margin: 5px calc(-1 * var(--rz-card-padding)); background-color: #0e44cc; cursor: pointer" @onclick=@(()=> NavigateTo("resumes", Item.Id.ToString()))>
         <RadzenText TextStyle="TextStyle.H6" style="color:white; "><strong>Details</strong></RadzenText>
         <RadzenRow RowGap="0">
             <RadzenColumn Visible=@DisplayItem()>
                 <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-4 rz-mb-0" style="color:white; ">Template</RadzenText>
-                <RadzenText TextStyle="TextStyle.Body1" style="color:white; "><b> @(ResumeItem.Title)</b></RadzenText>
+                <RadzenText TextStyle="TextStyle.Body1" style="color:white; "><b> @(Item.Title)</b></RadzenText>
                 <RadzenText TextStyle="TextStyle.Overline" class=" rz-display-flex rz-mt-4 rz-mb-0" style="color:white; ">Public</RadzenText>
-                <RadzenText TextStyle="TextStyle.Body1" style="color:white; "><b>@(ResumeItem.ATSApplyUrl)</b></RadzenText>
+                <RadzenText TextStyle="TextStyle.Body1" style="color:white; "><b>@(Item.ATSApplyUrl)</b></RadzenText>
             </RadzenColumn>
             <RadzenColumn>
                 <RadzenText TextStyle="TextStyle.Overline" style="color:white; " class="rz-display-flex rz-mt-4 rz-mb-0">Summary</RadzenText>
-                <RadzenText style="color:white; text-overflow:ellipsis; white-space:normal; overflow: hidden; height:240px" TextStyle="TextStyle.Body1" title="@(ResumeItem.Description)">@(ResumeItem.Description)</RadzenText>
+                <RadzenText style="color:white; text-overflow:ellipsis; white-space:normal; overflow: hidden; height:240px" TextStyle="TextStyle.Body1" title="@(Item.Description)">@(Item.Description)</RadzenText>
                 @*                 <RadzenText style="color:white; " TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-4 rz-mb-0">Freight</RadzenText>
                 <RadzenText style="color:white; " TextStyle="TextStyle.Body1"><b>@(ResumeEntity?.Basics?.Summary)</b></RadzenText>
  *@            </RadzenColumn>
@@ -36,8 +36,8 @@
     </RadzenCard>
     <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Center" Gap="0">
         <RadzenButton ButtonStyle="ButtonStyle.Danger" Variant="Variant.Text" Icon="delete" Text="Delete" Click=Delete Visible=@DisplayItem() />
-        <RadzenButton ButtonStyle="ButtonStyle.Dark" Variant="Variant.Text" Icon="edit" Text="Edit" Visible=@DisplayItem() Click=@(()=> NavigateTo("resumes/builder", ResumeItem.Id)) />
-        <RadzenButton ButtonStyle="ButtonStyle.Dark" Variant="Variant.Text" Icon="preview" Text="View" Click=@(()=> NavigateTo("resumes", ResumeItem.Id)) />
+        <RadzenButton ButtonStyle="ButtonStyle.Dark" Variant="Variant.Text" Icon="edit" Text="Edit" Visible=@DisplayItem() Click=@(()=> NavigateTo("resumes/builder", Item.Id)) />
+        <RadzenButton ButtonStyle="ButtonStyle.Dark" Variant="Variant.Text" Icon="preview" Text="View" Click=@(()=> NavigateTo("resumes", Item.Id)) />
     </RadzenStack>
 </RadzenCard>
 
@@ -46,7 +46,7 @@
     [Parameter] public EventCallback<ResponseResult> DeleteCompleted { get; set; }
 
     [Parameter]
-    public JobItemDTO ResumeItem { get; set; } = null;
+    public JobItemDTO Item { get; set; } = null;
 
     [Parameter]
     public Actions Mode { get; set; } = Actions.ReadView;
@@ -60,7 +60,7 @@
                 result = false;
                 break;
             case Actions.UpdateEdit:
-                result = ResumeItem.UserId == Security.User.Id;
+                result = Item.UserId == Security.User.Id;
                 break;
             default:
                 break;
@@ -74,11 +74,11 @@
     {
         await base.OnInitializedAsync();
 
-        if (ResumeItem == null)
-            ResumeItem = new JobItemDTO()
+        if (Item == null)
+            Item = new JobItemDTO()
                 {
                     Title = "Place Holder",
-                    Description = "Upload PDF Resume",
+                    Description = "Upload Job",
                     CreationDateTimeFormatted = DateTime.UtcNow.ToString("yyyy-MM-dd")
                 };
 
@@ -87,7 +87,7 @@
     protected async Task Delete()
     {
         var result = new ResponseResult();
-        result = await Service.Delete(ResumeItem.Id);
+        result = await Service.Delete(Item.Id);
         await DeleteCompleted.InvokeAsync(result);
     }
 }
