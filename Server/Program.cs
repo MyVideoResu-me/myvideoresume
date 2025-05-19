@@ -90,7 +90,37 @@ builder.Services.AddControllers().AddOData(opt =>
     var oDataBuilderDataContext = new ODataConventionModelBuilder();
     opt.AddRouteComponents("odata/DataContext", oDataBuilderDataContext.GetEdmModel()).Count().Filter().OrderBy().Expand().Select().SetMaxTop(null).TimeZone = TimeZoneInfo.Utc;
 });
+
 builder.Services.AddOpenApi();
+builder.Services.AddSwaggerGen(options =>
+{
+    options.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        Type = Microsoft.OpenApi.Models.SecuritySchemeType.Http,
+        Scheme = "bearer",
+        BearerFormat = "JWT",
+        In = Microsoft.OpenApi.Models.ParameterLocation.Header,
+        Description = "Enter 'Bearer' [space] and then your valid JWT token."
+    });
+
+    options.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
+    {
+        {
+            new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+            {
+                Reference = new Microsoft.OpenApi.Models.OpenApiReference
+                {
+                    Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            new string[] {}
+        }
+    });
+});
+
+
 
 builder.Services.AddScoped<Account.AccountService>();
 builder.Services.AddScoped<MenuService>();
@@ -177,41 +207,21 @@ builder.Services.AddHybridCache();
 
 builder.Host.UseSerilog();
 
-//builder.Services.AddEndpointsApiExplorer();
-//builder.Services.AddSwaggerGen(options =>
-//{
-//    options.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
-//    {
-//        Title = "MyVideoResume API",
-//        Version = "v1",
-//        Description = "API documentation for MyVideoResume.Server"
-//    });
-
-//    // Optional: Add XML comments for better documentation
-//    var xmlFile = $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.xml";
-//    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-//    if (System.IO.File.Exists(xmlPath))
-//    {
-//        options.IncludeXmlComments(xmlPath);
-//    }
-//});
 
 
 var app = builder.Build();
 
+app.MapOpenApi();
+app.UseSwagger();
+app.UseSwaggerUI();
+//app.UseSwaggerUI(options =>
+//{
+//    options.SwaggerEndpoint("/openapi/v1.json", "My API V1");
+//});
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    //app.UseSwagger();
-    app.UseSwaggerUI(static options => { options.SwaggerEndpoint("/openapi/v1.json", "My API V1"); });
-    //app.UseSwaggerUI(options =>
-    //{
-    //    options.SwaggerEndpoint("/swagger/v1/swagger.json", "MyVideoResume API v1");
-    //    options.RoutePrefix = "swagger"; // Swagger UI will be available at /swagger
-    //});
-
-    app.MapOpenApi();
-    app.MapScalarApiReference();
     app.UseWebAssemblyDebugging();
 }
 else

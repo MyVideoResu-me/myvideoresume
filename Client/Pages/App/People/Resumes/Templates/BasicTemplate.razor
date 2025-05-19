@@ -223,6 +223,7 @@
 }
 
 @code {
+    [Inject] protected ILogger<BasicTemplate> Logger { get; set; }
     private const string placeholder = "Placeholder";
     [Parameter]
     public ResumeInformationDTO Resume { get; set; } = new ResumeInformationDTO()
