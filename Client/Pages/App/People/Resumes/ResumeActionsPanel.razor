@@ -136,12 +136,12 @@
         var resultHtml = await ResumeWebService.GetResume(item.Id);
         if (resultHtml != null)
         {
-            _= DownloadAsHtml(resultHtml.MetaResume as JSONResume);
+            _ = DownloadAsHtml(resultHtml.MetaResume as JSONResume);
             ShowSuccessNotification("Processed", "Check downloads");
         }
         else
         {
-            ShowErrorNotification("Error", "Failed to Download");    
+            ShowErrorNotification("Error", "Failed to Download");
         }
     }
 
@@ -172,6 +172,6 @@
     {
         var result = await DialogService.OpenAsync("Job Match", ds =>
     @<ResumeJobMatchWizardComponent ResumeSummaryItem=@item></ResumeJobMatchWizardComponent>
-                                                                                                                                  );
+                                                                                                                          );
     }
 }
