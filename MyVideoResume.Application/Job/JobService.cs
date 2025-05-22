@@ -113,6 +113,7 @@ public partial class JobService
         {
             _dataContext.Jobs.Add(item);
             item.UserId = userId;
+            item.Privacy_ShowJob = DisplayPrivacy.ToPublic;
             item.CreatedByUser = user.UserProfile;
             item.CreationDateTime = DateTime.UtcNow;
             _dataContext.SaveChanges();

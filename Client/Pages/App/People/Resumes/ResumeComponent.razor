@@ -5,12 +5,16 @@
 
     [Parameter] public EventCallback<ResponseResult<float>> SentimentAnalysisProcessed { get; set; }
     [Inject] protected ResumeWebService ResumeWebService { get; set; }
+    [Inject] protected AccountWebService AccountWebService { get; set; }
     [Inject] protected IMapper Mapper { get; set; }
 
     protected async Task DownloadAsHtml(JSONResume resume)
     {
-        var resumeText = new ComponentRenderer<HtmlTemplate>()
+        try
+        {
+            var resumeText = new ComponentRenderer<HtmlTemplate>()
         .AddService(FeatureFlagService)
+        .AddService(AccountWebService)
         .AddService(MenuService)
         .AddService(NavigationManager)
         .AddService(AuthenticationStateProvider)
@@ -24,7 +28,12 @@
         .Set(c => c.Resume, resume)
         .Render();
 
-        await DownloadHtmlFile(resumeText, $"HtmlResume={resume.Basics.Name}");
+            await DownloadHtmlFile(resumeText, $"HtmlResume={resume.Basics.Name}");
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex.Message, ex);
+        }
     }
 
     protected async Task DownloadAsJson(JSONResume resume)
@@ -46,14 +55,14 @@
         }
         var result = await DialogService.OpenAsync("Sentiment Analysis", ds =>
     @<RadzenStack Orientation="Orientation.Vertical">
-                <RadzenBadge BadgeStyle="BadgeStyle.Light" Shade="Shade.Dark" >
-                    Sentiment is calculated by positive adjectives / nouns / verbs.
-                </RadzenBadge>
-               <RadzenCard Variant="Variant.Outlined">
-                    <HappinessScale Value=@floatValue />
-                </RadzenCard>
-                <RadzenButton ButtonStyle="ButtonStyle.Primary" Text=@text Click=@(() => ProcessSentimentAnalysis(item)) ></RadzenButton>
-            </RadzenStack>
+        <RadzenBadge BadgeStyle="BadgeStyle.Light" Shade="Shade.Dark">
+            Sentiment is calculated by positive adjectives / nouns / verbs.
+        </RadzenBadge>
+        <RadzenCard Variant="Variant.Outlined">
+            <HappinessScale Value=@floatValue />
+        </RadzenCard>
+        <RadzenButton ButtonStyle="ButtonStyle.Primary" Text=@text Click=@(() => ProcessSentimentAnalysis(item))></RadzenButton>
+    </RadzenStack>
         );
 
     }

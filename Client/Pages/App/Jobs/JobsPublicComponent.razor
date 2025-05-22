@@ -1,0 +1,34 @@
+﻿@inherits BaseComponent
+
+<RadzenRow Style="padding-bottom:15px" Visible="@(JobList.Count > 0)">
+    <RadzenColumn Style="max-width: 100%">
+        <RadzenText class="first_ftw" Text="Featured Resumes" TextStyle="TextStyle.H3"></RadzenText>
+        <RadzenCard>
+            <div class="searchComponent" style="overflow:auto;">
+                <RadzenStack Orientation="Orientation.Horizontal">
+                    @foreach (var item in JobList)
+                    {
+                        <RadzenColumn Size="4" SizeXS="4" SizeSM="4" SizeMD="4" SizeLG="4" SizeXL="4" SizeXX="4">
+                            <JobPreviewComponent Item=@item Mode="Actions.ReadView"></JobPreviewComponent>
+                        </RadzenColumn>
+
+                    }
+                </RadzenStack>
+            </div>
+        </RadzenCard>
+    </RadzenColumn>
+</RadzenRow>
+
+@code {
+
+    [Inject]
+    protected JobWebService Service { get; set; }
+
+    List<JobItemDTO> JobList { get; set; } = new List<JobItemDTO>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        JobList = await Service.GetPublicJobs();
+    }
+}

@@ -16,7 +16,7 @@
                         <AuthorizeView>
                             <Authorized>
                                 <RadzenMenuItem Icon="add_circle">
-                                    <RadzenMenuItem Text="Create Job" Path=@Paths.Jobs_View Icon="note_add" Visible="@Security.IsJobSeeker()"></RadzenMenuItem>
+                                    <RadzenMenuItem Text="Create Job" Path=@Paths.Jobs_View Icon="note_add" Visible="@Security.IsRecruiter()"></RadzenMenuItem>
                                     <RadzenMenuItem Text="Create Resume" Path=@Paths.Resume_View Icon="video_call" Visible="@Security.IsInRole(Constants.JobSeeker, Constants.Recruiter)"></RadzenMenuItem>
                                 </RadzenMenuItem>
                             </Authorized>
@@ -62,7 +62,7 @@
                 <RadzenPanelMenuItem Text="Summarize Resume" Path=@Paths.Tools_SummarizeResume Icon="query_stats" title="Summarize Resume" />
                 <RadzenPanelMenuItem Text="Convert Resume" Path=@Paths.Tools_PdfToJson Icon="convert_to_text" title="PDF to JSON" />
                 <RadzenPanelMenuItem Text="Best Resume" Path=@Paths.Tools_BestResume Icon="star" title="Best Resume Generator" />
-
+                <RadzenPanelMenuItem Text="Chrome Extension" Path=@Paths.External_ChromeExtension Icon="chrome" title="Chrome Extension" />
             </RadzenPanelMenuItem>
             <RadzenPanelMenuItem Text="Tasks" Icon="task_alt" title="Tasks">
                 <RadzenPanelMenuItem Text="Tasks" Path=@Paths.Tasks_View Icon="task_alt" title="Tasks" />

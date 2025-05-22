@@ -54,6 +54,7 @@ public static class Paths
     public const string Tools_JobMatch = "Tools/JobResumeMatch";
     public const string Tools_BestResume = "Tools/JobResumeBestResume";
     public const string Tools_PdfToJson = "Tools/pdftojson";
+    public const string External_ChromeExtension = "https://myvideoresu.me/insights/how-to-use-job-seeker-chrome-plugin-extension";
 }
 
 public static class Constants
