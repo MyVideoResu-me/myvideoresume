@@ -187,6 +187,11 @@
                                 </RadzenTabsItem>
                                 <RadzenTabsItem Text="Shipping Address">
                                 </RadzenTabsItem>
+                                <RadzenTabsItem Text="Payment Methods">
+                                    <div id="card-element"></div>
+                                    <div id="card-errors" role="alert"></div>
+                                    <RadzenButton ButtonType="ButtonType.Submit" Text="Save Card" Click="@SaveCard" Id="submit-button" />
+                                </RadzenTabsItem>
                             </Tabs>
                         </RadzenTabs>
 
@@ -285,5 +290,13 @@
             <RadzenButton ButtonType="ButtonType.Submit" Text="Change password" Variant="Variant.Flat" />
         </RadzenStack>
     </RadzenTemplateForm>    );
+    }
+
+    private async Task SaveCard()
+    {
+        // Implement card saving logic here
+        // This will involve interacting with Stripe.js
+        // For now, we can leave this as a placeholder
+        await JSRuntime.InvokeVoidAsync("console.log", "Save Card button clicked");
     }
 }
