@@ -166,6 +166,9 @@ builder.Services.AddSingleton<Parser>(Parser.GetDefault());
 // Register other services
 builder.Services.AddTransient<IRequestLogger, RequestLogger>();
 
+// Application Services
+builder.Services.AddScoped<IPaymentService, PaymentService>(); // Added IPaymentService registration
+
 //Payments
 builder.Services.Configure<StripeConfig>(builder.Configuration.GetSection("Stripe"));
 StripeConfiguration.ApiKey = builder.Configuration.GetSection("Stripe")["ApiKey"];
