@@ -13,8 +13,6 @@ namespace MyVideoResume.Abstractions.Account.Profiles;
 public class UserProfileDTO : UserProfile
 {
     public string Id { get; set; }
-    public List<Phone>? Phones { get; set; }
-    public List<Email>? Emails { get; set; }
 }
 
 public class UserProfile : ProfileBase
@@ -23,9 +21,13 @@ public class UserProfile : ProfileBase
 
     public string LastName { get; set; }
 
+    public List<Email>? Emails { get; set; }
+    public List<Phone>? Phones { get; set; }
+
     public DateTime? DateOfBirth { get; set; }
 
     public bool? IsRoleSelected { get; set; }
+
     public DateTime? IsRoleSelectedDateTime { get; set; }
 
     public ProfileStatus? ProfileStatus { get; set; } //Hiring => Show Jobs they own that are public; OpenToWork => Show featured Resume
