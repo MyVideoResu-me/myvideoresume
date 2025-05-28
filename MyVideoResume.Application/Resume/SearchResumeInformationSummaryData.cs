@@ -89,8 +89,7 @@ public partial class ResumeService
                 Name = x.MetaResume.Basics.Name,
                 IsPrimaryDefault = x.IsPrimaryDefault,
                 IsWatched = false,
-                Latitude = x.Latitude,
-                Longitude = x.Longitude
+
             }).ToListAsync();
 
             if (searchRequest.Latitude.HasValue && searchRequest.Longitude.HasValue && searchRequest.RadiusMiles.HasValue)
