@@ -18,7 +18,7 @@ using System.Text.Json;
 
 namespace MyVideoResume.Application.Resume;
 
-public class ResumeService
+public partial class ResumeService
 {
     private readonly ILogger<ResumeService> _logger;
     private readonly DataContext _dataContext;
