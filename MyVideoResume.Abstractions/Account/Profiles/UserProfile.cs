@@ -13,6 +13,8 @@ namespace MyVideoResume.Abstractions.Account.Profiles;
 public class UserProfileDTO : UserProfile
 {
     public string Id { get; set; }
+    public List<Email>? Emails { get; set; }
+    public List<Phone>? Phones { get; set; }
 }
 
 public class UserProfile : ProfileBase
@@ -20,9 +22,6 @@ public class UserProfile : ProfileBase
     public string FirstName { get; set; }
 
     public string LastName { get; set; }
-
-    public List<Email>? Emails { get; set; }
-    public List<Phone>? Phones { get; set; }
 
     public DateTime? DateOfBirth { get; set; }
 
