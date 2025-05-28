@@ -36,5 +36,7 @@ public class UserProfile : ProfileBase
     public DisplayPrivacy? Privacy_ShowProfile { get; set; } = DisplayPrivacy.ToPublic;
 
     public DisplayPrivacy? Privacy_ShowProfileContactDetails { get; set; } = DisplayPrivacy.ToConnections;
+    
+    public DistanceUnit? DistanceUnitPreference { get; set; } = DistanceUnit.Miles;
 
 }
