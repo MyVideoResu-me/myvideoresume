@@ -1,6 +1,8 @@
 @page "/schedule"
 @inherits TaskBaseComponent
 @layout MainLayout
+@using MyVideoResume.Abstractions.Productivity
+@using MyVideoResume.Abstractions.Core
 
 
 <PageTitle>MyVideoResu.ME - Schedule</PageTitle>
@@ -18,7 +20,7 @@
                         <RadzenSelectBar @bind-Value="@startMonth" TextProperty="Text" ValueProperty="Value" Data="@(Enum.GetValues(typeof(Month)).Cast<Month>().Select(t => new { Text = $"{t}", Value = t }))" Size="ButtonSize.Small" class="rz-display-xl-flex" />
                     </RadzenStack>
 
-                    <RadzenScheduler @ref=@scheduler SlotRender=@OnSlotRender style="height: 768px;" TItem="IProductivityItem" Data=@appointments StartProperty="Start" EndProperty="End" TextProperty="Text" SelectedIndex="1" SlotSelect=@OnSlotSelect AppointmentSelect=@OnAppointmentSelect AppointmentRender=@OnAppointmentRender MonthSelect=@OnMonthSelect>
+                    <RadzenScheduler @ref=@scheduler SlotRender=@OnSlotRender style="height: 768px;" TItem="IProductivityItem" Data=@Items StartProperty="Start" EndProperty="End" TextProperty="Text" SelectedIndex="1" SlotSelect=@OnSlotSelect AppointmentSelect=@OnAppointmentSelect AppointmentRender=@OnAppointmentRender MonthSelect=@OnMonthSelect>
                         <RadzenMonthView />
                         <RadzenYearPlannerView StartMonth="@startMonth" />
                         <RadzenYearTimelineView StartMonth="@startMonth" />
@@ -35,16 +37,7 @@
     Dictionary<DateTime, string> events = new Dictionary<DateTime, string>();
     Month startMonth = (Month)DateTime.Now.Month;
 
-    IList<IProductivityItem> appointments = new List<IProductivityItem>
-    {
-        new AppointmentDTO { Start = DateTime.Today.AddDays(-2), End = DateTime.Today.AddDays(-2), Text = "Birthday" },
-        new AppointmentDTO { Start = DateTime.Today.AddDays(-11), End = DateTime.Today.AddDays(-10), Text = "Day off" },
-        new AppointmentDTO { Start = DateTime.Today.AddDays(-10), End = DateTime.Today.AddDays(-8), Text = "Work from home" },
-        new AppointmentDTO { Start = DateTime.Today.AddHours(10), End = DateTime.Today.AddHours(12), Text = "Online meeting" },
-        new AppointmentDTO { Start = DateTime.Today.AddHours(10), End = DateTime.Today.AddHours(13), Text = "Skype call" },
-        new AppointmentDTO { Start = DateTime.Today.AddHours(14), End = DateTime.Today.AddHours(14).AddMinutes(30), Text = "Dentist appointment" },
-        new AppointmentDTO { Start = DateTime.Today.AddDays(1), End = DateTime.Today.AddDays(12), Text = "Vacation" },
-    };
+    // Using Items from TaskBaseComponent instead of hardcoded appointments
 
     void OnSlotRender(SchedulerSlotRenderEventArgs args)
     {
@@ -67,12 +60,12 @@
 
         if (args.View.Text != "Year")
         {
-            AppointmentDTO data = await DialogService.OpenAsync<AddAppointmentPage>("Add Appointment",
+            TaskDTO data = await DialogService.OpenAsync<AddTaskPage>("Add Task",
                 new Dictionary<string, object> { { "Start", args.Start }, { "End", args.End } });
 
             if (data != null)
             {
-                appointments.Add(data);
+                Items.Add(data);
                 // Either call the Reload method or reassign the Data property of the Scheduler
                 await scheduler.Reload();
             }
@@ -89,18 +82,38 @@
     {
         //   console.Log($"AppointmentSelect: Appointment={args.Data.Text}");
 
-        await DialogService.OpenAsync<EditAppointmentPage>("Edit Appointment", new Dictionary<string, object> { { "Appointment", args.Data } });
-
+        await DialogService.OpenAsync<EditTaskPage>("Edit Task", new Dictionary<string, object> { { "Task", args.Data } });
+        
+        // Reload tasks from service to get updated data
+        Items = await Service.TasksRead();
         await scheduler.Reload();
     }
 
     void OnAppointmentRender(SchedulerAppointmentRenderEventArgs<IProductivityItem> args)
     {
         // Never call StateHasChanged in AppointmentRender - would lead to infinite loop
-
-        if (args.Data.Text == "Birthday")
+        
+        if (args.Data is TaskDTO task)
         {
-            args.Attributes["style"] = "background: red";
+            // Color-code based on task status
+            switch (task.Status)
+            {
+                case ProductivityItemStatus.ToDo:
+                    args.Attributes["style"] = "background: #ffc107; color: #000;"; // Yellow
+                    break;
+                case ProductivityItemStatus.InProgress:
+                    args.Attributes["style"] = "background: #007bff; color: #fff;"; // Blue
+                    break;
+                case ProductivityItemStatus.Closed:
+                    args.Attributes["style"] = "background: #28a745; color: #fff;"; // Green
+                    break;
+                case ProductivityItemStatus.Planning:
+                    args.Attributes["style"] = "background: #6c757d; color: #fff;"; // Gray
+                    break;
+                default:
+                    args.Attributes["style"] = "background: #17a2b8; color: #fff;"; // Teal
+                    break;
+            }
         }
     }
 }

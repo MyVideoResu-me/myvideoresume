@@ -1,0 +1,84 @@
+@inherits TaskBaseComponent
+
+<RadzenTemplateForm TItem="TaskDTO" Data="@model" Submit=@OnSubmit>
+    <RadzenStack Gap="1rem">
+        <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Wrap="FlexWrap.Wrap">
+            <RadzenLabel Text="Title" Style="width: 6rem;" />
+            <RadzenTextBox @bind-Value="@model.Text" Name="Text" Style="width: 12rem;" />
+            <RadzenRequiredValidator Component="Text" Text="Title is required" />
+        </RadzenStack>
+        <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Wrap="FlexWrap.Wrap">
+            <RadzenLabel Text="Description" Style="width: 6rem;" />
+            <RadzenTextArea @bind-Value="@model.Description" Name="Description" Style="width: 12rem;" />
+        </RadzenStack>
+        <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Wrap="FlexWrap.Wrap">
+            <RadzenLabel Text="Start" Style="width: 6rem;" />
+            <RadzenDatePicker @bind-Value="@model.Start" Name="Start" ShowTime="true" Style="width: 12rem;" />
+            <RadzenRequiredValidator Component="Start" Text="Start is required" />
+        </RadzenStack>
+        <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Wrap="FlexWrap.Wrap">
+            <RadzenLabel Text="End" Style="width: 6rem;" />
+            <RadzenDatePicker Name="End" @bind-Value="@model.End" ShowTime="true" Style="width: 12rem;" />
+        </RadzenStack>
+        <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Wrap="FlexWrap.Wrap">
+            <RadzenLabel Text="Type" Style="width: 6rem;" />
+            <RadzenDropDown @bind-Value="@model.TaskType" Data="@taskTypes" ValueProperty="Value" TextProperty="Text" Style="width: 12rem;" />
+        </RadzenStack>
+        <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Wrap="FlexWrap.Wrap">
+            <RadzenLabel Text="Status" Style="width: 6rem;" />
+            <RadzenDropDown @bind-Value="@model.Status" Data="@statusOptions" ValueProperty="Value" TextProperty="Text" Style="width: 12rem;" />
+        </RadzenStack>
+        <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.End">
+            <RadzenButton ButtonType="ButtonType.Submit" Text="Save" />
+        </RadzenStack>
+    </RadzenStack>
+</RadzenTemplateForm>
+
+@code {
+    [Parameter] public IProductivityItem Task { get; set; }
+
+    TaskDTO model = new TaskDTO();
+    
+    List<dynamic> taskTypes = Enum.GetValues(typeof(TaskType)).Cast<TaskType>()
+        .Select(t => new { Text = t.ToString(), Value = t }).ToList<dynamic>();
+    
+    List<dynamic> statusOptions = Enum.GetValues(typeof(ProductivityItemStatus)).Cast<ProductivityItemStatus>()
+        .Select(s => new { Text = s.ToString(), Value = s }).ToList<dynamic>();
+
+    protected override void OnParametersSet()
+    {
+        if (Task is TaskDTO taskDto)
+        {
+            model = taskDto;
+        }
+        else
+        {
+            // Convert IProductivityItem to TaskDTO if needed
+            model = new TaskDTO
+            {
+                Id = Task.Id,
+                Text = Task.Text,
+                Description = Task.Description,
+                Start = Task.Start,
+                End = Task.End,
+                CreatedByUserId = Task.CreatedByUserId,
+                AssignedToUserId = Task.AssignedToUserId,
+                Status = Task.Status
+            };
+        }
+    }
+
+    async Task OnSubmit(TaskDTO model)
+    {
+        var result = await Service.TaskSave(model);
+        if (result.ErrorMessage.HasValue())
+        {
+            ShowErrorNotification("Failed to Update Task", result.ErrorMessage);
+        }
+        else
+        {
+            ShowSuccessNotification("Task Updated", "Task has been updated successfully");
+            DialogService.Close(result.Data);
+        }
+    }
+}
