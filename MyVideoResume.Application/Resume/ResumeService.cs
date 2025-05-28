@@ -111,7 +111,9 @@ public class ResumeService
                 Slug = x.Slug,
                 Name = x.MetaResume.Basics.Name,
                 IsPrimaryDefault = x.IsPrimaryDefault,
-                IsWatched = false
+                IsWatched = false,
+                Latitude = x.Latitude,
+                Longitude = x.Longitude
             }).ToList();
 
             if (!string.IsNullOrEmpty(userId))
@@ -137,7 +139,9 @@ public class ResumeService
                         Slug = x.ResumeInformation.Slug,
                         Name = x.ResumeInformation.MetaResume.Basics.Name,
                         IsPrimaryDefault = x.ResumeInformation.IsPrimaryDefault,
-                        IsWatched = true
+                        IsWatched = true,
+                        Latitude = x.ResumeInformation.Latitude,
+                        Longitude = x.ResumeInformation.Longitude
                     }).ToList();
 
                     resumeSummaryItems.AddRange(watchedResumes);

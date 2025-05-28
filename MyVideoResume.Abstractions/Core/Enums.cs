@@ -530,3 +530,11 @@ public enum ErrorCodes
     NoResume = 20,
     JobError = 30
 }
+
+public enum DistanceUnit
+{
+    [Description("Miles")]
+    Miles = 0,
+    [Description("Kilometers")]
+    Kilometers = 1
+}

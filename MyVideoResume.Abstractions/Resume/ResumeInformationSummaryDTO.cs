@@ -7,4 +7,6 @@ public class ResumeInformationSummaryDTO : ResumeInformationBase, IResumeItem
     public bool IsPublic { get; set; }
     public bool? IsOwner { get; set; }
     public string CreationDateTimeFormatted { get; set; }
+    public double? Latitude { get; set; }
+    public double? Longitude { get; set; }
 }
