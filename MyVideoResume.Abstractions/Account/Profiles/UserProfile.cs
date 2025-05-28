@@ -12,7 +12,7 @@ namespace MyVideoResume.Abstractions.Account.Profiles;
 
 public class UserProfileDTO : UserProfile
 {
-    public string Id { get; set; }
+    public required string Id { get; set; }
     public List<Phone>? Phones { get; set; }
     public List<Email>? Emails { get; set; }
 }
