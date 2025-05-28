@@ -5,7 +5,7 @@ namespace MyVideoResume.Abstractions.Account.Preferences;
 
 public class JobPreferences : CommonBase
 {
-    public string UserId { get; set; }
+    public required string UserId { get; set; }
     public string? UserHandle { get; set; }
     public Industry Industry { get; set; } = Industry.Management;
     public ExperienceLevel Seniority { get; set; } = ExperienceLevel.Entry;

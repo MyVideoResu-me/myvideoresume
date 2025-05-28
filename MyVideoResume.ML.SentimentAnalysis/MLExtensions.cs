@@ -14,7 +14,12 @@ public static class IServiceCollectionExtensions
 {
     public static IServiceCollection AddSentimentAnalysis(this IServiceCollection services, WebApplicationBuilder builder)
     {
-        var path = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), builder.Configuration["AI:MLModelFilePath"]);
+        var assemblyLocation = System.Reflection.Assembly.GetExecutingAssembly().Location;
+        var directoryName = System.IO.Path.GetDirectoryName(assemblyLocation);
+        var modelPath = builder.Configuration["AI:MLModelFilePath"];
+        var path = directoryName != null && modelPath != null 
+            ? System.IO.Path.Combine(directoryName, modelPath)
+            : null;
 
         services.AddPredictionEnginePool<SampleObservation, SamplePrediction>()
         .FromFile(path);

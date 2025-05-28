@@ -249,7 +249,11 @@ public partial class ResumeService
 
     public async Task<ResumeInformationEntity> GetDefaultResume(string userId)
     {
-        var result = new ResumeInformationEntity();
+        var result = new ResumeInformationEntity() 
+        { 
+            UserId = userId,
+            ResumeSerialized = "{}"
+        };
         try
         {
             var resumes = GetPartialResumeEntityDetails().Where(x => x.UserId == userId).ToList();
