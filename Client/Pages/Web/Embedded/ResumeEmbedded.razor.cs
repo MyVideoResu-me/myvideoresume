@@ -25,7 +25,12 @@ public partial class ResumeEmbedded
 
     [Inject] ILogger<ResumeViewer> Logger { get; set; }
 
-    public ResumeInformationDTO Resume { get; set; } = new ResumeInformationDTO();
+    public ResumeInformationDTO Resume { get; set; } = new ResumeInformationDTO() 
+    { 
+        Id = string.Empty,
+        ResumeSerialized = string.Empty,
+        UserId = string.Empty
+    };
 
     public bool IsResumeDeleted { get; set; }
 

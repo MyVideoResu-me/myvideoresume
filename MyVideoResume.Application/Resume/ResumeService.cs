@@ -216,7 +216,11 @@ public partial class ResumeService
 
     public async Task<ResumeInformationEntity> GetResume(string resumeId)
     {
-        var result = new ResumeInformationEntity();
+        var result = new ResumeInformationEntity() 
+        { 
+            UserId = string.Empty,
+            ResumeSerialized = string.Empty
+        };
         try
         {
             //Is it a slug?

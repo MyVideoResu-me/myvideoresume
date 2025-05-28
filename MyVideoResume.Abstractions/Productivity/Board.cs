@@ -10,18 +10,18 @@ namespace MyVideoResume.Abstractions.Productivity;
 
 public class BoardDTO : Board {
 
-    public string Id { get; set; }
+    public required string Id { get; set; }
 }
 
 
 public class Board: CommonBase
 {
     //User who owns the Task
-    public string CreatedByUserId { get; set; }
+    public required string CreatedByUserId { get; set; }
 
     public bool IsDefault { get; set; }
 
-    public string Name { get; set; }
+    public required string Name { get; set; }
 
     public string? Description { get; set; }
 

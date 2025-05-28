@@ -38,7 +38,14 @@ public partial class CompanyWebService : BaseWebService
 
     public async Task<BusinessProfileDTO> GetTask(string id)
     {
-        var result = new BusinessProfileDTO();
+        var result = new BusinessProfileDTO() 
+        { 
+            Id = string.Empty,
+            Name = string.Empty,
+            UserId = string.Empty,
+            Emails = new List<Email>(),
+            Phones = new List<Phone>()
+        };
         try
         {
             var uri = new Uri($"{_navigationManager.BaseUri}{Paths.Tasks_API_View}/{id}");
