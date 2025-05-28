@@ -403,3 +403,4 @@ FodyWeavers.xsd
 /Server/appsettings.Development.json
 /Server/appsettings.Local.json # Ensure local settings with secrets are ignored
 /MyVideoResume.API/appsettings.Development.json
+/MyVideoResume.Tests/appsettings.development.json

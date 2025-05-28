@@ -30,7 +30,7 @@ public class PaymentServiceTests
             .Build();
 
         // Get the secret key from configuration
-        var secretKey = configuration["Stripe:SecretKey"] ?? "sk_test_51RRgl8H4NegubGSXpBeUb8Lt3iTvUkVeZRq9rlBdWMUbXztjD27d9bI8sPdQEeapqzf7wqYJsD0UKWxZ96jX500300KoR8Lc3o";
+        var secretKey = configuration["Stripe:SecretKey"] ?? "";
         _stripeConfig = new StripeConfig { SecretKey = secretKey };
 
         _mockStripeConfigOptions = new Mock<IOptions<StripeConfig>>();
