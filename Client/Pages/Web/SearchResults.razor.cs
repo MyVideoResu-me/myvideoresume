@@ -49,9 +49,9 @@ public partial class SearchResults
     {
         await base.OnInitializedAsync();
         
-        if (SecurityService.IsAuthenticated)
+        if (SecurityService.IsAuthenticated())
         {
-            var userProfile = await SecurityService.GetUserProfile();
+            var userProfile = await SecurityService.GetUserProfileAsync();
             if (userProfile != null && userProfile.Latitude.HasValue && userProfile.Longitude.HasValue)
             {
                 userLatitude = userProfile.Latitude;

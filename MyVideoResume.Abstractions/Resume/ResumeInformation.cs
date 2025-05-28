@@ -9,7 +9,7 @@ namespace MyVideoResume.Abstractions.Resume;
 
 public class ResumeInformationBase : GISData
 {
-    public string UserId { get; set; }
+    public required string UserId { get; set; }
 
     public string? Name { get; set; }
 
@@ -37,5 +37,5 @@ public class ResumeInformation : ResumeInformationBase
     public float MinimumSalary { get; set; }
     public ResumeType ResumeType { get; set; }
 
-    public string ResumeSerialized { get; set; }
+    public required string ResumeSerialized { get; set; }
 }

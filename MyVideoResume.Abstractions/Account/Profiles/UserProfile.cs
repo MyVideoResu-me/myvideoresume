@@ -19,9 +19,13 @@ public class UserProfileDTO : UserProfile
 
 public class UserProfile : ProfileBase
 {
-    public string FirstName { get; set; }
+    public required string FirstName { get; set; }
 
-    public string LastName { get; set; }
+    public required string LastName { get; set; }
+    
+    public double? Latitude { get; set; }
+    
+    public double? Longitude { get; set; }
 
     public DateTime? DateOfBirth { get; set; }
 

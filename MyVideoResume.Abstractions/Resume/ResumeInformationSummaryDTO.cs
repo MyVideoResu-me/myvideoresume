@@ -2,9 +2,9 @@
 
 public class ResumeInformationSummaryDTO : ResumeInformationBase, IResumeItem
 {
-    public string Id { get; set; }
-    public string TemplateName { get; set; }
+    public required string Id { get; set; }
+    public required string TemplateName { get; set; }
     public bool IsPublic { get; set; }
     public bool? IsOwner { get; set; }
-    public string CreationDateTimeFormatted { get; set; }
+    public required string CreationDateTimeFormatted { get; set; }
 }
