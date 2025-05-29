@@ -33,8 +33,10 @@ public partial class AccountSettings
     protected RadzenDataGrid<ApplicationUser> grid0;
     public AccountSettingsDTO Settings { get; set; } = new AccountSettingsDTO();
     SortedList<string, string> DisplayPrivacyOptions = DisplayPrivacy.ToPublic.ToSortedList();
+    SortedList<string, string> DistanceUnitOptions = DistanceUnit.Miles.ToSortedList();
     public string DisplayPrivacyOptionSelected { get; set; } = DisplayPrivacy.ToPublic.ToString();
     public string DisplayPrivacyOptionContactDetailsSelected { get; set; } = DisplayPrivacy.ToPublic.ToString();
+    public string DistanceUnitSelected { get; set; } = DistanceUnit.Miles.ToString();
 
 
     protected override async Task OnInitializedAsync()
@@ -63,6 +65,11 @@ public partial class AccountSettings
 
             DisplayPrivacyOptionSelected = Settings.Privacy_ShowProfile.Value.ToString();
             DisplayPrivacyOptionContactDetailsSelected = Settings.Privacy_ShowProfileContactDetails.Value.ToString();
+            
+            if (Settings.DistanceUnitPreference.HasValue)
+            {
+                DistanceUnitSelected = Settings.DistanceUnitPreference.Value.ToString();
+            }
 
             //if the RoleSelect is null then they navigated directly here...
             //So we need to set a default and allow them to change it.
@@ -175,6 +182,7 @@ public partial class AccountSettings
 
             Settings.Privacy_ShowProfile = Enum.Parse<DisplayPrivacy>(DisplayPrivacyOptionSelected);
             Settings.Privacy_ShowProfileContactDetails = Enum.Parse<DisplayPrivacy>(DisplayPrivacyOptionContactDetailsSelected);
+            Settings.DistanceUnitPreference = Enum.Parse<DistanceUnit>(DistanceUnitSelected);
 
             var result = await Account.UserProfileUpdate(Settings.CreateUserProfile());
             if (result.ErrorMessage.HasValue())

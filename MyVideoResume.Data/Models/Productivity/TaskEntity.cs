@@ -16,7 +16,6 @@ public class TaskEntity : TaskItem
     [ForeignKey("AssignedToUserId")]
     [DeleteBehavior(DeleteBehavior.NoAction)]
     public UserProfileEntity AssignedToUser { get; set; }
-    public Guid AssignedToUserId { get; set; }
 
     [ForeignKey("CreatedByUserId")]
     [DeleteBehavior(DeleteBehavior.NoAction)]

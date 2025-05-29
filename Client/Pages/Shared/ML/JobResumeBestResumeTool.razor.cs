@@ -65,7 +65,14 @@ public partial class JobResumeBestResumeTool
                     resumeSerialized = resumeSerialized.Replace("\"Id\":null", $"\"Id\":\"{Guid.NewGuid().ToString()}\"");
 
                     var metaResume = JsonSerializer.Deserialize<JSONResumeDTO>(resumeSerialized);
-                    var resumeInformationEntity = new ResumeInformationDTO() { ResumeSerialized = resumeSerialized, MetaResume = metaResume };
+                    var resumeInformationEntity = new ResumeInformationDTO() 
+                    { 
+                        ResumeSerialized = resumeSerialized, 
+                        MetaResume = metaResume,
+                        UserId = Security.User?.Id ?? "anonymous",
+                        Id = Guid.NewGuid().ToString(),
+                        MetaData = new List<MyVideoResume.Abstractions.MetaContent.MetaDataDTO>()
+                    };
 
                     var resumeText = new ComponentRenderer<BasicTemplate>()
                     .AddService<FeatureFlagClientService>(FeatureFlagService)

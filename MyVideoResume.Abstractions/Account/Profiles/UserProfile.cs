@@ -22,6 +22,10 @@ public class UserProfile : ProfileBase
     public string FirstName { get; set; }
 
     public string LastName { get; set; }
+    
+    public double? Latitude { get; set; }
+    
+    public double? Longitude { get; set; }
 
     public DateTime? DateOfBirth { get; set; }
 
@@ -37,5 +41,7 @@ public class UserProfile : ProfileBase
     public DisplayPrivacy? Privacy_ShowProfile { get; set; } = DisplayPrivacy.ToPublic;
 
     public DisplayPrivacy? Privacy_ShowProfileContactDetails { get; set; } = DisplayPrivacy.ToConnections;
+    
+    public DistanceUnit? DistanceUnitPreference { get; set; } = DistanceUnit.Miles;
 
 }

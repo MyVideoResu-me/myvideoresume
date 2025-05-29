@@ -18,7 +18,7 @@ using System.Text.Json;
 
 namespace MyVideoResume.Application.Resume;
 
-public class ResumeService
+public partial class ResumeService
 {
     private readonly ILogger<ResumeService> _logger;
     private readonly DataContext _dataContext;
@@ -111,7 +111,9 @@ public class ResumeService
                 Slug = x.Slug,
                 Name = x.MetaResume.Basics.Name,
                 IsPrimaryDefault = x.IsPrimaryDefault,
-                IsWatched = false
+                IsWatched = false,
+                Latitude = x.Latitude,
+                Longitude = x.Longitude
             }).ToList();
 
             if (!string.IsNullOrEmpty(userId))
@@ -137,7 +139,9 @@ public class ResumeService
                         Slug = x.ResumeInformation.Slug,
                         Name = x.ResumeInformation.MetaResume.Basics.Name,
                         IsPrimaryDefault = x.ResumeInformation.IsPrimaryDefault,
-                        IsWatched = true
+                        IsWatched = true,
+                        Latitude = x.ResumeInformation.Latitude,
+                        Longitude = x.ResumeInformation.Longitude
                     }).ToList();
 
                     resumeSummaryItems.AddRange(watchedResumes);
@@ -212,7 +216,11 @@ public class ResumeService
 
     public async Task<ResumeInformationEntity> GetResume(string resumeId)
     {
-        var result = new ResumeInformationEntity();
+        var result = new ResumeInformationEntity() 
+        { 
+            UserId = string.Empty,
+            ResumeSerialized = string.Empty
+        };
         try
         {
             //Is it a slug?
@@ -245,7 +253,11 @@ public class ResumeService
 
     public async Task<ResumeInformationEntity> GetDefaultResume(string userId)
     {
-        var result = new ResumeInformationEntity();
+        var result = new ResumeInformationEntity() 
+        { 
+            UserId = userId,
+            ResumeSerialized = "{}"
+        };
         try
         {
             var resumes = GetPartialResumeEntityDetails().Where(x => x.UserId == userId).ToList();
