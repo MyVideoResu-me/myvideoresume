@@ -79,6 +79,22 @@ public partial class ResumeWebService : BaseWebService
 
         return result;
     }
+    
+    public async Task<List<ResumeInformationSummaryDTO>> SearchResumes(ResumeSearchRequestDTO searchRequest)
+    {
+        var result = new List<ResumeInformationSummaryDTO>();
+        try
+        {
+            var uri = new Uri($"{_navigationManager.BaseUri}api/resume/SearchResumes");
+            var response = await _httpClient.PostAsJsonAsync(uri, searchRequest);
+            result = await response.ReadAsync<List<ResumeInformationSummaryDTO>>();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.Message, ex);
+        }
+        return result;
+    }
     #endregion
 
     #region Resume List

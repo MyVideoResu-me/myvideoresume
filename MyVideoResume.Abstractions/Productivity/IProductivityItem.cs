@@ -18,7 +18,7 @@ public interface IProductivityItem
     DateTime? End { get; set; }
 
     string? CreatedByUserId { get; set; }
-    string AssignedToUserId { get; set; }
+    Guid? AssignedToUserId { get; set; }
 
     ProductivityItemStatus Status { get; set; }
 }

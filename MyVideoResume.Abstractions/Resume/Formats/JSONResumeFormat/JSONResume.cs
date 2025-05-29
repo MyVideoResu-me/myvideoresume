@@ -311,9 +311,10 @@ public class Work
     [JsonIgnore, NotMapped]
     public string HighlightsFlattened
     {
-        get => String.Join(Environment.NewLine, Highlights);
+        get => Highlights != null ? String.Join(Environment.NewLine, Highlights) : string.Empty;
         set
         {
+            Highlights ??= new List<string>();
             Highlights.Clear();
             string[] val;
             if (value.Contains("\n"))
@@ -338,9 +339,10 @@ public class Volunteer
     [JsonIgnore, NotMapped]
     public string HighlightsFlattened
     {
-        get => String.Join(Environment.NewLine, Highlights);
+        get => Highlights != null ? String.Join(Environment.NewLine, Highlights) : string.Empty;
         set
         {
+            Highlights ??= new List<string>();
             Highlights.Clear();
             string[] val;
             if (value.Contains("\n"))
@@ -479,9 +481,10 @@ public class Project
     [JsonIgnore, NotMapped]
     public string HighlightsFlattened
     {
-        get => String.Join(Environment.NewLine, Highlights);
+        get => Highlights != null ? String.Join(Environment.NewLine, Highlights) : string.Empty;
         set
         {
+            Highlights ??= new List<string>();
             Highlights.Clear();
             string[] val;
             if (value.Contains("\n"))

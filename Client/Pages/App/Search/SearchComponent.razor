@@ -1,24 +1,90 @@
 ﻿@inherits BaseComponent
+@using MyVideoResume.Abstractions.Resume
 <div class="searchComponent" style=" margin-bottom: 25px;">
     <RadzenStack Orientation="Orientation.Horizontal" Wrap="FlexWrap.Wrap" JustifyContent="JustifyContent.Center">
-        <RadzenTextBox @bind-value=@QuerySelected placeholder="Search..." class="searchComponent" />
+        <RadzenTextBox @bind-value=@QuerySelected placeholder="Search resumes..." class="searchComponent" />
         <RadzenButton Icon="search" Click=@(args => Search()) class="searchComponent" Shade="Shade.Lighter" ButtonStyle="ButtonStyle.Base"></RadzenButton>
-        <div class="searchFilterOptions"><FilterOptionsComponent></FilterOptionsComponent></div>
+        <div class="searchFilterOptions">
+            <FilterOptionsComponent 
+                QuerySelected="@QuerySelected" 
+                FilterSelected="@FilterSelected"
+                EducationSelected="@EducationSelected"
+                ExperienceSelected="@ExperienceSelected"
+                RadiusSelected="@RadiusSelected"
+                Latitude="@Latitude"
+                Longitude="@Longitude"
+                OnSearch="@HandleSearch">
+            </FilterOptionsComponent>
+        </div>
     </RadzenStack>
 </div>
 @code {
     [Parameter]
     public string FilterSelected { get; set; }
+    
     [Parameter]
     public string QuerySelected { get; set; } = "";
+    
+    [Parameter]
+    public string EducationSelected { get; set; }
+    
+    [Parameter]
+    public string ExperienceSelected { get; set; }
+    
+    [Parameter]
+    public string RadiusSelected { get; set; }
+    
+    [Parameter]
+    public double? Latitude { get; set; }
+    
+    [Parameter]
+    public double? Longitude { get; set; }
+    
+    [Parameter]
+    public EventCallback<ResumeSearchRequestDTO> OnSearch { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
+        
+        // Try to get user's location from browser
+        await GetUserLocation();
+    }
+    
+    private async Task GetUserLocation()
+    {
+        try
+        {
+            var location = await JSRuntime.InvokeAsync<LocationResult>("getUserLocation");
+            if (location != null)
+            {
+                Latitude = location.Latitude;
+                Longitude = location.Longitude;
+            }
+        }
+        catch (Exception ex)
+        {
+            // Location access might be denied or unavailable
+            Console.WriteLine($"Error getting location: {ex.Message}");
+        }
+    }
+    
+    private class LocationResult
+    {
+        public double Latitude { get; set; }
+        public double Longitude { get; set; }
     }
 
     void Search()
     {
-        NavigationManager.NavigateTo($"/search-results?query={QuerySelected}&filter={FilterSelected}");
+        NavigationManager.NavigateTo($"/search-results?query={QuerySelected}&filter={FilterSelected}&education={EducationSelected}&experience={ExperienceSelected}&radius={RadiusSelected}");
+    }
+    
+    async Task HandleSearch(ResumeSearchRequestDTO searchRequest)
+    {
+        if (OnSearch.HasDelegate)
+        {
+            await OnSearch.InvokeAsync(searchRequest);
+        }
     }
 }

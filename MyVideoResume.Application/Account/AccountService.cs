@@ -108,7 +108,7 @@ public class AccountService
     }
     public async Task<UserProfileEntity> UserProfileCreate(string userId)
     {
-        var profile = new UserProfileEntity();
+        var profile = new UserProfileEntity() { FirstName = string.Empty, LastName = string.Empty, UserId = userId };
         try
         {
             profile = _dataContext.UserProfiles.FirstOrDefault(x => x.UserId == userId);

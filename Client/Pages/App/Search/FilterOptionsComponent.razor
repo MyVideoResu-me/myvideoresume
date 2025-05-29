@@ -1,11 +1,13 @@
 ﻿@using MyVideoResume.Abstractions.Job
+@using MyVideoResume.Abstractions.Core
+@using MyVideoResume.Abstractions.Resume
 @inherits BaseComponent
 <div class="filterComponent">
     <RadzenButton Variant="Variant.Outlined" BadgeStyle="BadgeStyle.Secondary" Text="All" Click=@(args => Search("All")) />
     <RadzenDropDown AllowClear=true TValue="string" Change=@(args => Search($"{args}")) @bind-Value=@FilterSelected Data=@DatePosted Placeholder="Date Posted" TextProperty="Value" ValueProperty="Key"></RadzenDropDown>
-    <RadzenDropDown AllowClear=true TValue="string" Change=@(args => Search($"{args}")) @bind-Value=@FilterSelected Data=@Remote Placeholder="Remote" TextProperty="Value" ValueProperty="Key"></RadzenDropDown>
-    <RadzenDropDown AllowClear=true TValue="string" Change=@(args => Search($"{args}")) @bind-Value=@FilterSelected Data=@JobTypes Placeholder="Job Type" TextProperty="Value" ValueProperty="Key"></RadzenDropDown>
-    <RadzenDropDown AllowClear=true TValue="string" Change=@(args => Search($"{args}")) @bind-Value=@FilterSelected Data=@ExperienceLevels Placeholder="Experience Level" TextProperty="Value" ValueProperty="Key"></RadzenDropDown>
+    <RadzenDropDown AllowClear=true TValue="string" Change=@(args => Search($"{args}")) @bind-Value=@EducationSelected Data=@EducationLevels Placeholder="Education" TextProperty="Value" ValueProperty="Key"></RadzenDropDown>
+    <RadzenDropDown AllowClear=true TValue="string" Change=@(args => Search($"{args}")) @bind-Value=@ExperienceSelected Data=@ExperienceLevels Placeholder="Experience Level" TextProperty="Value" ValueProperty="Key"></RadzenDropDown>
+    <RadzenDropDown AllowClear=true TValue="string" Change=@(args => OnRadiusChange($"{args}")) @bind-Value=@RadiusSelected Data=@SearchRadius Placeholder="Search Radius" TextProperty="Value" ValueProperty="Key"></RadzenDropDown>
 </div>
 
 @code {
@@ -14,14 +16,44 @@
         { "3Days","Last 3 Days" },
         { "7Days","Last 7 Days"  },
         { "14Days","Last 14 Days"  }};
-    SortedList<string, string> Remote = WorkSetting.Remote.ToSortedList();
-    SortedList<string, string> JobTypes = JobType.FullTime.ToSortedList();
+    SortedList<string, string> EducationLevels = new SortedList<string, string> {
+        { "HighSchool", "High School" },
+        { "Associate", "Associate's Degree" },
+        { "Bachelor", "Bachelor's Degree" },
+        { "Master", "Master's Degree" },
+        { "Doctorate", "Doctorate" }
+    };
     SortedList<string, string> ExperienceLevels = ExperienceLevel.LeadExecutive.ToSortedList();
+    SortedList<string, string> SearchRadius = new SortedList<string, string> {
+        { "5", "5 miles/km" },
+        { "10", "10 miles/km" },
+        { "25", "25 miles/km" },
+        { "50", "50 miles/km" }
+    };
 
     [Parameter]
     public string FilterSelected { get; set; }
+    
     [Parameter]
     public string QuerySelected { get; set; } = "";
+    
+    [Parameter]
+    public string EducationSelected { get; set; }
+    
+    [Parameter]
+    public string ExperienceSelected { get; set; }
+    
+    [Parameter]
+    public string RadiusSelected { get; set; }
+    
+    [Parameter]
+    public double? Latitude { get; set; }
+    
+    [Parameter]
+    public double? Longitude { get; set; }
+    
+    [Parameter]
+    public EventCallback<ResumeSearchRequestDTO> OnSearch { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -31,7 +63,35 @@
     void Search(string item)
     {
         FilterSelected = item;
-        NavigationManager.NavigateTo($"/search-results?query={QuerySelected}&filter={FilterSelected}");
+        NavigationManager.NavigateTo($"/search-results?query={QuerySelected}&filter={FilterSelected}&education={EducationSelected}&experience={ExperienceSelected}&radius={RadiusSelected}");
+    }
+    
+    void OnRadiusChange(string radius)
+    {
+        RadiusSelected = radius;
+        Search(FilterSelected);
+    }
+
+    public async Task TriggerSearch()
+    {
+        var searchRequest = new ResumeSearchRequestDTO
+        {
+            TextQuery = QuerySelected,
+            Education = EducationSelected,
+            Experience = ExperienceSelected,
+            Latitude = Latitude,
+            Longitude = Longitude
+        };
+        
+        if (!string.IsNullOrEmpty(RadiusSelected) && double.TryParse(RadiusSelected, out double radiusValue))
+        {
+            searchRequest.RadiusMiles = radiusValue;
+        }
+        
+        if (OnSearch.HasDelegate)
+        {
+            await OnSearch.InvokeAsync(searchRequest);
+        }
     }
 
     void SearchOption(RadzenSplitButtonItem item)

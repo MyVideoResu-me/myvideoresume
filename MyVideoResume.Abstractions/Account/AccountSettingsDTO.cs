@@ -38,6 +38,8 @@ public class AccountSettingsDTO
     public DisplayPrivacy? Privacy_ShowProfile { get; set; } = DisplayPrivacy.ToPublic;
 
     public DisplayPrivacy? Privacy_ShowProfileContactDetails { get; set; } = DisplayPrivacy.ToConnections;
+    
+    public DistanceUnit? DistanceUnitPreference { get; set; } = DistanceUnit.Miles;
 
     public List<string>? SocialProfiles { get; set; }
 
@@ -78,6 +80,7 @@ public class AccountSettingsDTO
             PaidPurchaseDateTime = this.PaidPurchaseDateTime,
             Privacy_ShowProfile = this.Privacy_ShowProfile,
             Privacy_ShowProfileContactDetails = this.Privacy_ShowProfileContactDetails,
+            DistanceUnitPreference = this.DistanceUnitPreference,
             ProfileStatus = this.ProfileStatus,
             ProfileStatusDataTime = this.ProfileStatusDataTime,
             TermsOfUseAgreementAcceptedDateTime = this.TermsOfUseAgreementAcceptedDateTime,

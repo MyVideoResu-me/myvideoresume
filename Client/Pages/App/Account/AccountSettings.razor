@@ -78,7 +78,16 @@
                                             </RadzenColumn>
                                         </RadzenRow>
                                     </RadzenStack>
-
+                                    <RadzenStack Gap="1rem">
+                                        <RadzenRow AlignItems="AlignItems.Center">
+                                            <RadzenColumn Size="12" SizeMD="4">
+                                                <RadzenLabel Text="Distance Unit Preference" Component="DistanceUnit" />
+                                            </RadzenColumn>
+                                            <RadzenColumn Size="12" SizeMD="8">
+                                                <RadzenDropDown AllowClear=false TValue="string" @bind-Value=@DistanceUnitSelected Data=@DistanceUnitOptions TextProperty="Value" ValueProperty="Key"></RadzenDropDown>
+                                            </RadzenColumn>
+                                        </RadzenRow>
+                                    </RadzenStack>
                                 </RadzenFieldset>
                             </RadzenStack>
                             <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End">
@@ -291,4 +300,6 @@
         </RadzenStack>
     </RadzenTemplateForm>    );
     }
+
+    // SaveCard method is implemented in the .razor.cs file
 }

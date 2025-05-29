@@ -208,6 +208,21 @@ public partial class ResumeController : ControllerBase
         }
         return result;
     }
+    
+    [HttpPost("SearchResumes")]
+    public async Task<ActionResult<List<ResumeInformationSummaryDTO>>> SearchResumes([FromBody] ResumeSearchRequestDTO searchRequest)
+    {
+        var result = new List<ResumeInformationSummaryDTO>();
+        try
+        {
+            result = await _resumeService.SearchResumeInformationSummaryData(searchRequest);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.Message, ex);
+        }
+        return result;
+    }
 
 
     [HttpPost("Summarize")]

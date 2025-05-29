@@ -18,7 +18,7 @@ public class TaskItem : CommonBase
     //User who owns the Task
     public string? CreatedByUserId { get; set; }
 
-    public string AssignedToUserId { get; set; }
+    public Guid? AssignedToUserId { get; set; }
 
     public string Text { get; set; }
 

@@ -35,6 +35,20 @@ public partial class SecurityWebService : BaseWebService
     private readonly RecaptchaService recaptchaService;
     public ApplicationUser User { get; private set; } = new ApplicationUser { Name = "Anonymous" };
     public ClaimsPrincipal Principal { get; private set; }
+    
+    public async Task<UserProfileDTO> GetUserProfileAsync()
+    {
+        if (!IsAuthenticated())
+            return null;
+            
+        var uri = new Uri($"{_navigationManager.BaseUri}api/account/profile");
+        var response = await _httpClient.GetAsync(uri);
+        
+        if (!response.IsSuccessStatusCode)
+            return null;
+            
+        return await response.ReadAsync<UserProfileDTO>();
+    }
 
     public SecurityWebService(HybridCache cache, NavigationManager navigationManager, IHttpClientFactory factory, ILogger<SecurityWebService> logger, RecaptchaService recaptchaService) : base(cache, factory, navigationManager)
     {
