@@ -14,20 +14,52 @@
         <RadzenCard>
             <AuthorizeView>
                 <Authorized>
-                    <RadzenDataGrid Responsive=true AllowFiltering="false" AllowColumnResize="true" AllowAlternatingRows="false" FilterMode="FilterMode.Simple" AllowSorting="true" PageSize="5" AllowPaging="true" PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true" Data="@Items" ColumnWidth="300px" LogicalFilterOperator="LogicalFilterOperator.Or" SelectionMode="DataGridSelectionMode.Single" @bind-Value=@SelectedItems>
+                    <RadzenDataGrid Responsive=true AllowFiltering="true" AllowColumnResize="true" AllowAlternatingRows="false" FilterMode="FilterMode.Advanced" AllowSorting="true" PageSize="10" AllowPaging="true" PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true" Data="@Items" ColumnWidth="300px" LogicalFilterOperator="LogicalFilterOperator.Or" SelectionMode="DataGridSelectionMode.Single" @bind-Value=@SelectedItems>
                         <Columns>
                             <RadzenDataGridColumn Width="50px" Title="#" Filterable="false" Sortable="false" TextAlign="TextAlign.Center">
                                 <Template Context="data">
                                     @(Items.IndexOf(data) + 1)
                                 </Template>
                             </RadzenDataGridColumn>
-                            <RadzenDataGridColumn Property="@nameof(TaskDTO.Text)" Title="Item" Frozen="true">
+                            <RadzenDataGridColumn Property="@nameof(TaskDTO.Text)" Title="Title" Frozen="true">
                                 <Template Context="data">
-                                    <div style=" max-width: 250px; "><RadzenText style="text-overflow:ellipsis; white-space: nowrap; overflow: hidden;" TextStyle="TextStyle.Body1" title="@(data.Text)">@(data.Text)</RadzenText></div>
+                                    <div style="max-width: 250px;">
+                                        <RadzenText style="text-overflow:ellipsis; white-space: nowrap; overflow: hidden;" TextStyle="TextStyle.Body1" title="@(data.Text)">@(data.Text)</RadzenText>
+                                    </div>
                                 </Template>
                             </RadzenDataGridColumn>
-                            <RadzenDataGridColumn Width="75px" Property="@nameof(TaskDTO.CreationDateTime)" Title="Date Created" Frozen="false" />
-                            <RadzenDataGridColumn Title="Actions" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Frozen="false">
+                            <RadzenDataGridColumn Property="@nameof(TaskDTO.Description)" Title="Description" Frozen="false">
+                                <Template Context="data">
+                                    <div style="max-width: 250px;">
+                                        <RadzenText style="text-overflow:ellipsis; white-space: nowrap; overflow: hidden;" TextStyle="TextStyle.Body1" title="@(data.Description)">@(data.Description)</RadzenText>
+                                    </div>
+                                </Template>
+                            </RadzenDataGridColumn>
+                            <RadzenDataGridColumn Property="@nameof(TaskDTO.Status)" Title="Status" Frozen="false" Width="100px">
+                                <Template Context="data">
+                                    <RadzenBadge BadgeStyle="@GetStatusBadgeStyle(data.Status)" Text="@data.Status.ToString()" />
+                                </Template>
+                            </RadzenDataGridColumn>
+                            <RadzenDataGridColumn Title="Assigned To" Frozen="false" Width="150px">
+                                <Template Context="data">
+                                    @if (data.AssignedToUser != null)
+                                    {
+                                        <RadzenText TextStyle="TextStyle.Body1">
+                                            @($"{data.AssignedToUser.FirstName} {data.AssignedToUser.LastName}".Trim())
+                                        </RadzenText>
+                                    }
+                                    else
+                                    {
+                                        <RadzenText TextStyle="TextStyle.Body1">Unassigned</RadzenText>
+                                    }
+                                </Template>
+                            </RadzenDataGridColumn>
+                            <RadzenDataGridColumn Property="@nameof(TaskDTO.CreationDateTime)" Title="Created" Frozen="false" Width="120px">
+                                <Template Context="data">
+                                    @data.CreationDateTime.ToString("MM/dd/yyyy")
+                                </Template>
+                            </RadzenDataGridColumn>
+                            <RadzenDataGridColumn Title="Actions" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Frozen="false" Width="100px">
                                 <Template Context="data">
                                     <TaskActionsPanelComponent Item=data Deleted=DeleteCompletedHandler></TaskActionsPanelComponent>
                                 </Template>
@@ -44,6 +76,18 @@
 </RadzenRow>
 
 @code {
+    private BadgeStyle GetStatusBadgeStyle(ProductivityItemStatus status)
+    {
+        return status switch
+        {
+            ProductivityItemStatus.ToDo => BadgeStyle.Light,
+            ProductivityItemStatus.InProgress => BadgeStyle.Info,
+            ProductivityItemStatus.Completed => BadgeStyle.Success,
+            ProductivityItemStatus.OnHold => BadgeStyle.Warning,
+            ProductivityItemStatus.Cancelled => BadgeStyle.Danger,
+            _ => BadgeStyle.Secondary
+        };
+    }
 
     protected override async Task OnInitializedAsync()
     {
@@ -53,7 +97,7 @@
 
     private async Task LoadTasks()
     {
-            Items = await Service.TasksRead();
+        Items = await Service.TasksRead();
     }
 
     protected async Task DeleteCompletedHandler(ResponseResult result)
@@ -63,15 +107,15 @@
     }
 
     protected async Task Created(string result)
-        {
+    {
         if (result.HasValue())
-            {
+        {
             await LoadTasks(); // Refresh the task list after creation
-            }
+        }
     }
 
     protected async Task DeleteAction(IProductivityItem item)
-            {
+    {
         //Confirm Dialogue and if true then Delete...
         var confirm = await DialogService.Confirm("Are you sure?", "Delete", new ConfirmOptions() { OkButtonText = "Yes", CancelButtonText = "No" });
         if (confirm.HasValue && confirm.Value)
@@ -81,7 +125,7 @@
             if (result.ErrorMessage.HasValue())
             {
                 ShowErrorNotification("Failed to Delete", string.Empty);
-    }
+            }
             else
             {
                 ShowSuccessNotification("Task Deleted", string.Empty);
@@ -89,9 +133,8 @@
                     await Deleted.InvokeAsync(result);
 
                 await LoadTasks(); // Refresh the task list after deletion
-}
+            }
         }
         DialogService.Close();
     }
-
 }
