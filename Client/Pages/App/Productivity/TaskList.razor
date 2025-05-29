@@ -45,19 +45,33 @@
 
 @code {
 
-    protected async Task DeleteCompletedHandler(ResponseResult result)
+    protected override async Task OnInitializedAsync()
     {
-        await ShowNotification(result);
+        await base.OnInitializedAsync();
+        await LoadTasks();
     } 
 
-    protected async Task Created(string result)
+    private async Task LoadTasks()
     {
-        if (result.HasValue())
             Items = await Service.TasksRead();
     }
 
-    protected async Task DeleteAction(IProductivityItem item)
+    protected async Task DeleteCompletedHandler(ResponseResult result)
     {
+        await ShowNotification(result);
+        await LoadTasks(); // Refresh the task list after deletion
+    }
+
+    protected async Task Created(string result)
+        {
+        if (result.HasValue())
+            {
+            await LoadTasks(); // Refresh the task list after creation
+            }
+    }
+
+    protected async Task DeleteAction(IProductivityItem item)
+            {
         //Confirm Dialogue and if true then Delete...
         var confirm = await DialogService.Confirm("Are you sure?", "Delete", new ConfirmOptions() { OkButtonText = "Yes", CancelButtonText = "No" });
         if (confirm.HasValue && confirm.Value)
@@ -67,13 +81,15 @@
             if (result.ErrorMessage.HasValue())
             {
                 ShowErrorNotification("Failed to Delete", string.Empty);
-            }
+    }
             else
             {
-                ShowSuccessNotification("Resume Deleted", string.Empty);
+                ShowSuccessNotification("Task Deleted", string.Empty);
                 if (Deleted.HasDelegate)
                     await Deleted.InvokeAsync(result);
-            }
+
+                await LoadTasks(); // Refresh the task list after deletion
+}
         }
         DialogService.Close();
     }

@@ -72,22 +72,30 @@ public partial class ProductivityWebService : BaseWebService
 
     public async Task<ResponseResult<IProductivityItem>> TaskSave(TaskDTO item)
     {
-        var r = new ResponseResult<IProductivityItem>();
+        var result = new ResponseResult<IProductivityItem>();
         try
         {
             var uri = new Uri($"{_navigationManager.BaseUri}{Paths.Tasks_API_Save}");
 
-            var jsonText = JsonSerializer.Serialize(item);
+            // Send the TaskDTO object directly
+            var response = await _httpClient.PostAsJsonAsync(uri, item);
 
-            var response = await _httpClient.PostAsJsonAsync<string>(uri, jsonText);
-            r = await response.ReadAsync<ResponseResult<IProductivityItem>>();
+            if (response.IsSuccessStatusCode)
+            {
+                result = await response.ReadAsync<ResponseResult<IProductivityItem>>();
+            }
+            else
+            {
+                result.ErrorMessage = $"Failed to save task. Status code: {response.StatusCode}";
+                _logger.LogError($"Failed to save task. Status code: {response.StatusCode}");
+            }
         }
         catch (Exception ex)
         {
-            r.ErrorMessage = "Failed Saving";
+            result.ErrorMessage = "Failed Saving: " + ex.Message;
             _logger.LogError(ex.Message, ex);
         }
-        return r;
+        return result;
     }
 
     public async Task<String> TaskGetUrl(TaskDTO item)

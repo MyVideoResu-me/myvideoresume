@@ -29,22 +29,38 @@
             <RadzenDropDown @bind-Value="@model.Status" Data="@statusOptions" ValueProperty="Value" TextProperty="Text" Style="width: 12rem;" />
         </RadzenStack>
         <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.End">
-            <RadzenButton ButtonType="ButtonType.Submit" Text="Save" />
+            <RadzenButton ButtonType="ButtonType.Submit" Text="Save" ButtonStyle="ButtonStyle.Primary" Style="margin-right: 10px;" />
+            <RadzenButton Text="Cancel" ButtonStyle="ButtonStyle.Light" Click="@(() => DialogService.Close(null))" />
         </RadzenStack>
     </RadzenStack>
 </RadzenTemplateForm>
 
 @code {
     [Parameter] public DateTime Start { get; set; }
-    [Parameter] public DateTime End { get; set; }
+    [Parameter] public DateTime? End { get; set; }
 
     TaskDTO model = new TaskDTO();
-    
-    List<dynamic> taskTypes = Enum.GetValues(typeof(TaskType)).Cast<TaskType>()
-        .Select(t => new { Text = t.ToString(), Value = t }).ToList<dynamic>();
-    
-    List<dynamic> statusOptions = Enum.GetValues(typeof(ProductivityItemStatus)).Cast<ProductivityItemStatus>()
-        .Select(s => new { Text = s.ToString(), Value = s }).ToList<dynamic>();
+
+    List<dynamic> taskTypes;
+    List<dynamic> statusOptions;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        // Fix the duplicate enum issue by creating a distinct list by both enum value and name
+        taskTypes = Enum.GetValues(typeof(TaskType))
+            .Cast<TaskType>()
+            .Select(t => new { Text = t.ToString(), Value = t })
+            .GroupBy(x => new { x.Value, x.Text })
+            .Select(g => g.First())
+            .ToList<dynamic>();
+
+        statusOptions = Enum.GetValues(typeof(ProductivityItemStatus))
+            .Cast<ProductivityItemStatus>()
+            .Select(s => new { Text = s.ToString(), Value = s })
+            .ToList<dynamic>();
+    }
 
     protected override void OnParametersSet()
     {
@@ -53,7 +69,14 @@
         model.TaskType = TaskType.General;
         model.Status = ProductivityItemStatus.ToDo;
         model.CreatedByUserId = Security.User?.Id;
-        model.AssignedToUserId = Security.User?.Id ?? "";
+        if (Guid.TryParse(Security.User?.Id, out var assignedToUserId))
+        {
+            model.AssignedToUserId = assignedToUserId;
+        }
+        else
+        {
+            model.AssignedToUserId = null;
+        }
     }
 
     async Task OnSubmit(TaskDTO model)
@@ -66,7 +89,7 @@
         else
         {
             ShowSuccessNotification("Task Created", "Task has been created successfully");
-            DialogService.Close(result.Data);
+            DialogService.Close(result.Result);
         }
     }
 }

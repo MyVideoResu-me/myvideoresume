@@ -47,8 +47,8 @@ public static class Paths
     public const string Inbox_API_View = "api/inbox";
     public const string Tasks_View = "/tasks";
     public const string Tasks_Schedule = "/schedule";
-    public const string Tasks_API_View = "api/tasks";
-    public const string Tasks_API_Save = "api/tasks/save";
+    public const string Tasks_API_View = "api/task";
+    public const string Tasks_API_Save = "api/task/save";
     public const string Tools_Sentiment = "Tools/SentimentAnalysis";
     public const string Tools_SummarizeResume = "Tools/SummarizeResume";
     public const string Tools_JobMatch = "Tools/JobResumeMatch";

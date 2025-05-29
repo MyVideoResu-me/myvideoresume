@@ -245,7 +245,7 @@ public enum TaskType
     OnboardingPrivacy = 13,
 
     Recruiter = 20,
-    RecruiterPreferences = 31,
+    RecruiterPreferences = 21,
     JobSeeker = 30,
     JobSeekerPreferences = 31,
     Company = 40, //Update Company Profile; Add Contact Details; Add Job;
