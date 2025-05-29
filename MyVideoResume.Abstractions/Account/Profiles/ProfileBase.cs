@@ -10,7 +10,7 @@ namespace MyVideoResume.Abstractions.Account.Profiles;
 public class ProfileBase : CommonBase
 {
     //User who created
-    public required string UserId { get; set; }
+    public string UserId { get; set; }
 
     public List<string>? SocialProfiles { get; set; }
 

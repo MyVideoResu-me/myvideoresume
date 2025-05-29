@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace MyVideoResume.Abstractions.Productivity;
 
 public class AppointmentDTO : Appointment, IProductivityItem
-{    public required string Id { get; set; }
+{    public string Id { get; set; }
 }
 
 public class Appointment : TaskItem

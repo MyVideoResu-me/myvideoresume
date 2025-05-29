@@ -6,9 +6,9 @@ namespace MyVideoResume.Abstractions.Resume;
 
 public class ResumeInformationDTO : ResumeInformation, IResumeItem
 {
-    public required string Id { get; set; }
-    public required JSONResumeDTO MetaResume { get; set; }
-    public required List<MetaDataDTO> MetaData { get; set; }
+    public string Id { get; set; }
+    public JSONResumeDTO MetaResume { get; set; }
+    public List<MetaDataDTO> MetaData { get; set; }
 
     public ResumeTemplate? ResumeTemplate { get; set; }
 

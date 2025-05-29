@@ -4,12 +4,12 @@ namespace MyVideoResume.Abstractions.Productivity;
 
 public class TaskDTO : TaskItem, IProductivityItem
 {
-    public required string Id { get; set; }
+    public string Id { get; set; }
 
     public ContactPersonDTO? CreatedByUser { get; set; }
-    public required ContactPersonDTO AssignedToUser { get; set; }
+    public ContactPersonDTO AssignedToUser { get; set; }
 
-    public required string BoardId { get; set; }
+    public string BoardId { get; set; }
 
 }
 
@@ -18,9 +18,9 @@ public class TaskItem : CommonBase
     //User who owns the Task
     public string? CreatedByUserId { get; set; }
 
-    public required string AssignedToUserId { get; set; }
+    public Guid? AssignedToUserId { get; set; }
 
-    public required string Text { get; set; }
+    public string Text { get; set; }
 
     public string? Description { get; set; }
 

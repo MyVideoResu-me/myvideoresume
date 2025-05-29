@@ -9,7 +9,7 @@ namespace MyVideoResume.Abstractions.Productivity;
 
 public class ProjectGroupDTO : ProjectGroup, IProductivityItem
 {
-    public required string Id { get; set; }
+    public string Id { get; set; }
 }
 
 public class ProjectGroup: TaskItem
