@@ -17,4 +17,16 @@ public partial class ExportDataContextController : ExportController
         this.service = service;
         this.context = context;
     }
+
+    [HttpGet("csv")]
+    public override FileStreamResult ToCSV(IQueryable query, string fileName = null)
+    {
+        return base.ToCSV(query, fileName);
+    }
+
+    [HttpGet("excel")]
+    public override FileStreamResult ToExcel(IQueryable query, string fileName = null)
+    {
+        return base.ToExcel(query, fileName);
+    }
 }

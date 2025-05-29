@@ -20,6 +20,7 @@ namespace MyVideoResume.Server.Controllers;
 [ApiController]
 public partial class ExportController : ControllerBase
 {
+    [NonAction]
     public IQueryable ApplyQuery<T>(IQueryable<T> items, IQueryCollection query = null, bool keyless = false) where T : class
     {
         if (query != null)
@@ -67,7 +68,8 @@ public partial class ExportController : ControllerBase
         return items;
     }
 
-    public FileStreamResult ToCSV(IQueryable query, string fileName = null)
+    [HttpGet("csv")]
+    public virtual FileStreamResult ToCSV(IQueryable query, string fileName = null)
     {
         var columns = GetProperties(query.ElementType);
 
@@ -85,14 +87,14 @@ public partial class ExportController : ControllerBase
             sb.AppendLine(string.Join(",", row.ToArray()));
         }
 
-
         var result = new FileStreamResult(new MemoryStream(UTF8Encoding.Default.GetBytes($"{string.Join(",", columns.Select(c => c.Key))}{System.Environment.NewLine}{sb.ToString()}")), "text/csv");
         result.FileDownloadName = (!string.IsNullOrEmpty(fileName) ? fileName : "Export") + ".csv";
 
         return result;
     }
 
-    public FileStreamResult ToExcel(IQueryable query, string fileName = null)
+    [HttpGet("excel")]
+    public virtual FileStreamResult ToExcel(IQueryable query, string fileName = null)
     {
         var columns = GetProperties(query.ElementType);
         var stream = new MemoryStream();
@@ -181,7 +183,6 @@ public partial class ExportController : ControllerBase
                 sheetData.AppendChild(row);
             }
 
-
             workbookPart.Workbook.Save();
         }
 
@@ -196,18 +197,20 @@ public partial class ExportController : ControllerBase
         return result;
     }
 
-
+    [NonAction]
     public static object GetValue(object target, string name)
     {
         return target.GetType().GetProperty(name).GetValue(target);
     }
 
+    [NonAction]
     public static IEnumerable<KeyValuePair<string, Type>> GetProperties(Type type)
     {
         return type.GetProperties(BindingFlags.Public | BindingFlags.Instance)
                 .Where(p => p.CanRead && IsSimpleType(p.PropertyType)).Select(p => new KeyValuePair<string, Type>(p.Name, p.PropertyType));
     }
 
+    [NonAction]
     public static bool IsSimpleType(Type type)
     {
         var underlyingType = type.IsGenericType &&

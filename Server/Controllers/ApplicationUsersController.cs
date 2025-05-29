@@ -7,9 +7,10 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
 using Microsoft.AspNetCore.OData.Routing.Controllers;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.OData.Results;
+using Microsoft.AspNetCore.OData.Routing.Attributes;
 using Microsoft.AspNetCore.OData.Deltas;
+using Microsoft.AspNetCore.Hosting;
 using System.ComponentModel.DataAnnotations.Schema;
 
 using MyVideoResume.Server.Data;
@@ -19,13 +20,12 @@ using DocumentFormat.OpenXml.Spreadsheet;
 namespace MyVideoResume.Server.Controllers;
 
 [Authorize]
-[Route("odata/Identity/ApplicationUsers")]
+[ODataRouteComponent("odata/Identity")]
 public partial class ApplicationUsersController : ODataController
 {
     private readonly ApplicationIdentityDbContext context;
     private readonly UserManager<ApplicationUser> userManager;
     private readonly ILogger<ApplicationUsersController> logger;
-
 
     public ApplicationUsersController(ApplicationIdentityDbContext context, UserManager<ApplicationUser> userManager, ILogger<ApplicationUsersController> logger)
     {
@@ -36,38 +36,32 @@ public partial class ApplicationUsersController : ODataController
 
     partial void OnUsersRead(ref IQueryable<ApplicationUser> users);
 
-    [EnableQuery]
-    [HttpGet]
-    public IEnumerable<ApplicationUser> Get()
+    [EnableQuery(PageSize = 10)]
+    public IQueryable<ApplicationUser> Get()
     {
         var users = userManager.Users;
         OnUsersRead(ref users);
-
         return users;
     }
 
     [EnableQuery]
-    [HttpGet("{Id}")]
-    public SingleResult<ApplicationUser> GetApplicationUser(string key)
+    public SingleResult<ApplicationUser> Get([FromRoute] string key)
     {
         try
         {
             var user = context.Users.Where(i => i.Id == key);
-            var result = SingleResult.Create(user);
-            return result;
+            return SingleResult.Create(user);
         }
         catch (Exception ex)
         {
             logger.LogError(ex.Message, ex);
+            return null;
         }
-
-        return null;
     }
 
     partial void OnUserDeleted(ApplicationUser user);
 
-    [HttpDelete("{Id}")]
-    public async Task<IActionResult> Delete(string key)
+    public async Task<IActionResult> Delete([FromRoute] string key)
     {
         var user = await userManager.FindByIdAsync(key);
 
@@ -85,13 +79,12 @@ public partial class ApplicationUsersController : ODataController
             return IdentityError(result);
         }
 
-        return new NoContentResult();
+        return NoContent();
     }
 
     partial void OnUserUpdated(ApplicationUser user);
 
-    [HttpPatch("{Id}")]
-    public async Task<IActionResult> Patch(string key, [FromBody] ApplicationUser data)
+    public async Task<IActionResult> Patch([FromRoute] string key, [FromBody] Delta<ApplicationUser> patch)
     {
         var user = await userManager.FindByIdAsync(key);
 
@@ -100,50 +93,21 @@ public partial class ApplicationUsersController : ODataController
             return NotFound();
         }
 
-        OnUserUpdated(data);
+        patch.Patch(user);
+        OnUserUpdated(user);
 
-        IdentityResult result = null;
+        var result = await userManager.UpdateAsync(user);
 
-        user.Roles = null;
-
-        result = await userManager.UpdateAsync(user);
-
-        if (data.Roles != null)
-        {
-            result = await userManager.RemoveFromRolesAsync(user, await userManager.GetRolesAsync(user));
-
-            if (result.Succeeded)
-            {
-                result = await userManager.AddToRolesAsync(user, data.Roles.Select(r => r.Name));
-            }
-        }
-
-        if (!string.IsNullOrEmpty(data.Password))
-        {
-            result = await userManager.RemovePasswordAsync(user);
-
-            if (result.Succeeded)
-            {
-                result = await userManager.AddPasswordAsync(user, data.Password);
-            }
-
-            if (!result.Succeeded)
-            {
-                return IdentityError(result);
-            }
-        }
-
-        if (result != null && !result.Succeeded)
+        if (!result.Succeeded)
         {
             return IdentityError(result);
         }
 
-        return new NoContentResult();
+        return Updated(user);
     }
 
     partial void OnUserCreated(ApplicationUser user);
 
-    [HttpPost]
     public async Task<IActionResult> Post([FromBody] ApplicationUser user)
     {
         user.UserName = user.Email;
@@ -163,8 +127,7 @@ public partial class ApplicationUsersController : ODataController
         if (result.Succeeded)
         {
             OnUserCreated(user);
-
-            return Created($"odata/Identity/Users('{user.Id}')", user);
+            return Created(user);
         }
         else
         {
@@ -175,7 +138,6 @@ public partial class ApplicationUsersController : ODataController
     private IActionResult IdentityError(IdentityResult result)
     {
         var message = string.Join(", ", result.Errors.Select(error => error.Description));
-
         return BadRequest(new { error = new { message } });
     }
 }

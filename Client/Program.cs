@@ -9,8 +9,15 @@ using MyVideoResume.Client.Services.FeatureFlag;
 using AutoMapper;
 using MyVideoResume.Mapper;
 using MyVideoResume.Client.Pages.Shared.Security.Recaptcha;
+using Microsoft.Extensions.Logging;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
+
+// Add this to suppress debug logs from Blazor rendering
+builder.Logging.SetMinimumLevel(LogLevel.Information);
+builder.Logging.AddFilter("Microsoft.AspNetCore.Components", LogLevel.Information);
+builder.Logging.AddFilter("Radzen", LogLevel.Information);
+
 builder.Services.AddBlazorBootstrap();
 builder.Services.AddRadzenComponents();
 builder.Services.AddRadzenCookieThemeService(options =>

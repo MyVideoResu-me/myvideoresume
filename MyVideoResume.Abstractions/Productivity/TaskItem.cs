@@ -1,4 +1,5 @@
-﻿using MyVideoResume.Abstractions.Core;
+﻿using MyVideoResume.Abstractions.Account.Profiles;
+using MyVideoResume.Abstractions.Core;
 
 namespace MyVideoResume.Abstractions.Productivity;
 
@@ -6,8 +7,8 @@ public class TaskDTO : TaskItem, IProductivityItem
 {
     public string Id { get; set; }
 
-    public ContactPersonDTO? CreatedByUser { get; set; }
-    public ContactPersonDTO AssignedToUser { get; set; }
+    public UserProfileDTO? CreatedByUser { get; set; }
+    public UserProfileDTO AssignedToUser { get; set; }
 
     public string BoardId { get; set; }
 

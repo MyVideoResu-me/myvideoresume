@@ -1,0 +1,117 @@
+@inherits TaskBaseComponent
+@inject AccountWebService AccountService
+
+<RadzenTemplateForm TItem="TaskDTO" Data="@model" Submit=@OnSubmit>
+    <RadzenStack Gap="1rem">
+        <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Wrap="FlexWrap.Wrap">
+            <RadzenLabel Text="Title" Style="width: 4rem;" />
+            <RadzenTextBox @bind-Value="@model.Text" Name="Text" Style="width: 12rem;" />
+            <RadzenRequiredValidator Component="Text" Text="Title is required" />
+        </RadzenStack>
+        <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Wrap="FlexWrap.Wrap">
+            <RadzenLabel Text="Description" Style="width: 4rem;" />
+            <RadzenTextArea @bind-Value="@model.Description" Name="Description" Style="width: 12rem;" />
+        </RadzenStack>
+        <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Wrap="FlexWrap.Wrap">
+            <RadzenLabel Text="Start" Style="width: 4rem;" />
+            <RadzenDatePicker @bind-Value="@model.Start" Name="Start" ShowTime="true" Style="width: 12rem;" />
+            <RadzenRequiredValidator Component="Start" Text="Start is required" />
+        </RadzenStack>
+        <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Wrap="FlexWrap.Wrap">
+            <RadzenLabel Text="End" Style="width: 4rem;" />
+            <RadzenDatePicker Name="End" @bind-Value="@model.End" ShowTime="true" Style="width: 12rem;" />
+        </RadzenStack>
+        <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Wrap="FlexWrap.Wrap">
+            <RadzenLabel Text="Type" Style="width: 4rem;" />
+            <RadzenDropDown @bind-Value="@model.TaskType" Data="@taskTypes" ValueProperty="Value" TextProperty="Text" Style="width: 12rem;" />
+        </RadzenStack>
+        <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Wrap="FlexWrap.Wrap">
+            <RadzenLabel Text="Status" Style="width: 4rem;" />
+            <RadzenDropDown @bind-Value="@model.Status" Data="@statusOptions" ValueProperty="Value" TextProperty="Text" Style="width: 12rem;" />
+        </RadzenStack>
+        <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Wrap="FlexWrap.Wrap">
+            <RadzenLabel Text="Assign To" Style="width: 4rem;" />
+            <RadzenDropDown @bind-Value="@model.AssignedToUserId" Data="@availableUsers" ValueProperty="UserId" TextProperty="DisplayName" Style="width: 12rem;" />
+        </RadzenStack>
+        <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.End">
+            <RadzenButton ButtonType="ButtonType.Submit" Text="Save" ButtonStyle="ButtonStyle.Primary" Style="margin-right: 10px;" />
+            <RadzenButton Text="Cancel" ButtonStyle="ButtonStyle.Light" Click="@(() => DialogService.Close(null))" />
+        </RadzenStack>
+    </RadzenStack>
+</RadzenTemplateForm>
+
+@code {
+    [Parameter] public DateTime Start { get; set; }
+    [Parameter] public DateTime? End { get; set; }
+
+    TaskDTO model = new TaskDTO();
+    List<dynamic> taskTypes;
+    List<dynamic> statusOptions;
+    List<UserDisplayInfo> availableUsers = new List<UserDisplayInfo>();
+
+    private class UserDisplayInfo
+    {
+        public string UserId { get; set; }
+        public string DisplayName { get; set; }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+
+        // Fix the duplicate enum issue by creating a distinct list by both enum value and name
+        taskTypes = Enum.GetValues(typeof(TaskType))
+            .Cast<TaskType>()
+            .Select(t => new { Text = t.ToString(), Value = t })
+            .GroupBy(x => new { x.Value, x.Text })
+            .Select(g => g.First())
+            .ToList<dynamic>();
+
+        statusOptions = Enum.GetValues(typeof(ProductivityItemStatus))
+            .Cast<ProductivityItemStatus>()
+            .Select(s => new { Text = s.ToString(), Value = s })
+            .ToList<dynamic>();
+
+        // Load available users
+        var usersResult = await AccountService.AccountUsers();
+        if (!usersResult.ErrorMessage.HasValue())
+        {
+            availableUsers = usersResult.Result
+                .Select(u => new UserDisplayInfo 
+                { 
+                    UserId = u.UserId,
+                    DisplayName = $"{u.UserProfile?.FirstName} {u.UserProfile?.LastName}".Trim()
+                })
+                .ToList();
+        }
+    }
+
+    protected override void OnParametersSet()
+    {
+        model = new TaskDTO
+        {
+            Id = null,
+            Start = Start,
+            End = End ?? Start.AddHours(1),
+            TaskType = TaskType.General,
+            Status = ProductivityItemStatus.ToDo,
+            CreatedByUserId = Security.User?.Id,
+            AssignedToUserId = Guid.TryParse(Security.User?.Id, out var assignedToUserId) ? assignedToUserId : (Guid?)null,
+            CreationDateTime = DateTime.UtcNow
+        };
+    }
+
+    async Task OnSubmit(TaskDTO model)
+    {
+        var result = await Service.TaskSave(model);
+        if (result.ErrorMessage.HasValue())
+        {
+            ShowErrorNotification("Failed to Save Task", result.ErrorMessage);
+        }
+        else
+        {
+            ShowSuccessNotification("Task Created", "Task has been created successfully");
+            DialogService.Close(result.Result);
+        }
+    }
+}

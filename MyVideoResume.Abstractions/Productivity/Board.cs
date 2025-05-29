@@ -8,11 +8,11 @@ using System.Threading.Tasks;
 
 namespace MyVideoResume.Abstractions.Productivity;
 
-public class BoardDTO : Board {
-
+public class BoardDTO : Board 
+{
     public string Id { get; set; }
+    public List<TaskDTO> Tasks { get; set; } = new List<TaskDTO>();
 }
-
 
 public class Board: CommonBase
 {
@@ -24,5 +24,4 @@ public class Board: CommonBase
     public string Name { get; set; }
 
     public string? Description { get; set; }
-
 }

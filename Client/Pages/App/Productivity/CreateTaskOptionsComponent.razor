@@ -23,13 +23,47 @@
         }
         else
         {
-            if (args == null || args?.Value == "ai")
+            if (args == null) // Regular task creation
             {
-    //             var result = await DialogService.OpenAsync("Upload File to Create Job", ds =>
-    // @<RadzenCard Variant="Variant.Outlined">
-    //     <UploadToJsonComponent Url=@Paths.Jobs_API_CreateFromFile UploadCompleted=@UploadCompletedHandler></UploadToJsonComponent>
-    // </RadzenCard>
-    // );
+                var result = await DialogService.OpenAsync<AddTaskPage>("Create Task",
+                    new Dictionary<string, object>()
+                    {
+                        { "Start", DateTime.Now }
+                    },
+                    new DialogOptions()
+                    {
+                        Width = "500px",
+                        Height = "auto",
+                        CloseDialogOnEsc = true,
+                        CloseDialogOnOverlayClick = false
+                    });
+
+                if (result != null)
+                {
+                    await Created.InvokeAsync(result.ToString());
+                }
+            }
+            else if (args?.Value == "ai")
+            {
+                // AI-based task creation logic will go here
+                // For now, we'll use the same dialog as regular task creation
+                var result = await DialogService.OpenAsync<AddTaskPage>("Create Task with AI",
+                    new Dictionary<string, object>()
+                    {
+                        { "Start", DateTime.Now }
+                    },
+                    new DialogOptions()
+                    {
+                        Width = "500px",
+                        Height = "auto",
+                        CloseDialogOnEsc = true,
+                        CloseDialogOnOverlayClick = false
+                    });
+
+                if (result != null)
+                {
+                    await Created.InvokeAsync(result.ToString());
+                }
             }
         }
     }

@@ -9,6 +9,10 @@ on:
     branches-ignore:
       - 'devin*'
 
+concurrency:
+  group: build-and-test
+  cancel-in-progress: true
+
 jobs:
   build-and-test:
     runs-on: ubuntu-latest

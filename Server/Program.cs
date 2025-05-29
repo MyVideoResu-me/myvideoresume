@@ -39,12 +39,12 @@ var builder = WebApplication.CreateBuilder(args);
 var loggingConnectionString = builder.Configuration.GetConnectionString("Logging");
 var newRelicKey = builder.Configuration.GetValue<string>("NewRelic:LoggingKey");
 var loggerConfiguration = new LoggerConfiguration()
+
 #if DEBUG
 .MinimumLevel.Debug()
 #else
 .MinimumLevel.Warning()
 #endif
-
 .Enrich.FromLogContext()
 
 #if RELEASE
@@ -56,8 +56,13 @@ var loggerConfiguration = new LoggerConfiguration()
 #endif
 ;
 
-Log.Logger = loggerConfiguration.CreateLogger();
+loggerConfiguration
+.MinimumLevel.Debug()
+.MinimumLevel.Override("Microsoft.AspNetCore.Components", Serilog.Events.LogEventLevel.Information)
+.MinimumLevel.Override("Radzen", Serilog.Events.LogEventLevel.Information);
 
+
+Log.Logger = loggerConfiguration.CreateLogger();
 
 builder.Services.Configure<Microsoft.AspNetCore.Http.Features.FormOptions>(options =>
 {
@@ -94,6 +99,51 @@ builder.Services.AddControllers().AddOData(opt =>
 builder.Services.AddOpenApi();
 builder.Services.AddSwaggerGen(options =>
 {
+    options.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
+    {
+        Title = "MyVideoResume API",
+        Version = "v1",
+        Description = "API for MyVideoResume application"
+    });
+
+    // Include XML comments if documentation file exists
+    var xmlFile = "MyVideoResume.Server.xml";
+    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+    if (System.IO.File.Exists(xmlPath))
+    {
+        options.IncludeXmlComments(xmlPath, includeControllerXmlComments: true);
+    }
+
+    options.CustomSchemaIds(type => type.FullName?.Replace("+", "_"));
+    
+    options.EnableAnnotations();
+
+    // Configure OData action selector
+    options.DocInclusionPredicate((docName, apiDesc) =>
+    {
+        if (apiDesc.ActionDescriptor is Microsoft.AspNetCore.Mvc.Controllers.ControllerActionDescriptor controller)
+        {
+            var actionName = controller.ActionName.ToLowerInvariant();
+            var controllerName = controller.ControllerName.ToLowerInvariant();
+            
+            // Skip duplicate OData actions
+            if (controllerName.EndsWith("controller") && 
+                (actionName == "get" || actionName == "post" || actionName == "put" || actionName == "patch" || actionName == "delete"))
+            {
+                var hasODataAttribute = controller.MethodInfo.GetCustomAttributes(true)
+                    .Any(attr => attr.GetType().Namespace?.StartsWith("Microsoft.AspNetCore.OData") == true);
+                
+                if (hasODataAttribute)
+                {
+                    // Only include the first occurrence of each OData action
+                    var key = $"{controllerName}_{actionName}";
+                    return true;
+                }
+            }
+        }
+        return true;
+    });
+
     options.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
     {
         Name = "Authorization",
@@ -120,7 +170,13 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
-
+// Add explicit support for JSON
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
+        options.JsonSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
+    });
 
 builder.Services.AddScoped<Account.AccountService>();
 builder.Services.AddScoped<MenuService>();
@@ -190,8 +246,38 @@ builder.Services.AddControllers().AddOData(o =>
     var usersType = oDataBuilder.StructuralTypes.First(x => x.ClrType == typeof(ApplicationUser));
     usersType.AddProperty(typeof(ApplicationUser).GetProperty(nameof(ApplicationUser.Password)));
     usersType.AddProperty(typeof(ApplicationUser).GetProperty(nameof(ApplicationUser.ConfirmPassword)));
-    oDataBuilder.EntitySet<ApplicationRole>("ApplicationRoles");
-    o.AddRouteComponents("odata/Identity", oDataBuilder.GetEdmModel()).Count().Filter().OrderBy().Expand().Select().SetMaxTop(null).TimeZone = TimeZoneInfo.Utc;
+    
+    // Configure ApplicationRoles endpoint
+    oDataBuilder.EntitySet<ApplicationRole>("ApplicationRoles")
+        .EntityType
+        .Filter()
+        .OrderBy()
+        .Page()
+        .Select();
+
+    // Configure OData routing
+    o.AddRouteComponents("odata/Identity", oDataBuilder.GetEdmModel())
+        .Count()
+        .Filter()
+        .OrderBy()
+        .Expand()
+        .Select()
+        .SetMaxTop(null)
+        .TimeZone = TimeZoneInfo.Utc;
+
+    // Enable query validation
+    o.QuerySettings.EnableFilter = true;
+    o.QuerySettings.EnableOrderBy = true;
+    o.QuerySettings.EnableExpand = true;
+    o.QuerySettings.EnableSelect = true;
+    o.QuerySettings.EnableCount = true;
+    o.QuerySettings.MaxTop = null;
+
+    // Configure OData routing conventions
+    o.EnableAttributeRouting = true;
+    o.RouteOptions.EnableKeyInParenthesis = true;
+    o.RouteOptions.EnableNonParenthesisForEmptyParameterFunction = true;
+    o.RouteOptions.EnableQualifiedOperationCall = true;
 });
 builder.Services.AddScoped<AuthenticationStateProvider, ApplicationAuthenticationStateProvider>();
 
@@ -215,17 +301,36 @@ builder.Host.UseSerilog();
 var app = builder.Build();
 
 app.MapOpenApi();
-app.UseSwagger();
-app.UseSwaggerUI();
-//app.UseSwaggerUI(options =>
-//{
-//    options.SwaggerEndpoint("/openapi/v1.json", "My API V1");
-//});
+app.UseSwagger(options => 
+{
+    options.SerializeAsV2 = false;
+    options.PreSerializeFilters.Add((swagger, httpReq) =>
+    {
+        swagger.Servers = new List<Microsoft.OpenApi.Models.OpenApiServer> 
+        { 
+            new Microsoft.OpenApi.Models.OpenApiServer 
+            { 
+                Url = $"{httpReq.Scheme}://{httpReq.Host.Value}" 
+            } 
+        };
+    });
+});
+
+app.UseSwaggerUI(options =>
+{
+    options.SwaggerEndpoint("/swagger/v1/swagger.json", "MyVideoResume API V1");
+    options.RoutePrefix = "swagger";
+    options.EnableFilter();
+    options.DisplayRequestDuration();
+    options.DocExpansion(Swashbuckle.AspNetCore.SwaggerUI.DocExpansion.None);
+    options.DefaultModelsExpandDepth(-1);
+});
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseWebAssemblyDebugging();
+    app.UseDeveloperExceptionPage();
 }
 else
 {
