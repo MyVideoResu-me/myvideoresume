@@ -15,6 +15,7 @@ using MyVideoResume.Documents;
 using MyVideoResume.Web.Common;
 using System.Security.Claims;
 using System.Text.Json;
+using System.Linq;
 
 namespace MyVideoResume.Server.Controllers;
 
@@ -24,11 +25,17 @@ public partial class TaskController : ControllerBase
 {
     private readonly ILogger<TaskController> _logger;
     private readonly ProductivityService _productivityService;
+    private readonly JsonSerializerOptions _jsonOptions;
 
     public TaskController(ILogger<TaskController> logger, ProductivityService productivityService)
     {
         _logger = logger;
         _productivityService = productivityService;
+        _jsonOptions = new JsonSerializerOptions
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            Converters = { new System.Text.Json.Serialization.JsonStringEnumConverter() }
+        };
     }
 
     [HttpGet("{id}")]
@@ -85,16 +92,71 @@ public partial class TaskController : ControllerBase
 
     [Authorize]
     [HttpPost("save")]
-    public async Task<ActionResult<ResponseResult<IProductivityItem>>> Save([FromBody] TaskDTO taskDto)
+    public async Task<ActionResult<ResponseResult<IProductivityItem>>> Save([FromBody] JsonElement taskDtoJson)
     {
         var result = new ResponseResult<IProductivityItem>();
         try
         {
+            // Deserialize using our custom options
+            var taskDto = JsonSerializer.Deserialize<TaskDTO>(taskDtoJson.GetRawText(), _jsonOptions);
+
+            // Log the incoming task data
+            _logger.LogInformation("Received task data: {@TaskData}", taskDto);
+
+            if (!ModelState.IsValid)
+            {
+                var errors = ModelState.Values
+                    .SelectMany(v => v.Errors)
+                    .Select(e => e.ErrorMessage)
+                    .ToList();
+                
+                _logger.LogWarning("Model validation failed. Errors: {@ValidationErrors}", errors);
+                
+                var validationDetails = new
+                {
+                    Message = "Validation failed",
+                    Errors = errors,
+                    TaskData = new
+                    {
+                        Id = taskDto?.Id,
+                        Text = taskDto?.Text,
+                        Start = taskDto?.Start,
+                        End = taskDto?.End,
+                        TaskType = taskDto?.TaskType,
+                        Status = taskDto?.Status,
+                        CreatedByUserId = taskDto?.CreatedByUserId,
+                        AssignedToUserId = taskDto?.AssignedToUserId
+                    }
+                };
+
+                result.ErrorMessage = JsonSerializer.Serialize(validationDetails, _jsonOptions);
+                return BadRequest(result);
+            }
+
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (taskDto == null)
             {
                 result.ErrorMessage = "Invalid task data";
-                return result;
+                return BadRequest(result);
+            }
+
+            // Basic validation
+            if (string.IsNullOrEmpty(taskDto.Text))
+            {
+                result.ErrorMessage = "Task text/title is required";
+                return BadRequest(result);
+            }
+
+            if (taskDto.Start == default)
+            {
+                result.ErrorMessage = "Task start date is required";
+                return BadRequest(result);
+            }
+
+            // For new tasks, ensure ID is not set
+            if (string.IsNullOrEmpty(taskDto.Id))
+            {
+                taskDto.Id = null; // Ensure ID is null for new tasks
             }
 
             // Set the creator/assignee if not already set
@@ -103,19 +165,37 @@ public partial class TaskController : ControllerBase
                 taskDto.CreatedByUserId = userId;
             }
 
-            if (taskDto.AssignedToUserId == Guid.Empty && Guid.TryParse(userId, out var assignedToUserId))
+            if (taskDto.AssignedToUserId.HasValue)
             {
-                taskDto.AssignedToUserId = assignedToUserId;
+                taskDto.AssignedToUserId = Guid.Parse(userId);
+            }
+
+            // Set creation time for new tasks
+            if (taskDto.CreationDateTime == null)
+            {
+                taskDto.CreationDateTime = DateTime.UtcNow;
+            }
+
+            // Update time for existing tasks
+            if (!string.IsNullOrEmpty(taskDto.Id))
+            {
+                taskDto.UpdateDateTime = DateTime.UtcNow;
             }
 
             result = await _productivityService.SaveTask(taskDto, userId);
+            if (!string.IsNullOrEmpty(result.ErrorMessage))
+            {
+                _logger.LogWarning("Task save failed: {ErrorMessage}", result.ErrorMessage);
+                return BadRequest(result);
+            }
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex.Message, ex);
+            _logger.LogError(ex, "Error saving task");
             result.ErrorMessage = "Error saving task: " + ex.Message;
+            return BadRequest(result);
         }
-        return result;
+        return Ok(result);
     }
 }
 

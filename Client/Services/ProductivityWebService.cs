@@ -12,10 +12,12 @@ namespace MyVideoResume.Client.Services;
 public partial class ProductivityWebService : BaseWebService
 {
     private readonly ILogger<ProductivityWebService> _logger;
+    private readonly SecurityWebService _securityService;
 
-    public ProductivityWebService(HybridCache cache, NavigationManager navigationManager, IHttpClientFactory factory, ILogger<ProductivityWebService> logger) : base(cache, factory, navigationManager)
+    public ProductivityWebService(HybridCache cache, NavigationManager navigationManager, IHttpClientFactory factory, ILogger<ProductivityWebService> logger, SecurityWebService securityService) : base(cache, factory, navigationManager)
     {
         this._logger = logger;
+        this._securityService = securityService;
     }
 
     #region Tasks
@@ -77,17 +79,57 @@ public partial class ProductivityWebService : BaseWebService
         {
             var uri = new Uri($"{_navigationManager.BaseUri}{Paths.Tasks_API_Save}");
 
-            // Send the TaskDTO object directly
-            var response = await _httpClient.PostAsJsonAsync(uri, item);
+            // If BoardId is not set, get the default board
+            if (string.IsNullOrEmpty(item.BoardId))
+            {
+                var defaultBoardUri = new Uri($"{_navigationManager.BaseUri}api/board/default");
+                var boardResponse = await _httpClient.GetAsync(defaultBoardUri);
+                if (boardResponse.IsSuccessStatusCode)
+                {
+                    var board = await boardResponse.Content.ReadFromJsonAsync<BoardDTO>();
+                    if (board != null)
+                    {
+                        item.BoardId = board.Id;
+                    }
+                }
+            }
+
+            // Set AssignedToUser if not already set
+            if (item.AssignedToUser == null && item.AssignedToUserId.HasValue)
+            {
+                var userProfile = await _securityService.GetUserProfileAsync();
+                if (userProfile != null)
+                {
+                    item.AssignedToUser = userProfile;
+                }
+            }
+
+            // Configure JSON serialization options
+            var jsonOptions = new JsonSerializerOptions
+            {
+                WriteIndented = true,
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                Converters = { new System.Text.Json.Serialization.JsonStringEnumConverter() }
+            };
+
+            // Log the payload being sent
+            var payload = JsonSerializer.Serialize(item, jsonOptions);
+            _logger.LogInformation("Sending task payload: {Payload}", payload);
+
+            // Create the request with proper content type and serialization
+            var content = new StringContent(payload, System.Text.Encoding.UTF8, "application/json");
+            var response = await _httpClient.PostAsync(uri, content);
 
             if (response.IsSuccessStatusCode)
             {
-                result = await response.ReadAsync<ResponseResult<IProductivityItem>>();
+                var responseContent = await response.Content.ReadAsStringAsync();
+                result = JsonSerializer.Deserialize<ResponseResult<IProductivityItem>>(responseContent, jsonOptions);
             }
             else
             {
-                result.ErrorMessage = $"Failed to save task. Status code: {response.StatusCode}";
-                _logger.LogError($"Failed to save task. Status code: {response.StatusCode}");
+                var errorContent = await response.Content.ReadAsStringAsync();
+                result.ErrorMessage = $"Failed to save task. Status code: {response.StatusCode}. Error: {errorContent}";
+                _logger.LogError("Failed to save task. Status code: {StatusCode}. Error: {Error}", response.StatusCode, errorContent);
             }
         }
         catch (Exception ex)

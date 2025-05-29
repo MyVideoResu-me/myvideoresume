@@ -164,12 +164,39 @@ public class ProductivityService
             {
                 // This is a new task
                 taskEntity = _mapper.Map<TaskEntity>(taskDto);
+                taskEntity.Id = Guid.NewGuid(); // Generate new GUID for new tasks
                 taskEntity.CreationDateTime = DateTime.UtcNow;
                 
                 // Set default values if not provided
-                if (taskEntity.CreatedByUserId == null || taskEntity.CreatedByUserId == Guid.Empty)
+                if (string.IsNullOrEmpty(taskDto.CreatedByUserId))
                 {
                     taskEntity.CreatedByUserId = Guid.TryParse(userId, out var guid) ? guid : (Guid?)null;
+                }
+
+                // Set AssignedToUserId and AssignedToUser if not provided
+                if (!taskEntity.AssignedToUserId.HasValue)
+                {
+                    if (Guid.TryParse(userId, out var guid))
+                    {
+                        taskEntity.AssignedToUserId = guid;
+                        // Fetch and set the user profile
+                        taskEntity.AssignedToUser = await _dataContext.UserProfiles.FirstOrDefaultAsync(u => u.Id == guid);
+                        if (taskEntity.AssignedToUser == null)
+                        {
+                            response.ErrorMessage = "User profile not found";
+                            return response;
+                        }
+                    }
+                }
+                else
+                {
+                    // If AssignedToUserId is provided, ensure the user profile exists
+                    taskEntity.AssignedToUser = await _dataContext.UserProfiles.FirstOrDefaultAsync(u => u.Id == taskEntity.AssignedToUserId);
+                    if (taskEntity.AssignedToUser == null)
+                    {
+                        response.ErrorMessage = "Assigned user profile not found";
+                        return response;
+                    }
                 }
                 
                 // Find the default board to add the task to
@@ -178,7 +205,6 @@ public class ProductivityService
                 
                 if (defaultBoard != null)
                 {
-                    // Set BoardId on the task DTO for reference
                     taskDto.BoardId = defaultBoard.Id.ToString();
                 }
                 
@@ -194,39 +220,40 @@ public class ProductivityService
                 }
                 
                 taskEntity = await _dataContext.Tasks.FindAsync(taskId);
-            if (taskEntity == null)
-            {
-                response.ErrorMessage = "Task not found";
-                return response;
-            }
-            
+                if (taskEntity == null)
+                {
+                    response.ErrorMessage = "Task not found";
+                    return response;
+                }
+                
                 // Check if the user has permission to update this task
-            if (taskEntity.CreatedByUserId?.ToString() != userId && taskEntity.AssignedToUserId?.ToString() != userId)
-            {
+                if (taskEntity.CreatedByUserId?.ToString() != userId && taskEntity.AssignedToUserId?.ToString() != userId)
+                {
                     response.ErrorMessage = "You don't have permission to update this task";
-                return response;
-            }
-            
+                    return response;
+                }
+                
                 // Update the task properties
                 _mapper.Map(taskDto, taskEntity);
+                taskEntity.UpdateDateTime = DateTime.UtcNow;
 
                 // Ensure update doesn't change the creator
                 if (taskEntity.CreatedByUserId?.ToString() != userId && !string.IsNullOrEmpty(taskDto.CreatedByUserId))
-        {
+                {
                     taskEntity.CreatedByUserId = Guid.TryParse(userId, out var guid) ? guid : (Guid?)null;
-        }
-        
+                }
+                
                 _dataContext.Tasks.Update(taskEntity);
-    }
+            }
 
             await _dataContext.SaveChangesAsync();
 
             // Map back to DTO for the response
             response.Result = _mapper.Map<TaskDTO>(taskEntity);
-}
+        }
         catch (Exception ex)
         {
-            _logger.LogError(ex.Message, ex);
+            _logger.LogError(ex, "Error saving task: {Message}", ex.Message);
             response.ErrorMessage = "Error saving task: " + ex.Message;
         }
 

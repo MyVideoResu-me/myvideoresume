@@ -205,6 +205,7 @@ If you didn't request this code, you can safely ignore this email. Someone else 
         };
     }
 
+    [HttpGet]
     public async Task<IActionResult> Logout()
     {
         await signInManager.SignOutAsync();
@@ -264,6 +265,7 @@ If you didn't request this registration, you can safely ignore this email. Someo
         await emailService.SendEmailAsync(user.Email, "Confirm your registration", text);
     }
 
+    [HttpGet]
     public async Task<IActionResult> ConfirmEmail(string userId, string code)
     {
         var user = await userManager.FindByIdAsync(userId);
@@ -278,6 +280,7 @@ If you didn't request this registration, you can safely ignore this email. Someo
         return RedirectWithError("Invalid user or confirmation code", ErrorCodes.InValidUser);
     }
 
+    [HttpGet]
     public async Task<IActionResult> ResetPassword(string userName)
     {
         var user = await userManager.FindByNameAsync(userName);
@@ -306,6 +309,7 @@ If you didn't request this registration, you can safely ignore this email. Someo
         }
     }
 
+    [HttpGet]
     public async Task<IActionResult> ConfirmPasswordReset(string userId, string code)
     {
         var user = await userManager.FindByIdAsync(userId);

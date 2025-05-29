@@ -1,6 +1,7 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk.Web">
 	<PropertyGroup>
-		<NoWarn>CS0168,CS1998,BL9993,CS0649,CS0436,0436</NoWarn>
+		<NoWarn>CS0168,CS1998,BL9993,CS0649,CS0436,0436,CS1591</NoWarn>
 		<NuGetAuditMode>direct</NuGetAuditMode>
 		<TargetFramework>net9.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
@@ -9,6 +10,7 @@
 		<UserSecretsId>ce67b6ee-56cd-456c-9ca4-9c15b0642e5a</UserSecretsId>
 		<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+		<DocumentationFile>bin\$(Configuration)\$(TargetFramework)\MyVideoResume.Server.xml</DocumentationFile>
 		<OpenApiDocumentsDirectory>./</OpenApiDocumentsDirectory>
 	</PropertyGroup>
 	<ItemGroup>
@@ -41,6 +43,7 @@
 		<PackageReference Include="Splitio" Version="7.10.0" />
 		<PackageReference Include="Stripe.net" Version="48.0.0" />
 		<PackageReference Include="Swashbuckle.AspNetCore" Version="8.1.1" />
+		<PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="8.1.1" />
 		<PackageReference Include="System.Linq.Dynamic.Core" Version="1.6.0.2" />
 		<PackageReference Include="System.Security.Cryptography.Pkcs" Version="9.0.4" />
 		<PackageReference Include="System.Security.Cryptography.Xml" Version="9.0.4" />

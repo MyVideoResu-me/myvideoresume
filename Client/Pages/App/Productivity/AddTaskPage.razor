@@ -64,19 +64,17 @@
 
     protected override void OnParametersSet()
     {
-        model.Start = Start;
-        model.End = End ?? Start.AddHours(1);
-        model.TaskType = TaskType.General;
-        model.Status = ProductivityItemStatus.ToDo;
-        model.CreatedByUserId = Security.User?.Id;
-        if (Guid.TryParse(Security.User?.Id, out var assignedToUserId))
+        model = new TaskDTO
         {
-            model.AssignedToUserId = assignedToUserId;
-        }
-        else
-        {
-            model.AssignedToUserId = null;
-        }
+            Id = null,
+            Start = Start,
+            End = End ?? Start.AddHours(1),
+            TaskType = TaskType.General,
+            Status = ProductivityItemStatus.ToDo,
+            CreatedByUserId = Security.User?.Id,
+            AssignedToUserId = Guid.TryParse(Security.User?.Id, out var assignedToUserId) ? assignedToUserId : (Guid?)null,
+            CreationDateTime = DateTime.UtcNow
+        };
     }
 
     async Task OnSubmit(TaskDTO model)
